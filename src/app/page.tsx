@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, MessageCircle, ShoppingBag, Grid, Palette, Camera, Heart, HelpCircle, Star } from "lucide-react";
+import { Play, ArrowRight, MessageCircle, ShoppingBag, Grid, Palette, Camera, Heart, HelpCircle, Star, Store, LineChart, LayoutTemplate, CheckCircle2 } from "lucide-react";
 
 export default function LandingPage() {
   return (

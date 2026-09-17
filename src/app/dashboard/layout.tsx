@@ -50,7 +50,7 @@ export default function DashboardLayout({
       <aside className="hidden md:flex w-[260px] flex-col bg-[#0F172A] text-slate-300 shrink-0">
         <div className="p-6">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white rounded flex items-center justify-center font-bold text-zyp-primary text-xl tracking-tighter italic">e</div>
+            <img src="/logo.jpg" alt="Zypcart" className="h-6 object-contain rounded" />
             <span className="font-bold text-xl text-white tracking-tight">Zypcart</span>
           </Link>
         </div>
@@ -99,8 +99,10 @@ export default function DashboardLayout({
         {/* Header matching Figma */}
         <header className="h-[72px] border-b border-zyp-border flex items-center justify-between px-6 md:px-8 bg-white shrink-0">
           <div className="flex items-center md:hidden">
-             <div className="w-6 h-6 bg-zyp-primary rounded flex items-center justify-center font-bold text-white text-sm tracking-tighter italic mr-2">e</div>
-             <span className="font-bold text-lg text-zyp-textPrimary tracking-tight">Zypcart</span>
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <img src="/logo.jpg" alt="Zypcart" className="h-6 object-contain rounded" />
+              <span className="font-bold text-lg text-zyp-textPrimary tracking-tight">Zypcart</span>
+            </Link>
           </div>
           
           <div className="hidden md:flex items-center gap-4 flex-1">
