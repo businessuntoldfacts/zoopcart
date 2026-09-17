@@ -17,7 +17,10 @@ export default function ProductsPage() {
     name: "",
     price: "",
     short_description: "",
+    image: "",
   });
+
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -37,6 +40,24 @@ export default function ProductsPage() {
     setLoading(false);
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setUploadingImage(true);
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `product-${Math.random()}.${fileExt}`;
+    
+    const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file);
+    if (!uploadError) {
+      const { data } = supabase.storage.from('images').getPublicUrl(fileName);
+      setFormData({...formData, image: data.publicUrl});
+    } else {
+      alert("Image upload failed. Ensure you created the public 'images' bucket.");
+    }
+    setUploadingImage(false);
+  };
+
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!businessId) return;
@@ -49,13 +70,14 @@ export default function ProductsPage() {
       name: formData.name,
       slug: slug,
       price: parseFloat(formData.price),
-      short_description: formData.short_description
+      short_description: formData.short_description,
+      image: formData.image
     }]).select();
 
     if (!error && data) {
       setProducts([...products, data[0]]);
       setShowAddForm(false);
-      setFormData({ name: "", price: "", short_description: "" });
+      setFormData({ name: "", price: "", short_description: "", image: "" });
     } else {
       alert("Error adding product");
     }
@@ -82,6 +104,14 @@ export default function ProductsPage() {
           <CardContent className="pt-6">
             <h3 className="text-lg font-medium text-white mb-4">Add New Product</h3>
             <form onSubmit={handleAddProduct} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Product Image</label>
+                <div className="flex items-center gap-4">
+                  {formData.image && <img src={formData.image} alt="Preview" className="w-16 h-16 rounded-md object-cover border border-white/10" />}
+                  <Input type="file" accept="image/*" onChange={handleImageUpload} className="border-white/10" />
+                </div>
+                {uploadingImage && <p className="text-xs text-zyp-accent">Uploading image...</p>}
+              </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-white">Product Name</label>
                 <Input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="E.g. Custom Birthday Cake" />
@@ -119,8 +149,9 @@ export default function ProductsPage() {
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map(p => (
-            <Card key={p.id} className="bg-zyp-surface border-white/5 flex flex-col">
-              <CardContent className="p-4 flex flex-col h-full">
+            <Card key={p.id} className="bg-zyp-surface border-white/5 flex flex-col overflow-hidden">
+              {p.image && <img src={p.image} alt={p.name} className="w-full h-48 object-cover border-b border-white/5" />}
+              <CardContent className="p-4 flex flex-col h-full mt-2">
                 <h4 className="font-semibold text-white text-lg">{p.name}</h4>
                 <p className="text-sm text-zyp-textMuted mt-1 mb-4 flex-1">{p.short_description}</p>
                 <div className="text-lg font-display font-bold text-zyp-accent">₹{p.price}</div>

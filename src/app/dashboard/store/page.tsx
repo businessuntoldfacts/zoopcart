@@ -35,6 +35,7 @@ export default function StorePage() {
         .update({
           business_name: business.business_name,
           description: business.description,
+          profile_image: business.profile_image,
           category: business.category,
           instagram_handle: business.instagram_handle,
           whatsapp_country_code: business.whatsapp_country_code,
@@ -63,9 +64,43 @@ export default function StorePage() {
       <Card>
         <CardHeader>
           <CardTitle>Business Details</CardTitle>
-          <CardDescription>This information will be visible on your public store. (zypcart.com/{business.username})</CardDescription>
+          <CardDescription>
+            This information will be visible on your public store. <br/>
+            <a href={`/${business.username}`} target="_blank" className="text-zyp-accent hover:underline font-bold">zypcart.com/{business.username} ↗</a>
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Store Logo / Profile Photo</label>
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-white/5 overflow-hidden border border-white/10 shrink-0">
+                {business.profile_image ? (
+                  <img src={business.profile_image} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white/30 text-xs">No img</div>
+                )}
+              </div>
+              <Input type="file" accept="image/*" onChange={async (e) => {
+                if (!e.target.files || e.target.files.length === 0) return;
+                const file = e.target.files[0];
+                setMessage("Uploading image...");
+                
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${business.id}-${Math.random()}.${fileExt}`;
+                
+                const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file);
+                if (uploadError) {
+                  setMessage("Upload failed. Make sure you created a public 'images' bucket in Supabase.");
+                  return;
+                }
+                
+                const { data } = supabase.storage.from('images').getPublicUrl(fileName);
+                setBusiness({...business, profile_image: data.publicUrl});
+                setMessage("Image uploaded! Don't forget to click Save Profile.");
+              }} className="border-white/10" />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Business Name</label>
             <Input value={business.business_name || ""} onChange={e => setBusiness({...business, business_name: e.target.value})} placeholder="E.g., The Cake Studio" />
