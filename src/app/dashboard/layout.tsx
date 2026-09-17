@@ -35,9 +35,7 @@ export default function DashboardLayout({
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag, badge: 3 },
     { name: "Products", href: "/dashboard/products", icon: Store },
-    { name: "Store", href: "/dashboard/store", icon: Store },
-    { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    { name: "Store", href: "/dashboard/store", icon: Settings },
   ];
 
   const handleLogout = async () => {

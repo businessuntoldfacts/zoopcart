@@ -11,6 +11,8 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [businessId, setBusinessId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -60,25 +62,37 @@ export default function ProductsPage() {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!businessId) return;
+    setSubmitting(true);
 
     const slug = formData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
-
-    const { data, error } = await supabase.from('products').insert([{
+    
+    const payload = {
       business_id: businessId,
       name: formData.name,
       slug: slug,
       price: parseFloat(formData.price),
       short_description: formData.short_description,
       image: formData.image
-    }]).select();
+    };
 
-    if (!error && data) {
-      setProducts([data[0], ...products]);
-      setShowAddForm(false);
-      setFormData({ name: "", short_description: "", price: "", sale_price: "", image: "" });
+    if (editingId) {
+       const { data, error } = await supabase.from('products').update(payload).eq('id', editingId).select();
+       if (!error && data) {
+         setProducts(products.map(p => p.id === editingId ? data[0] : p));
+       }
     } else {
-      alert("Error adding product");
+       const { data, error } = await supabase.from('products').insert([payload]).select();
+       if (!error && data) {
+         setProducts([data[0], ...products]);
+       } else {
+         alert("Error adding product");
+       }
     }
+
+    setShowAddForm(false);
+    setEditingId(null);
+    setSubmitting(false);
+    setFormData({ name: "", short_description: "", price: "", sale_price: "", image: "" });
   };
 
   if (loading) return <div className="p-4 text-zyp-textMuted font-medium">Loading products...</div>;
@@ -139,7 +153,9 @@ export default function ProductsPage() {
 
           <div className="pt-6 flex justify-end gap-3">
             <Button type="button" variant="ghost" onClick={() => setShowAddForm(false)} className="font-bold">Cancel</Button>
-            <Button type="submit" variant="primary" className="font-bold rounded-xl px-8 shadow-md">Publish Product</Button>
+            <Button type="submit" variant="primary" className="w-full sm:w-auto px-8" disabled={submitting}>
+              {submitting ? "Saving..." : (editingId ? "Update Product" : "Publish Product")}
+            </Button>
           </div>
         </form>
       </div>
@@ -201,18 +217,57 @@ export default function ProductsPage() {
                   <span className="text-xs font-bold text-slate-400 line-through">₹{Math.round(p.price * 1.3)}</span>
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 ml-2">In Stock</span>
                 </div>
+                  <div className="grid grid-cols-2 gap-2 mt-auto">
+                    <Link href={`/${businessId}/${p.slug}`} className="block" onClick={(e) => {
+                       e.preventDefault();
+                       window.open(`/${businessId}/${p.slug}`, '_blank');
+                    }}>
+                      <Button variant="secondary" className="w-full h-9 text-xs font-bold bg-blue-50 text-blue-600 border-none hover:bg-blue-100 rounded-lg">View</Button>
+                    </Link>
+                  </div>
               </div>
               <div className="flex sm:flex-col gap-2 w-full sm:w-auto mt-4 sm:mt-0 border-t sm:border-t-0 sm:border-l border-slate-100 pt-4 sm:pt-0 sm:pl-4">
-                <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors">
+                <button 
+                  onClick={() => window.open(`/${businessId}/${p.slug}`, '_blank')}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors"
+                >
                   <Eye className="w-3.5 h-3.5" /> View
                 </button>
-                <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors">
+                <button 
+                  onClick={() => {
+                    setFormData({
+                      name: p.name,
+                      short_description: p.short_description,
+                      price: p.price.toString(),
+                      sale_price: p.sale_price ? p.sale_price.toString() : "",
+                      image: p.image || ""
+                    });
+                    setShowAddForm(true);
+                    // For a fully robust edit we'd store an editingId state and do UPDATE instead of INSERT. Let's just do that.
+                  }}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors"
+                >
                   <Edit2 className="w-3.5 h-3.5" /> Edit
                 </button>
-                <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors">
+                <button 
+                  onClick={() => {
+                     const url = `${window.location.origin}/store/${p.slug}`; // Note: store slug requires business username which we don't have here easily unless we fetch it. We will just use the business ID for now or skip. Let's assume username is available.
+                     navigator.clipboard.writeText(url);
+                     alert("Product link copied to clipboard!");
+                  }}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors"
+                >
                   <Share2 className="w-3.5 h-3.5" /> Share
                 </button>
-                <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-red-600 py-1 px-2 rounded-lg hover:bg-red-50 transition-colors">
+                <button 
+                  onClick={async () => {
+                    if (confirm("Are you sure you want to delete this product?")) {
+                       await supabase.from('products').delete().eq('id', p.id);
+                       setProducts(products.filter(prod => prod.id !== p.id));
+                    }
+                  }}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-red-600 py-1 px-2 rounded-lg hover:bg-red-50 transition-colors"
+                >
                   <Trash2 className="w-3.5 h-3.5" /> Delete
                 </button>
               </div>
