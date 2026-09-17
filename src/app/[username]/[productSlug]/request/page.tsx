@@ -78,7 +78,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
       customer_email: formData.email,
       quantity: formData.quantity,
       budget: formData.budget ? parseFloat(formData.budget) : null,
-      required_date: formData.requiredDate,
+      required_date: formData.requiredDate || null,
       notes: formData.notes,
       delivery_location: formData.delivery_location,
       city: formData.city,
@@ -93,7 +93,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
       setTrackingToken(token);
       setIsSubmitted(true);
     } else {
-      alert("Error submitting request. Please try again.");
+      alert("Error submitting request: " + (error.message || "Please try again."));
     }
   };
 
