@@ -6,15 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 
-export default function StorePage() {
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
+export default function StoreSettingsPage() {
   const [business, setBusiness] = useState<any>(null);
-  
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+
   useEffect(() => {
     async function loadProfile() {
-      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data } = await supabase.from('businesses').select('*').eq('user_id', user.id).single();
@@ -26,58 +24,56 @@ export default function StorePage() {
   }, []);
 
   const handleSave = async () => {
-    if (!business) return;
-    setSaving(true);
-    setMessage("");
-    
-    try {
-      const { error } = await supabase.from('businesses')
-        .update({
-          business_name: business.business_name,
-          description: business.description,
-          profile_image: business.profile_image,
-          category: business.category,
-          instagram_handle: business.instagram_handle,
-          whatsapp_country_code: business.whatsapp_country_code,
-          whatsapp_number: business.whatsapp_number
-        })
-        .eq('id', business.id);
-        
-      if (error) throw error;
+    setMessage("Saving...");
+    const { error } = await supabase
+      .from('businesses')
+      .update({
+        business_name: business.business_name,
+        description: business.description,
+        profile_image: business.profile_image,
+        category: business.category,
+        instagram_handle: business.instagram_handle,
+        whatsapp_country_code: business.whatsapp_country_code,
+        whatsapp_number: business.whatsapp_number,
+      })
+      .eq('id', business.id);
+
+    if (error) {
+      setMessage("Error saving profile.");
+    } else {
       setMessage("Profile saved successfully!");
-    } catch (err: any) {
-      setMessage("Error saving profile: " + err.message);
-    } finally {
-      setSaving(false);
     }
   };
 
-  if (loading) return <div className="p-8 text-white">Loading profile...</div>;
-  if (!business) return <div className="p-8 text-white">Please log in to manage store.</div>;
+  if (loading) return <div className="p-8 text-slate-700">Loading profile...</div>;
+  if (!business) return <div className="p-8 text-slate-700">Please log in to manage store.</div>;
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <h2 className="text-xl font-semibold text-white">Store Profile</h2>
+    <div className="max-w-3xl mx-auto pb-12">
+      <div className="mb-6">
+        <h2 className="text-2xl font-extrabold text-zyp-textPrimary">Store Settings</h2>
+        <p className="text-sm text-zyp-textMuted mt-1">Manage your account and preferences.</p>
+      </div>
 
-      {message && <div className="p-4 bg-zyp-accent/20 text-white rounded-[16px]">{message}</div>}
+      {message && <div className="p-4 mb-6 bg-blue-50 text-blue-700 rounded-xl font-medium border border-blue-100">{message}</div>}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Business Details</CardTitle>
-          <CardDescription>
+      <Card className="bg-white border-zyp-border shadow-sm rounded-3xl overflow-hidden">
+        <CardHeader className="bg-slate-50 border-b border-zyp-border pb-4 pt-6 px-6">
+          <CardTitle className="text-lg font-extrabold text-[#0F172A]">Business Details</CardTitle>
+          <CardDescription className="text-sm font-medium text-slate-500">
             This information will be visible on your public store. <br/>
-            <a href={`/${business.username}`} target="_blank" className="text-zyp-accent hover:underline font-bold">zypcart.com/{business.username} ↗</a>
+            <a href={`/${business.username}`} target="_blank" className="text-zyp-primary hover:underline font-bold mt-1 inline-block">zypcart.com/{business.username} ↗</a>
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6 p-6">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Store Logo / Profile Photo</label>
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-white/5 overflow-hidden border border-white/10 shrink-0">
+            <label className="text-sm font-bold text-[#0F172A]">Store Logo / Profile Photo</label>
+            <div className="flex items-center gap-6">
+              <div className="w-20 h-20 rounded-full bg-slate-100 overflow-hidden border-4 border-white shadow-sm shrink-0">
                 {business.profile_image ? (
                   <img src={business.profile_image} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white/30 text-xs">No img</div>
+                  <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs font-bold">Upload</div>
                 )}
               </div>
               <Input type="file" accept="image/*" onChange={async (e) => {
@@ -97,67 +93,46 @@ export default function StorePage() {
                 const { data } = supabase.storage.from('images').getPublicUrl(fileName);
                 setBusiness({...business, profile_image: data.publicUrl});
                 setMessage("Image uploaded! Don't forget to click Save Profile.");
-              }} className="border-white/10" />
+              }} className="bg-slate-50 border-zyp-border cursor-pointer w-full max-w-sm" />
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-[#0F172A]">Business Name</label>
+              <Input value={business.business_name || ""} onChange={e => setBusiness({...business, business_name: e.target.value})} placeholder="E.g., ABC Cakes" className="bg-slate-50" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-[#0F172A]">Category</label>
+              <Input value={business.category || ""} onChange={e => setBusiness({...business, category: e.target.value})} placeholder="e.g. Home Bakers" className="bg-slate-50" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Business Name</label>
-            <Input value={business.business_name || ""} onChange={e => setBusiness({...business, business_name: e.target.value})} placeholder="E.g., The Cake Studio" />
+            <label className="text-sm font-bold text-[#0F172A]">Description</label>
+            <Input value={business.description || ""} onChange={e => setBusiness({...business, description: e.target.value})} placeholder="Custom cakes for every celebration 💖" className="bg-slate-50" />
           </div>
           
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Description</label>
-            <textarea 
-              value={business.description || ""} onChange={e => setBusiness({...business, description: e.target.value})}
-              className="flex w-full rounded-[16px] border border-white/10 bg-zyp-surface px-4 py-3 text-sm text-zyp-textPrimary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zyp-accent min-h-[100px]"
-              placeholder="Tell customers about your business..."
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Category</label>
-            <select value={business.category || ""} onChange={e => setBusiness({...business, category: e.target.value})} className="flex h-12 w-full rounded-[16px] border border-white/10 bg-zyp-surface px-4 py-2 text-sm text-zyp-textPrimary focus:outline-none focus:ring-2 focus:ring-zyp-accent">
-              <option value="Home Bakers">Home Bakers</option>
-              <option value="Clothing Sellers">Clothing Sellers</option>
-              <option value="Jewellery Businesses">Jewellery Businesses</option>
-              <option value="Others">Others</option>
-            </select>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Social & Contact</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Instagram Handle</label>
-            <div className="flex">
-              <span className="inline-flex items-center px-4 rounded-l-[16px] border border-r-0 border-white/10 bg-white/5 text-zyp-textMuted text-sm">
-                @
-              </span>
-              <Input className="rounded-l-none border-l-0" value={business.instagram_handle || ""} onChange={e => setBusiness({...business, instagram_handle: e.target.value})} placeholder="zypcart_store" />
+          <div className="grid sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-[#0F172A]">Instagram Handle</label>
+              <Input value={business.instagram_handle || ""} onChange={e => setBusiness({...business, instagram_handle: e.target.value})} placeholder="@abc_cakes" className="bg-slate-50" />
             </div>
-            <p className="text-xs text-zyp-textMuted mt-1">Status: {business.instagram_handle ? "Connected" : "Not Connected"}</p>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">WhatsApp Number</label>
-            <div className="flex gap-2">
-              <select value={business.whatsapp_country_code || "+91"} onChange={e => setBusiness({...business, whatsapp_country_code: e.target.value})} className="flex h-12 w-24 rounded-[16px] border border-white/10 bg-zyp-surface px-4 py-2 text-sm text-zyp-textPrimary focus:outline-none focus:ring-2 focus:ring-zyp-accent">
-                <option value="+91">+91 (IN)</option>
-                <option value="+1">+1 (US)</option>
-                <option value="+44">+44 (UK)</option>
-              </select>
-              <Input className="flex-1" value={business.whatsapp_number || ""} onChange={e => setBusiness({...business, whatsapp_number: e.target.value})} placeholder="9876543210" />
+            
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-[#0F172A]">WhatsApp Number</label>
+              <div className="flex gap-2">
+                <Input className="w-20 bg-slate-50 text-center" value={business.whatsapp_country_code || "91"} onChange={e => setBusiness({...business, whatsapp_country_code: e.target.value})} placeholder="91" />
+                <Input className="flex-1 bg-slate-50" value={business.whatsapp_number || ""} onChange={e => setBusiness({...business, whatsapp_number: e.target.value})} placeholder="9876543210" />
+              </div>
             </div>
           </div>
-          
-          <Button onClick={handleSave} className="mt-4" disabled={saving}>
-            {saving ? "Saving..." : "Save Profile"}
-          </Button>
+
+          <div className="pt-6 border-t border-slate-100 flex justify-end">
+             <Button onClick={handleSave} variant="primary" className="font-bold rounded-xl px-8 shadow-md">
+               Save Changes
+             </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
