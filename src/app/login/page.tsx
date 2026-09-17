@@ -2,18 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,57 +23,82 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
       });
 
-      if (error) throw error;
+      if (authError) throw authError;
       
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err: any) {
-      setError(err.message || "Failed to log in");
+      setError(err.message || "Invalid credentials");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-zyp-bg flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <Link href="/" className="inline-block mb-6">
-            <img src="/logo.jpg" alt="Zypcart" className="h-12 mx-auto" />
-          </Link>
-          <CardTitle>Welcome back</CardTitle>
-          <CardDescription>Log in to manage your orders</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
+      <header className="p-6 flex justify-between items-center max-w-2xl mx-auto w-full">
+        <Link href="/" className="flex items-center gap-2">
+          <img src="/logo.jpg" alt="Zypcart" className="h-6 object-contain rounded" />
+          <span className="font-bold text-lg tracking-tight">Zypcart</span>
+        </Link>
+        <div className="text-sm">
+          <span className="text-zyp-textMuted">New to Zypcart? </span>
+          <Link href="/signup" className="font-bold text-zyp-primary hover:underline">Sign up</Link>
+        </div>
+      </header>
+
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-md border border-zyp-border">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-extrabold mb-2 tracking-tight">Welcome back</h1>
+            <p className="text-zyp-textMuted">Log in to manage your store</p>
+          </div>
+
+          {error && <div className="p-3 mb-6 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">{error}</div>}
+
           <form onSubmit={handleLogin} className="space-y-4">
-            {error && <div className="p-3 text-sm bg-zyp-danger/10 text-zyp-danger rounded-[12px]">{error}</div>}
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Email</label>
-              <Input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seller@example.com" />
+            <div>
+              <Input 
+                required 
+                type="email"
+                placeholder="Email Address" 
+                value={formData.email}
+                onChange={e => setFormData({...formData, email: e.target.value})}
+                className="bg-gray-50 border-gray-200"
+              />
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-white">Password</label>
-                <Link href="#" className="text-xs text-zyp-accent hover:underline">Forgot password?</Link>
-              </div>
-              <Input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <div className="relative">
+              <Input 
+                required 
+                type={showPassword ? "text" : "password"}
+                placeholder="Password" 
+                value={formData.password}
+                onChange={e => setFormData({...formData, password: e.target.value})}
+                className="bg-gray-50 border-gray-200 pr-10"
+              />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
             
-            <Button type="submit" className="w-full mt-6" disabled={loading}>
-              {loading ? "Logging In..." : "Log In"}
+            <div className="flex justify-end pt-1 pb-4">
+              <a href="#" className="text-sm font-bold text-zyp-primary hover:underline">Forgot password?</a>
+            </div>
+
+            <Button type="submit" variant="primary" className="w-full text-base py-6 rounded-xl font-bold">
+              {loading ? "Logging in..." : "Log in"}
             </Button>
-            
-            <div className="text-center text-sm text-zyp-textMuted mt-6">
-              Don't have an account? <Link href="/signup" className="text-zyp-accent hover:underline">Sign up</Link>
-            </div>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </main>
     </div>
   );
 }

@@ -3,11 +3,10 @@ import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
 
 export const metadata: Metadata = {
   title: "Zypcart",
-  description: "Turn conversations into orders. Your store, one link away.",
+  description: "Turn conversations into orders.",
 };
 
 export default function RootLayout({
@@ -16,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} ${fraunces.variable} font-sans`}>
+    <html lang="en">
+      <body className={`${inter.variable} font-sans antialiased`}>
         {children}
       </body>
     </html>

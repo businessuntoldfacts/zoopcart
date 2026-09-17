@@ -1,35 +1,51 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zyp-primary disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        primary: "bg-zyp-primary text-white hover:bg-zyp-primaryHover shadow-sm shadow-zyp-primary/20",
+        secondary: "bg-white text-zyp-textPrimary border border-zyp-border hover:bg-zyp-bg shadow-sm",
+        ghost: "hover:bg-zyp-bg text-zyp-textPrimary",
+        danger: "bg-red-50 text-red-600 hover:bg-red-100",
+        success: "bg-green-50 text-green-600 hover:bg-green-100",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        lg: "h-12 rounded-xl px-8 text-base",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "primary",
+      size: "default",
+    },
+  }
+)
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "danger" | "ghost";
-  size?: "default" | "sm" | "lg";
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "default", ...props }, ref) => {
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
     return (
-      <button
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium transition-transform active:translate-y-0 disabled:pointer-events-none disabled:opacity-50",
-          {
-            "bg-gradient-to-br from-zyp-accent to-zyp-accentSecondary text-white shadow-sm shadow-zyp-accent/20 hover:-translate-y-0.5": variant === "primary",
-            "bg-transparent border border-zyp-textMuted/30 text-zyp-textPrimary hover:bg-zyp-surface hover:-translate-y-0.5": variant === "secondary",
-            "bg-zyp-danger text-white hover:opacity-90": variant === "danger",
-            "hover:bg-zyp-surface text-zyp-textPrimary": variant === "ghost",
-            "h-10 px-4 py-2": size === "default",
-            "h-9 px-3 text-sm rounded-[12px]": size === "sm",
-            "h-12 px-8 text-lg": size === "lg",
-          },
-          className
-        )}
         {...props}
       />
-    );
+    )
   }
-);
-Button.displayName = "Button";
+)
+Button.displayName = "Button"
 
-export { Button };
+export { Button, buttonVariants }

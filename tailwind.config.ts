@@ -9,23 +9,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         zyp: {
-          bg: "#0B0E14",
-          surface: "#161B24",
-          accent: "#7C3AED", // Match the logo's purple
-          accentSecondary: "#4338CA", // Match the logo's indigo
-          success: "#2ECC71",
-          warning: "#F39C4E",
-          danger: "#EF5A5A",
-          textPrimary: "#F5F6F8",
-          textMuted: "#9AA3B2",
-          lightSurface: "#FBFAF7",
+          primary: "#2563EB", // Vibrant Blue from Figma
+          primaryHover: "#1D4ED8",
+          sidebar: "#0F172A", // Dark Navy
+          bg: "#F8FAFC", // Light Gray background
+          surface: "#FFFFFF", // White cards
+          textPrimary: "#1E293B",
+          textMuted: "#64748B",
+          border: "#E2E8F0",
+          success: "#10B981", // Green
+          warning: "#F59E0B", // Orange
+          danger: "#EF4444", // Red
         }
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'sans-serif'],
-        display: ['var(--font-fraunces)', 'serif'],
-        mono: ['var(--font-geist-mono)', 'monospace'], // Default mono if needed
+        sans: ['var(--font-inter)'],
+        display: ['var(--font-inter)'], // Figma uses a clean sans-serif (Inter) everywhere
       }
     },
   },

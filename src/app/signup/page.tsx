@@ -2,119 +2,201 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Eye, EyeOff, CheckCircle2, Shield, Zap, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     businessName: "",
-    username: "",
     email: "",
-    password: ""
+    password: "",
+    username: "",
   });
+  
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess("");
 
     try {
-      // 1. Sign up auth user
+      // 1. Sign up user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
+        options: {
+          data: {
+            full_name: formData.fullName,
+          }
+        }
       });
 
       if (authError) throw authError;
-      if (!authData.user) throw new Error("No user returned");
 
-      // 2. Create business profile
-      const { error: profileError } = await supabase
-        .from('businesses')
-        .insert([
+      if (authData.user) {
+        // 2. Create business profile
+        const { error: dbError } = await supabase.from('businesses').insert([
           {
             user_id: authData.user.id,
             business_name: formData.businessName,
-            username: formData.username.toLowerCase().replace(/[^a-z0-9]/g, ''),
-            category: 'Others', // default
+            username: formData.username.toLowerCase(),
+            status: 'active'
           }
         ]);
 
-      if (profileError) {
-        // If username taken, etc.
-        throw profileError;
-      }
+        if (dbError) {
+          // Username might be taken
+          if (dbError.code === '23505') {
+            throw new Error("Username already taken. Please choose another.");
+          }
+          throw dbError;
+        }
 
-      router.push("/dashboard");
+        setSuccess("Account created successfully! Redirecting to login...");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      }
     } catch (err: any) {
-      setError(err.message || "Failed to sign up");
+      setError(err.message || "An error occurred during signup");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-zyp-bg flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg my-8">
-        <CardHeader className="text-center">
-          <Link href="/" className="inline-block mb-6">
-            <img src="/logo.jpg" alt="Zypcart" className="h-12 mx-auto" />
-          </Link>
-          <CardTitle>Create your store</CardTitle>
-          <CardDescription>Turn your DMs into a streamlined ordering system</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <div className="p-3 text-sm bg-zyp-danger/10 text-zyp-danger rounded-[12px]">{error}</div>}
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-white">Full Name</label>
-                <Input required value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} placeholder="Jane Doe" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-white">Business Name</label>
-                <Input required value={formData.businessName} onChange={(e) => setFormData({...formData, businessName: e.target.value})} placeholder="The Cake Studio" />
-              </div>
+    <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
+      <header className="p-6 flex justify-between items-center max-w-2xl mx-auto w-full">
+        <Link href="/" className="flex items-center gap-2">
+          <img src="/logo.jpg" alt="Zypcart" className="h-6 object-contain rounded" />
+          <span className="font-bold text-lg tracking-tight">Zypcart</span>
+        </Link>
+        <div className="text-sm">
+          <span className="text-zyp-textMuted">Already have an account? </span>
+          <Link href="/login" className="font-bold text-zyp-primary hover:underline">Login</Link>
+        </div>
+      </header>
+
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-lg border border-zyp-border">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-extrabold mb-2 tracking-tight">Create your Zypcart</h1>
+            <p className="text-zyp-textMuted">Join thousands of social sellers</p>
+          </div>
+
+          {error && <div className="p-3 mb-6 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">{error}</div>}
+          {success && <div className="p-3 mb-6 bg-green-50 text-green-600 rounded-xl text-sm font-medium border border-green-100">{success}</div>}
+
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div>
+              <Input 
+                required 
+                placeholder="Full Name" 
+                value={formData.fullName}
+                onChange={e => setFormData({...formData, fullName: e.target.value})}
+                className="bg-gray-50 border-gray-200"
+              />
+            </div>
+            <div>
+              <Input 
+                required 
+                placeholder="Business Name" 
+                value={formData.businessName}
+                onChange={e => setFormData({...formData, businessName: e.target.value})}
+                className="bg-gray-50 border-gray-200"
+              />
+            </div>
+            <div>
+              <Input 
+                required 
+                type="email"
+                placeholder="Email" 
+                value={formData.email}
+                onChange={e => setFormData({...formData, email: e.target.value})}
+                className="bg-gray-50 border-gray-200"
+              />
+            </div>
+            <div className="relative">
+              <Input 
+                required 
+                type={showPassword ? "text" : "password"}
+                placeholder="Password" 
+                value={formData.password}
+                onChange={e => setFormData({...formData, password: e.target.value})}
+                className="bg-gray-50 border-gray-200 pr-10"
+              />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
             
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Username</label>
-              <div className="flex">
-                <span className="inline-flex items-center px-4 rounded-l-[16px] border border-r-0 border-white/10 bg-white/5 text-zyp-textMuted text-sm">
+            <div className="pt-2">
+              <div className="flex rounded-lg overflow-hidden border border-gray-200 focus-within:ring-2 focus-within:ring-zyp-primary/20 focus-within:border-zyp-primary transition-colors">
+                <span className="flex items-center justify-center bg-gray-50 px-4 text-gray-500 font-medium text-sm border-r border-gray-200">
                   zypcart.com/
                 </span>
-                <Input required className="rounded-l-none border-l-0" value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})} placeholder="thecakestudio" />
+                <input 
+                  required
+                  placeholder="username"
+                  value={formData.username}
+                  onChange={e => setFormData({...formData, username: e.target.value.replace(/[^a-zA-Z0-9-]/g, '')})}
+                  className="flex-1 h-12 px-3 text-sm focus:outline-none"
+                />
+                {formData.username.length > 2 && (
+                  <span className="flex items-center pr-3">
+                    <CheckCircle2 className="w-5 h-5 text-zyp-success" />
+                  </span>
+                )}
               </div>
+              {formData.username && (
+                <p className="text-xs text-zyp-success mt-2 font-medium">Your store URL will be: zypcart.com/{formData.username}</p>
+              )}
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Email</label>
-              <Input required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="jane@example.com" />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Password</label>
-              <Input required type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
+            <div className="flex items-center gap-2 pt-2 pb-4">
+              <input type="checkbox" required id="terms" className="rounded text-zyp-primary focus:ring-zyp-primary border-gray-300 w-4 h-4" />
+              <label htmlFor="terms" className="text-xs text-zyp-textMuted">
+                I agree to the <a href="#" className="font-bold text-zyp-primary hover:underline">Terms & Privacy Policy</a>
+              </label>
             </div>
 
-            <Button type="submit" className="w-full mt-6" disabled={loading}>
-              {loading ? "Creating Account..." : "Create Account"}
+            <Button type="submit" variant="primary" className="w-full text-base py-6 rounded-xl font-bold">
+              {loading ? "Creating..." : "Create My Zypcart →"}
             </Button>
-            
-            <div className="text-center text-sm text-zyp-textMuted mt-6">
-              Already have an account? <Link href="/login" className="text-zyp-accent hover:underline">Log in</Link>
-            </div>
           </form>
-        </CardContent>
-      </Card>
+
+          <div className="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center opacity-60">
+            <div className="flex flex-col items-center gap-1 text-[10px] font-bold text-center">
+              <Shield className="w-5 h-5 mb-1" />
+              Secure &<br/>Private
+            </div>
+            <div className="flex flex-col items-center gap-1 text-[10px] font-bold text-center">
+              <Zap className="w-5 h-5 mb-1" />
+              No Customer<br/>Account Required
+            </div>
+            <div className="flex flex-col items-center gap-1 text-[10px] font-bold text-center">
+              <Users className="w-5 h-5 mb-1" />
+              Built for<br/>Social Sellers
+            </div>
+          </div>
+        </div>
+        
+        <div className="fixed bottom-6 w-full text-center text-sm font-medium text-zyp-textMuted italic max-w-sm">
+          "Simple, powerful and exactly what I needed!" <br/> - A Happy Seller
+        </div>
+      </main>
     </div>
   );
 }

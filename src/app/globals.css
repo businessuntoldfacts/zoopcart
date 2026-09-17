@@ -4,14 +4,8 @@
 
 @layer base {
   :root {
-    --background: #FBFAF7;
-    --foreground: #0B0E14;
-  }
-
-  /* Defaulting to dark mode for the seller dashboard */
-  .dark {
-    --background: #0B0E14;
-    --foreground: #F5F6F8;
+    --background: #F8FAFC;
+    --foreground: #1E293B;
   }
 
   body {
