@@ -4,6 +4,8 @@ import { Heart, ShoppingCart, ArrowLeft, ShoppingBag, Truck, Search } from "luci
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+export const revalidate = 0;
+
 export default async function TrackPage({ params }: { params: { username: string } }) {
   const { data: business } = await supabase
     .from('businesses')

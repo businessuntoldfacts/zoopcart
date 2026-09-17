@@ -4,6 +4,8 @@ import { Heart, ShoppingCart, ArrowLeft, ShoppingBag, Truck } from "lucide-react
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+export const revalidate = 0;
+
 export default async function SavedPage({ params }: { params: { username: string } }) {
   const { data: business } = await supabase
     .from('businesses')
@@ -31,9 +33,9 @@ export default async function SavedPage({ params }: { params: { username: string
           <h1 className="font-extrabold text-xl text-slate-900 tracking-tight">{business.business_name}</h1>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-pink-600 transition-colors">
-            <Heart className="w-6 h-6 fill-pink-600" />
-          </div>
+          <Link href={`/${business.username}/saved`} className="text-slate-600 hover:text-pink-600 transition-colors">
+            <Heart className="w-6 h-6 fill-pink-600 text-pink-600" />
+          </Link>
           <Link href={`/${business.username}/cart`} className="w-10 h-10 bg-pink-600 hover:bg-pink-700 text-white rounded-xl flex items-center justify-center shadow-md relative">
             <ShoppingCart className="w-5 h-5 fill-current" />
             <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-slate-900 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white">0</span>
@@ -93,7 +95,7 @@ export default async function SavedPage({ params }: { params: { username: string
             <span className="text-[10px] font-extrabold text-slate-900">Saved</span>
           </Link>
 
-          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
+          <Link href={`/${business.username}/track`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
             <Truck className="w-5 h-5" />
             <span className="text-[10px] font-extrabold">Track</span>
           </Link>
@@ -104,4 +106,3 @@ export default async function SavedPage({ params }: { params: { username: string
     </div>
   );
 }
-

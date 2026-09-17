@@ -40,13 +40,8 @@ export default async function StorefrontPage({ params }: { params: { username: s
           <h1 className="font-extrabold text-xl text-slate-900 tracking-tight">{business.business_name}</h1>
         </div>
         <div className="flex items-center gap-4">
-          <button className="text-slate-600 hover:text-pink-600 transition-colors">
-            <Heart className="w-6 h-6" />
-          </button>
-          <button className="w-10 h-10 bg-pink-600 hover:bg-pink-700 text-white rounded-xl flex items-center justify-center shadow-md transition-colors relative">
-            <ShoppingCart className="w-5 h-5 fill-current" />
-            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-slate-900 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white">0</span>
-          </button>
+          <Link href={`/${business.username}/saved`} className="text-slate-600 hover:text-pink-600 transition-colors"><Heart className="w-6 h-6" /></Link>
+          <Link href={`/${business.username}/cart`} className="w-10 h-10 bg-pink-600 hover:bg-pink-700 text-white rounded-xl flex items-center justify-center shadow-md transition-colors relative"><ShoppingCart className="w-5 h-5 fill-current" /><span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-slate-900 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white">0</span></Link>
         </div>
       </header>
 
@@ -220,3 +215,4 @@ export default async function StorefrontPage({ params }: { params: { username: s
     </div>
   );
 }
+
