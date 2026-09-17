@@ -40,8 +40,8 @@ export default function ReviewSystem({ businessId, productId }: { businessId: st
       status: 'review',
       customer_name: name,
       customer_phone: "0000000000",
-      address: comment, // using address to store review text
-      total_amount: rating // using total_amount to store rating
+      notes: comment, // using notes to store review text
+      quantity: rating // using quantity to store rating
     };
 
     const { data, error } = await supabase.from('orders').insert([newReview]).select();
@@ -60,7 +60,7 @@ export default function ReviewSystem({ businessId, productId }: { businessId: st
 
   if (loading) return <div className="py-8 text-center text-slate-400 font-bold text-sm">Loading reviews...</div>;
 
-  const averageRating = reviews.length > 0 ? (reviews.reduce((acc, r) => acc + (r.total_amount || 5), 0) / reviews.length).toFixed(1) : "5.0";
+  const averageRating = reviews.length > 0 ? (reviews.reduce((acc, r) => acc + (r.quantity || 5), 0) / reviews.length).toFixed(1) : "5.0";
 
   return (
     <div className="mt-8 border-t border-slate-100 pt-8">
@@ -122,7 +122,7 @@ export default function ReviewSystem({ businessId, productId }: { businessId: st
                 <div className="font-extrabold text-slate-900 text-sm leading-tight mb-1">{r.customer_name}</div>
                 <div className="flex text-yellow-400">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-3 h-3 ${i < (r.total_amount || 5) ? 'fill-current' : 'text-slate-200'}`} />
+                    <Star key={i} className={`w-3 h-3 ${i < (r.quantity || 5) ? 'fill-current' : 'text-slate-200'}`} />
                   ))}
                 </div>
               </div>
@@ -134,3 +134,4 @@ export default function ReviewSystem({ businessId, productId }: { businessId: st
     </div>
   );
 }
+

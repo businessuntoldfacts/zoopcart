@@ -103,7 +103,7 @@ export default function OrderTracker({ businessId }: { businessId: string }) {
              </div>
              <div className="flex justify-between items-center py-2 border-b border-slate-50">
                <span className="text-sm font-bold text-slate-400">Amount</span>
-               <span className="text-sm font-extrabold text-slate-900">₹{order.total_amount}</span>
+               <span className="text-sm font-extrabold text-slate-900">₹{order.products?.price}</span>
              </div>
              <div className="flex justify-between items-center py-2 border-b border-slate-50">
                <span className="text-sm font-bold text-slate-400">Date</span>
@@ -117,4 +117,5 @@ export default function OrderTracker({ businessId }: { businessId: string }) {
     </div>
   );
 }
+
 

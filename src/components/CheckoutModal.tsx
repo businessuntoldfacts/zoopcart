@@ -32,8 +32,9 @@ export default function CheckoutModal({
         product_id: product.id,
         customer_name: name,
         customer_phone: phone,
-        address: address,
-        total_amount: product.price,
+        delivery_location: address,
+        quantity: 1,
+        notes: "Order Amount: ₹" + product.price,
         status: 'pending'
       })
       .select('id')
@@ -169,6 +170,7 @@ export default function CheckoutModal({
     </>
   );
 }
+
 
 
 

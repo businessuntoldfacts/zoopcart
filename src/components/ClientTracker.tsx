@@ -16,10 +16,11 @@ export default function ClientTracker({ businessId, productId, type }: { busines
       status: type,
       customer_name: "Anonymous Viewer",
       customer_phone: "0000000000",
-      address: "View",
-      total_amount: 0
+      notes: "View",
+      quantity: 1
     }]).then(() => {});
   }, [businessId, productId, type]);
 
   return null;
 }
+
