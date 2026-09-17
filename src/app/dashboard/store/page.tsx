@@ -107,11 +107,26 @@ export default function StoreSettingsPage() {
                 const file = e.target.files[0];
                 showToast("Processing image...", 'loading');
                 
-                // Convert to base64 to avoid needing a Supabase Storage Bucket setup
+                // Compress image client-side to ensure small base64 string
                 const reader = new FileReader();
-                reader.onloadend = () => {
-                  setBusiness({...business, profile_image: reader.result as string});
-                  showToast("Image updated! Don't forget to click Save.", 'success');
+                reader.onload = (event) => {
+                  const img = new Image();
+                  img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400; // smaller for profile pics
+                    const scaleSize = Math.min(MAX_WIDTH / img.width, 1);
+                    canvas.width = img.width * scaleSize;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); // 60% quality JPEG
+                    
+                    setBusiness({...business, profile_image: compressedBase64});
+                    showToast("Image updated! Don't forget to click Save.", 'success');
+                  };
+                  if (event.target?.result) {
+                    img.src = event.target.result as string;
+                  }
                 };
                 reader.readAsDataURL(file);
               }} className="bg-slate-50 border-slate-200 cursor-pointer w-full max-w-sm" />

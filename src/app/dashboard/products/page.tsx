@@ -16,48 +16,51 @@ export default function ProductsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    short_description: "",
-    price: "",
-    sale_price: "",
-    image: "",
-  });
+  const [formData, setFormData] = useState({ name: "", short_description: "", description: "", category: "", price: "", sale_price: "", availability: "in_stock", image: "" });
   const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
+    async function loadProducts() {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+  
+      const { data: business } = await supabase.from('businesses').select('id, username').eq('user_id', user.id).single();
+      if (business) {
+        setBusinessId(business.id);
+        setBusinessUsername(business.username);
+        const { data } = await supabase.from('products').select('*').eq('business_id', business.id).order('created_at', { ascending: false });
+        if (data) setProducts(data);
+      }
+      setLoading(false);
+    }
     loadProducts();
   }, []);
 
-  async function loadProducts() {
-    setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data: business } = await supabase.from('businesses').select('id, username').eq('user_id', user.id).single();
-    if (business) {
-      setBusinessId(business.id);
-      setBusinessUsername(business.username);
-      const { data } = await supabase.from('products').select('*').eq('business_id', business.id).order('created_at', { ascending: false });
-      if (data) setProducts(data);
-    }
-    setLoading(false);
-  }
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     setUploadingImage(true);
     
-    // Using base64 to avoid Supabase storage bucket setup requirements for this demo
+    // Compress image client-side to ensure small base64 string
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData({...formData, image: reader.result as string});
-      setUploadingImage(false);
-    };
-    reader.onerror = () => {
-      alert("Error reading file.");
-      setUploadingImage(false);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 600;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); // 60% quality JPEG
+        setFormData({...formData, image: compressedBase64});
+        setUploadingImage(false);
+      };
+      if (event.target?.result) {
+        img.src = event.target.result as string;
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -74,7 +77,11 @@ export default function ProductsPage() {
       name: formData.name,
       slug: slug,
       price: parseFloat(formData.price),
+      sale_price: formData.sale_price ? parseFloat(formData.sale_price) : null,
       short_description: formData.short_description,
+      description: formData.description,
+      category: formData.category,
+      availability: formData.availability,
       image: formData.image
     };
 
@@ -95,7 +102,7 @@ export default function ProductsPage() {
     setShowAddForm(false);
     setEditingId(null);
     setSubmitting(false);
-    setFormData({ name: "", short_description: "", price: "", sale_price: "", image: "" });
+    setFormData({ name: "", short_description: "", description: "", category: "", price: "", sale_price: "", availability: "in_stock", image: "" });
   };
 
   if (loading) return <div className="p-4 text-zyp-textMuted font-medium">Loading products...</div>;
@@ -109,8 +116,8 @@ export default function ProductsPage() {
         </button>
         
         <div>
-          <h2 className="text-2xl font-extrabold text-zyp-textPrimary">Add New Product</h2>
-          <p className="text-sm text-zyp-textMuted mt-1">Add product details to showcase on your store.</p>
+          <h2 className="text-2xl font-extrabold text-zyp-textPrimary">{editingId ? "Edit Product" : "Add New Product"}</h2>
+          <p className="text-sm text-zyp-textMuted mt-1">Add complete product details to showcase on your store.</p>
         </div>
 
         <form onSubmit={handleAddProduct} className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zyp-border space-y-6">
@@ -127,7 +134,7 @@ export default function ProductsPage() {
                 )}
                 <Input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
               </div>
-              {uploadingImage && <div className="text-[10px] font-bold text-zyp-primary text-center">Uploading...</div>}
+              {uploadingImage && <div className="text-[10px] font-bold text-zyp-primary text-center">Optimizing...</div>}
               {formData.image && <div className="text-[10px] font-bold text-center text-zyp-primary cursor-pointer">Change Image</div>}
             </div>
 
@@ -148,7 +155,24 @@ export default function ProductsPage() {
               <div className="space-y-1.5">
                 <Input required value={formData.short_description} onChange={e => setFormData({...formData, short_description: e.target.value})} placeholder="Short Description (Rich and moist chocolate cake...)" className="bg-slate-50" />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Input value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} placeholder="Category (e.g. Desserts)" className="bg-slate-50" />
+                </div>
+                <div className="space-y-1.5">
+                  <select value={formData.availability} onChange={e => setFormData({...formData, availability: e.target.value})} className="w-full h-10 px-3 rounded-md border border-slate-200 bg-slate-50 text-sm">
+                    <option value="in_stock">In Stock</option>
+                    <option value="out_of_stock">Out of Stock</option>
+                    <option value="preorder">Pre-order</option>
+                  </select>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <div className="space-y-1.5 pt-4 border-t border-slate-100">
+            <label className="text-sm font-bold text-zyp-textPrimary">Detailed Description (Optional)</label>
+            <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Add more details about ingredients, sizing, etc." className="w-full min-h-[100px] rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20" />
           </div>
 
           <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zyp-border">
@@ -249,6 +273,9 @@ export default function ProductsPage() {
                     setFormData({
                       name: p.name,
                       short_description: p.short_description,
+                      description: p.description || "",
+                      category: p.category || "",
+                      availability: p.availability || "in_stock",
                       price: p.price.toString(),
                       sale_price: p.sale_price ? p.sale_price.toString() : "",
                       image: p.image || ""
