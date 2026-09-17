@@ -41,7 +41,7 @@ export default async function StorefrontPage({ params }: { params: { username: s
         </div>
         <div className="flex items-center gap-4">
           <Link href={`/${business.username}/saved`} className="text-slate-600 hover:text-pink-600 transition-colors"><Heart className="w-6 h-6" /></Link>
-          <Link href={`/${business.username}/cart`} className="w-10 h-10 bg-pink-600 hover:bg-pink-700 text-white rounded-xl flex items-center justify-center shadow-md transition-colors relative"><ShoppingCart className="w-5 h-5 fill-current" /><span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-slate-900 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white">0</span></Link>
+          
         </div>
       </header>
 
@@ -65,7 +65,7 @@ export default async function StorefrontPage({ params }: { params: { username: s
           ) : (
             products.map((product: any) => (
               <Link href={`/${business.username}/${product.slug}`} key={product.id} className="block group">
-                <div className="w-full aspect-[4/5] sm:aspect-square bg-slate-100 rounded-[28px] overflow-hidden relative mb-4">
+                <div className={`w-full bg-slate-100 rounded-[28px] overflow-hidden relative mb-4 ${product.image ? "aspect-[4/5] sm:aspect-square" : "h-48"}`}>
                   {product.image ? (
                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
@@ -165,7 +165,7 @@ export default async function StorefrontPage({ params }: { params: { username: s
           <div className="mb-12 border-b border-white/10 pb-12">
             <h5 className="text-[11px] font-extrabold text-slate-400 tracking-widest uppercase mb-4">Account</h5>
             <ul className="space-y-4 font-bold text-sm text-slate-200">
-              <li><Link href={`/${business.username}/cart`}>Cart</Link></li>
+              
               <li><Link href={`/${business.username}/saved`}>Favourites</Link></li>
               <li><Link href={`/${business.username}/track`}>Track order</Link></li>
               {business.instagram_handle && (
@@ -194,10 +194,7 @@ export default async function StorefrontPage({ params }: { params: { username: s
             <span className="text-[10px] font-extrabold text-slate-900">Shop</span>
           </Link>
 
-          <Link href={`/${business.username}/cart`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
-            <ShoppingCart className="w-5 h-5" />
-            <span className="text-[10px] font-extrabold">Cart</span>
-          </Link>
+          
 
           <Link href={`/${business.username}/saved`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
             <Heart className="w-5 h-5" />
@@ -215,4 +212,5 @@ export default async function StorefrontPage({ params }: { params: { username: s
     </div>
   );
 }
+
 

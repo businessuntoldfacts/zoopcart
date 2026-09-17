@@ -16,6 +16,15 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [theme, setTheme] = useState('light');
+  useEffect(() => {
+    const t = localStorage.getItem('zypcart-theme') || 'light';
+    setTheme(t);
+    const handleTheme = () => setTheme(localStorage.getItem('zypcart-theme') || 'light');
+    window.addEventListener('theme-changed', handleTheme);
+    return () => window.removeEventListener('theme-changed', handleTheme);
+  }, []);
+
   const [businessData, setBusinessData] = useState<{name: string, username: string, image: string | null}>({
     name: "Store Owner",
     username: "",
@@ -101,7 +110,8 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0 flex flex-col mb-16 md:mb-0">
+      <main className={`flex-1 min-w-0 flex flex-col mb-16 md:mb-0 ${theme === "dark" ? "zyp-dark-mode" : ""}`}>
+        <style dangerouslySetInnerHTML={{__html: `\n          .zyp-dark-mode {\n            filter: invert(1) hue-rotate(180deg);\n            background-color: #000;\n            transition: filter 0.5s ease;\n          }\n          .zyp-dark-mode img, .zyp-dark-mode svg, .zyp-dark-mode [data-theme-ignore] {\n            filter: invert(1) hue-rotate(180deg);\n          }\n        `}} />
         <header className="h-[72px] border-b border-zyp-border flex items-center justify-between px-6 md:px-8 bg-white shrink-0">
           <div className="flex items-center md:hidden">
             <Link href="/dashboard" className="flex items-center">
@@ -176,3 +186,5 @@ export default function DashboardLayout({
     </div>
   );
 }
+
+

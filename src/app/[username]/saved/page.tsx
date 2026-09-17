@@ -82,10 +82,7 @@ export default async function SavedPage({ params }: { params: { username: string
             <span className="text-[10px] font-extrabold">Shop</span>
           </Link>
 
-          <Link href={`/${business.username}/cart`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
-            <ShoppingCart className="w-5 h-5" />
-            <span className="text-[10px] font-extrabold">Cart</span>
-          </Link>
+          
 
           <Link href={`/${business.username}/saved`} className="flex flex-col items-center justify-center w-16 h-full gap-1 group relative">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-pink-600 rounded-b-full"></div>
@@ -106,3 +103,4 @@ export default async function SavedPage({ params }: { params: { username: string
     </div>
   );
 }
+

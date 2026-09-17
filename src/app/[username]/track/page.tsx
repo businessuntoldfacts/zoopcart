@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { Heart, ShoppingCart, ArrowLeft, ShoppingBag, Truck, Search } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import OrderTracker from "@/components/OrderTracker";
 
 export const revalidate = 0;
 
@@ -55,22 +56,7 @@ export default async function TrackPage({ params }: { params: { username: string
            <p className="text-sm font-medium text-slate-500 mb-8">Enter your order ID or phone number.</p>
         </div>
 
-        <div className="w-full bg-slate-50 rounded-[32px] border border-slate-100 p-8 flex flex-col items-center text-center">
-           <div className="w-24 h-24 bg-white rounded-3xl shadow-sm flex items-center justify-center mb-6">
-              <Truck className="w-10 h-10 text-slate-300" />
-           </div>
-           
-           <div className="w-full relative mb-6">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input type="text" placeholder="Order ID or Phone" className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-pink-500 font-bold" />
-           </div>
-
-           <Button className="w-full h-12 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-extrabold shadow-md shadow-pink-600/20 border-none">
-             Track Package
-           </Button>
-        </div>
-
-      </div>
+        <OrderTracker businessId={business.id} /></div>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
@@ -81,10 +67,7 @@ export default async function TrackPage({ params }: { params: { username: string
             <span className="text-[10px] font-extrabold">Shop</span>
           </Link>
 
-          <Link href={`/${business.username}/cart`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
-            <ShoppingCart className="w-5 h-5" />
-            <span className="text-[10px] font-extrabold">Cart</span>
-          </Link>
+          
 
           <Link href={`/${business.username}/saved`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
             <Heart className="w-5 h-5" />
@@ -105,3 +88,5 @@ export default async function TrackPage({ params }: { params: { username: string
     </div>
   );
 }
+
+

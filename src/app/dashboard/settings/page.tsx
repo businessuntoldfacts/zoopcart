@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronRight, BarChart2, Store, Palette, Wallet, Sun, HelpCircle, Bell, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,8 @@ export default function SettingsHubPage() {
   };
 
   const [appearance, setAppearance] = useState("light");
+  useEffect(() => { setAppearance(localStorage.getItem("zypcart-theme") || "light") }, []);
+  const changeTheme = (t: string) => { setAppearance(t); localStorage.setItem("zypcart-theme", t); window.dispatchEvent(new Event("theme-changed")); };
 
   const menuSections: any[] = [
     {
@@ -38,15 +40,15 @@ export default function SettingsHubPage() {
       items: [
         { icon: Sun, label: "Appearance", description: "Dashboard theme · press D to toggle", customAction: (
           <div className="flex gap-2 mt-4">
-            <button onClick={() => setAppearance("light")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "light" ? "border-pink-500" : "border-slate-200"}`}>
+            <button onClick={() => changeTheme("light")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "light" ? "border-pink-500" : "border-slate-200"}`}>
               <div className="w-full h-8 bg-white border border-slate-200 rounded flex flex-col gap-1 p-1"><div className="w-1/2 h-1 bg-slate-200 rounded"></div><div className="w-full h-1 bg-slate-100 rounded"></div></div>
               <span className="text-[10px] font-bold text-slate-700">Light</span>
             </button>
-            <button onClick={() => setAppearance("dark")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "dark" ? "border-pink-500" : "border-transparent opacity-50"}`}>
+            <button onClick={() => changeTheme("dark")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "dark" ? "border-pink-500" : "border-transparent opacity-50"}`}>
               <div className="w-full h-8 bg-slate-900 border border-slate-700 rounded flex flex-col gap-1 p-1"><div className="w-1/2 h-1 bg-slate-700 rounded"></div><div className="w-full h-1 bg-slate-800 rounded"></div></div>
               <span className="text-[10px] font-bold text-slate-700">Dark</span>
             </button>
-            <button onClick={() => setAppearance("auto")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "auto" ? "border-pink-500" : "border-transparent opacity-50"}`}>
+            <button onClick={() => changeTheme("auto")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "auto" ? "border-pink-500" : "border-transparent opacity-50"}`}>
               <div className="w-full h-8 bg-gradient-to-br from-white to-slate-900 border border-slate-300 rounded flex flex-col gap-1 p-1"></div>
               <span className="text-[10px] font-bold text-slate-700">Auto</span>
             </button>
@@ -125,5 +127,8 @@ export default function SettingsHubPage() {
     </div>
   );
 }
+
+
+
 
 
