@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, Store, LineChart, Settings, LogOut, HelpCircle, Bell } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Store, LineChart, Settings, LogOut, HelpCircle, Bell, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
@@ -128,13 +128,18 @@ export default function DashboardLayout({
               <Link 
                 href={businessData.username ? `/${businessData.username}` : '#'} 
                 target="_blank"
-                className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700 border border-slate-200 overflow-hidden hover:ring-2 hover:ring-pink-500 transition-all shadow-sm"
+                className="relative w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700 border border-slate-200 hover:ring-2 hover:ring-pink-500 transition-all shadow-sm group"
               >
-                {businessData.image ? (
-                  <img src={businessData.image} alt={businessData.name} className="w-full h-full object-cover" />
-                ) : (
-                  businessData.name.charAt(0).toUpperCase()
-                )}
+                <div className="w-full h-full rounded-full overflow-hidden">
+                  {businessData.image ? (
+                    <img src={businessData.image} alt={businessData.name} className="w-full h-full object-cover" />
+                  ) : (
+                    businessData.name.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div className="absolute -top-1 -right-1 bg-pink-500 text-white p-0.5 rounded-full border-2 border-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <ArrowUpRight className="w-3 h-3" />
+                </div>
               </Link>
             </div>
           </div>

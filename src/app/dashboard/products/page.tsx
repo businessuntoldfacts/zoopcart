@@ -196,8 +196,17 @@ export default function ProductsPage() {
                 <Input required value={formData.category} onChange={(e: any) => setFormData({...formData, category: e.target.value})} placeholder="e.g. bags" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl" />
               </div>
               <div>
-                <label className="text-sm font-bold text-white mb-1.5 block">Description</label>
-                <textarea value={formData.description} onChange={(e: any) => setFormData({...formData, description: e.target.value})} placeholder="Write a short description..." className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 min-h-[100px] rounded-xl resize-none" />
+                <label className="text-sm font-bold text-white mb-1.5 flex items-center justify-between">
+                  <span>Description</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-800 px-2 py-0.5 rounded-full">Recommended</span>
+                </label>
+                <textarea 
+                  value={formData.description} 
+                  onChange={(e: any) => setFormData({...formData, description: e.target.value})} 
+                  placeholder="Describe your product in detail. Include materials, dimensions, care instructions, or any special features..." 
+                  className="w-full bg-black/50 border border-slate-700 text-white placeholder:text-slate-600 p-4 min-h-[160px] rounded-xl resize-y outline-none focus:border-pink-500 transition-colors" 
+                />
+                <p className="text-xs text-slate-500 mt-2">A good description helps customers decide and builds trust.</p>
               </div>
             </div>
           </div>
@@ -223,35 +232,6 @@ export default function ProductsPage() {
               <div>
                 <label className="text-sm font-bold text-white mb-1.5 block">Stock <span className="text-pink-500">*</span></label>
                 <Input type="number" value={formData.stock} onChange={(e: any) => setFormData({...formData, stock: e.target.value})} placeholder="50" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl" />
-              </div>
-            </div>
-          </div>
-
-          {/* VARIANTS SECTION */}
-          <div className="space-y-2">
-            <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Variants</h3>
-            <div className="bg-[#1A1A1A] p-8 rounded-3xl border border-slate-800 shadow-xl flex flex-col items-center text-center">
-              <h4 className="text-white font-bold mb-2">Does this come in different sizes or colours?</h4>
-              <p className="text-sm text-slate-400 mb-6">Add variants and each combination gets its own stock. Leave this alone if the product only comes one way.</p>
-              <Button type="button" variant="ghost" className="rounded-full bg-transparent border-slate-600 text-white hover:bg-slate-800 font-bold px-6">
-                + Add variants
-              </Button>
-            </div>
-          </div>
-
-          {/* VIDEOS SECTION */}
-          <div className="space-y-2">
-            <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Videos</h3>
-            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4">
-              <div className="flex gap-2">
-                <Input value={formData.videoLink} onChange={(e: any) => setFormData({...formData, videoLink: e.target.value})} placeholder="Paste a YouTube or Instagram Reels link" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl flex-1" />
-                <Button type="button" variant="secondary" className="h-12 rounded-xl bg-white/10 text-white border-none hover:bg-white/20 font-bold px-6">Add</Button>
-              </div>
-              <div className="h-24 bg-black/30 rounded-xl border border-slate-800 flex flex-col items-center justify-center text-slate-500">
-                <div className="w-8 h-6 border-2 border-slate-500 rounded flex items-center justify-center mb-1">
-                  <div className="w-0 h-0 border-t-4 border-t-transparent border-l-[6px] border-l-slate-500 border-b-4 border-b-transparent ml-1"></div>
-                </div>
-                <span className="text-xs font-bold">YouTube or Instagram Reels</span>
               </div>
             </div>
           </div>
@@ -395,4 +375,5 @@ export default function ProductsPage() {
     </div>
   );
 }
+
 
