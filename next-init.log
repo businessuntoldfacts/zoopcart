@@ -1,0 +1,15 @@
+npm warn exec The following package was not found and will be installed: create-next-app@14.2.35
+The directory [32mzypcart-app[39m contains files that could conflict:
+
+  .eslintrc.json
+  next-env.d.ts
+  next.config.mjs
+  package.json
+  postcss.config.mjs
+  README.md
+  [34msrc[39m/
+  tailwind.config.ts
+  tsconfig.json
+
+Either try using a new directory name, or remove the files listed above.
+
