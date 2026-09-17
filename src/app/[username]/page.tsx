@@ -3,6 +3,8 @@ import { supabase } from "@/lib/supabase";
 import { Heart, ShoppingCart, ArrowLeft, ShieldCheck, Zap, Repeat, FileText, ShoppingBag, Truck, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import ClientTracker from "@/components/ClientTracker";
+import ReviewSystem from "@/components/ReviewSystem";
 
 export const revalidate = 0; // Dynamic route
 
@@ -21,6 +23,7 @@ export default async function StorefrontPage({ params }: { params: { username: s
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
+      <ClientTracker businessId={business.id} type="store_view" />
       
       {/* Top Header */}
       <header className="bg-white px-4 h-16 flex items-center justify-between sticky top-0 z-50 border-b border-slate-100 shadow-sm">
@@ -143,6 +146,10 @@ export default async function StorefrontPage({ params }: { params: { username: s
 
           </div>
         </div>
+        
+        <div className="px-4 pb-8 bg-white">
+          <ReviewSystem businessId={business.id} />
+        </div>
 
         {/* Dark Footer */}
         <footer className="bg-[#0b1021] text-white px-6 py-12 rounded-t-[32px] mt-4">
@@ -163,9 +170,9 @@ export default async function StorefrontPage({ params }: { params: { username: s
           <div className="mb-12 border-b border-white/10 pb-12">
             <h5 className="text-[11px] font-extrabold text-slate-400 tracking-widest uppercase mb-4">Account</h5>
             <ul className="space-y-4 font-bold text-sm text-slate-200">
-              <li><Link href="#">Cart</Link></li>
-              <li><Link href="#">Favourites</Link></li>
-              <li><Link href="#">Track order</Link></li>
+              <li><Link href={`/${business.username}/cart`}>Cart</Link></li>
+              <li><Link href={`/${business.username}/saved`}>Favourites</Link></li>
+              <li><Link href={`/${business.username}/track`}>Track order</Link></li>
               {business.instagram_handle && (
                 <li><a href={`https://instagram.com/${business.instagram_handle.replace('@','')}`} target="_blank" className="text-pink-400 hover:text-pink-300 transition-colors">@{business.instagram_handle.replace('@','')}</a></li>
               )}
@@ -192,17 +199,17 @@ export default async function StorefrontPage({ params }: { params: { username: s
             <span className="text-[10px] font-extrabold text-slate-900">Shop</span>
           </Link>
 
-          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
+          <Link href={`/${business.username}/cart`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
             <ShoppingCart className="w-5 h-5" />
             <span className="text-[10px] font-extrabold">Cart</span>
           </Link>
 
-          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
+          <Link href={`/${business.username}/saved`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
             <Heart className="w-5 h-5" />
             <span className="text-[10px] font-extrabold">Saved</span>
           </Link>
 
-          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
+          <Link href={`/${business.username}/track`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
             <Truck className="w-5 h-5" />
             <span className="text-[10px] font-extrabold">Track</span>
           </Link>
@@ -213,4 +220,3 @@ export default async function StorefrontPage({ params }: { params: { username: s
     </div>
   );
 }
-

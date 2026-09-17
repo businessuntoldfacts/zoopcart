@@ -21,7 +21,7 @@ export default function OrdersPage() {
       const { data } = await supabase
         .from('orders')
         .select('*, products(*)')
-        .eq('business_id', business.id)
+        .eq('business_id', business.id).neq('status', 'store_view').neq('status', 'product_view').neq('status', 'review')
         .order('created_at', { ascending: false });
 
       if (data) setOrders(data);
@@ -207,3 +207,5 @@ export default function OrdersPage() {
     </div>
   );
 }
+
+

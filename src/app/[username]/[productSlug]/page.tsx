@@ -3,6 +3,8 @@ import { supabase } from "@/lib/supabase";
 import { Heart, ShoppingCart, ArrowLeft, ShieldCheck, Zap, FileText, ShoppingBag, Truck, Share2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import ClientTracker from "@/components/ClientTracker";
+import ReviewSystem from "@/components/ReviewSystem";
 
 export default async function ProductDetailPage({ params }: { params: { username: string, productSlug: string } }) {
   const { data: business } = await supabase
@@ -24,6 +26,7 @@ export default async function ProductDetailPage({ params }: { params: { username
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-32">
+      <ClientTracker businessId={business.id} productId={product.id} type="product_view" />
       
       {/* Top Header */}
       <header className="bg-white px-4 h-16 flex items-center justify-between sticky top-0 z-50 border-b border-slate-100 shadow-sm">
@@ -119,6 +122,7 @@ export default async function ProductDetailPage({ params }: { params: { username
           </div>
         </div>
 
+        <div className="px-5 pb-8 bg-white"><ReviewSystem businessId={business.id} productId={product.id} /></div>
         {/* Footer inside detail page */}
         <div className="px-5 pb-8">
            <div className="flex items-center gap-2 mb-6 mt-12">
@@ -151,3 +155,4 @@ export default async function ProductDetailPage({ params }: { params: { username
     </div>
   );
 }
+
