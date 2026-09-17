@@ -16,15 +16,23 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [businessName, setBusinessName] = useState("Store Owner");
+  const [businessData, setBusinessData] = useState<{name: string, username: string, image: string | null}>({
+    name: "Store Owner",
+    username: "",
+    image: null
+  });
 
   useEffect(() => {
     async function loadUser() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: business } = await supabase.from('businesses').select('business_name').eq('user_id', user.id).single();
-        if (business?.business_name) {
-          setBusinessName(business.business_name);
+        const { data: business } = await supabase.from('businesses').select('business_name, username, profile_image').eq('user_id', user.id).single();
+        if (business) {
+          setBusinessData({
+            name: business.business_name || "Store Owner",
+            username: business.username || "",
+            image: business.profile_image || null
+          });
         }
       }
     }
@@ -36,7 +44,7 @@ export default function DashboardLayout({
     { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag, badge: 3 },
     { name: "Products", href: "/dashboard/products", icon: Store },
     { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },
-    { name: "Store", href: "/dashboard/store", icon: Settings },
+    { name: "More", href: "/dashboard/settings", icon: Settings },
   ];
 
   const handleLogout = async () => {
@@ -55,7 +63,7 @@ export default function DashboardLayout({
 
         <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
           {navigation.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard");
             const Icon = item.icon;
             return (
               <Link
@@ -64,7 +72,7 @@ export default function DashboardLayout({
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
                   isActive
-                    ? "bg-zyp-primary text-white shadow-md shadow-zyp-primary/20"
+                    ? "bg-pink-500 text-white shadow-md shadow-pink-500/20"
                     : "hover:bg-white/10 hover:text-white"
                 )}
               >
@@ -94,7 +102,6 @@ export default function DashboardLayout({
 
       {/* Main Content */}
       <main className="flex-1 min-w-0 flex flex-col mb-16 md:mb-0">
-        {/* Header matching Figma */}
         <header className="h-[72px] border-b border-zyp-border flex items-center justify-between px-6 md:px-8 bg-white shrink-0">
           <div className="flex items-center md:hidden">
             <Link href="/dashboard" className="flex items-center">
@@ -103,8 +110,8 @@ export default function DashboardLayout({
           </div>
           
           <div className="hidden md:flex items-center gap-4 flex-1">
-             <h1 className="text-xl font-bold text-zyp-textPrimary capitalize">
-               {navigation.find((item) => item.href === pathname)?.name || "Dashboard"}
+             <h1 className="text-xl font-bold text-slate-900 capitalize">
+               {navigation.find((item) => pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard"))?.name || "Dashboard"}
              </h1>
           </div>
 
@@ -115,17 +122,25 @@ export default function DashboardLayout({
             </button>
             <div className="flex items-center gap-3 border-l border-zyp-border pl-6">
               <div className="hidden sm:block text-right">
-                <div className="text-sm font-bold text-zyp-textPrimary leading-tight">{businessName}</div>
-                <div className="text-xs text-zyp-textMuted font-medium">Seller</div>
+                <div className="text-sm font-bold text-slate-900 leading-tight">{businessData.name}</div>
+                <div className="text-xs text-slate-500 font-medium">Seller</div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-sm font-bold text-zyp-primary border border-blue-200">
-                {businessName.charAt(0).toUpperCase()}
-              </div>
+              <Link 
+                href={businessData.username ? `/${businessData.username}` : '#'} 
+                target="_blank"
+                className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700 border border-slate-200 overflow-hidden hover:ring-2 hover:ring-pink-500 transition-all shadow-sm"
+              >
+                {businessData.image ? (
+                  <img src={businessData.image} alt={businessData.name} className="w-full h-full object-cover" />
+                ) : (
+                  businessData.name.charAt(0).toUpperCase()
+                )}
+              </Link>
             </div>
           </div>
         </header>
         
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-zyp-bg">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50">
           <div className="max-w-[1200px] mx-auto">
             {children}
           </div>
@@ -133,21 +148,21 @@ export default function DashboardLayout({
       </main>
 
       {/* Mobile Bottom Navigation (Light theme) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-zyp-border flex items-center justify-around p-2 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-safe">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex items-center justify-around p-2 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-safe">
         {navigation.slice(0, 5).map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard");
           const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1 p-2 rounded-lg text-[10px] font-bold transition-colors ${
+              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-[10px] font-bold transition-all ${
                 isActive 
-                  ? "text-zyp-primary" 
-                  : "text-slate-400"
+                  ? "bg-pink-500 text-white shadow-md shadow-pink-500/30 -translate-y-1" 
+                  : "text-slate-400 hover:text-slate-600"
               }`}
             >
-              <Icon className={cn("w-5 h-5", isActive ? "fill-blue-50/50" : "")} />
+              <Icon className={cn("w-5 h-5", isActive ? "" : "")} />
               {item.name}
             </Link>
           );
