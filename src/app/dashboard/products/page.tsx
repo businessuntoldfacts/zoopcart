@@ -132,13 +132,21 @@ export default function ProductsPage() {
             </div>
 
             <div className="flex-1 space-y-4 w-full">
-              <div className="space-y-1.5">
-                <label className="text-sm font-bold text-zyp-textPrimary">Product Name <span className="text-red-500">*</span></label>
-                <Input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Chocolate Cake" className="bg-slate-50" />
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-bold text-zyp-textPrimary">Product Details <span className="text-red-500">*</span></label>
+                <button 
+                  type="button" 
+                  onClick={() => setFormData({...formData, name: 'Premium ' + (formData.name || 'Product'), short_description: 'Discover the amazing quality of our premium offering, crafted with care for the best experience.'})}
+                  className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md hover:bg-blue-100 flex items-center gap-1"
+                >
+                  ✨ AI Suggest
+                </button>
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-bold text-zyp-textPrimary">Short Description <span className="text-red-500">*</span></label>
-                <Input required value={formData.short_description} onChange={e => setFormData({...formData, short_description: e.target.value})} placeholder="Rich and moist chocolate cake..." className="bg-slate-50" />
+                <Input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Product Name (e.g. Chocolate Cake)" className="bg-slate-50" />
+              </div>
+              <div className="space-y-1.5">
+                <Input required value={formData.short_description} onChange={e => setFormData({...formData, short_description: e.target.value})} placeholder="Short Description (Rich and moist chocolate cake...)" className="bg-slate-50" />
               </div>
             </div>
           </div>

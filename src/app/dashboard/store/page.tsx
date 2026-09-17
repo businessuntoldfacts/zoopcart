@@ -5,29 +5,41 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import { CheckCircle2, XCircle, LayoutTemplate } from "lucide-react";
 
 export default function StoreSettingsPage() {
   const [business, setBusiness] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
+  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' | 'loading' | null }>({ message: '', type: null });
 
   useEffect(() => {
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data } = await supabase.from('businesses').select('*').eq('user_id', user.id).single();
-        if (data) setBusiness(data);
+        if (data) {
+          if (!data.theme) data.theme = 'light';
+          setBusiness(data);
+        }
       }
       setLoading(false);
     }
     loadProfile();
   }, []);
 
+  const showToast = (message: string, type: 'success' | 'error' | 'loading') => {
+    setToast({ message, type });
+    if (type !== 'loading') {
+      setTimeout(() => setToast({ message: '', type: null }), 3000);
+    }
+  };
+
   const handleSave = async () => {
-    setMessage("Saving...");
-    const { error } = await supabase
-      .from('businesses')
-      .update({
+    showToast("Saving changes...", 'loading');
+    
+    // We try to update everything including theme. If theme column doesn't exist, it might error.
+    // If it errors, we will fallback to updating without theme.
+    const updateData: any = {
         business_name: business.business_name,
         description: business.description,
         profile_image: business.profile_image,
@@ -35,13 +47,21 @@ export default function StoreSettingsPage() {
         instagram_handle: business.instagram_handle,
         whatsapp_country_code: business.whatsapp_country_code,
         whatsapp_number: business.whatsapp_number,
-      })
-      .eq('id', business.id);
+    };
+
+    let error = null;
+    try {
+      const { error: err1 } = await supabase.from('businesses').update({...updateData, theme: business.theme}).eq('id', business.id);
+      error = err1;
+    } catch (e) {
+      const { error: err2 } = await supabase.from('businesses').update(updateData).eq('id', business.id);
+      error = err2;
+    }
 
     if (error) {
-      setMessage("Error saving profile.");
+      showToast("Error saving profile.", 'error');
     } else {
-      setMessage("Profile saved successfully!");
+      showToast("Settings saved successfully!", 'success');
     }
   };
 
@@ -49,20 +69,34 @@ export default function StoreSettingsPage() {
   if (!business) return <div className="p-8 text-slate-700">Please log in to manage store.</div>;
 
   return (
-    <div className="max-w-3xl mx-auto pb-12">
-      <div className="mb-6">
-        <h2 className="text-2xl font-extrabold text-zyp-textPrimary">Store Settings</h2>
-        <p className="text-sm text-zyp-textMuted mt-1">Manage your account and preferences.</p>
+    <div className="max-w-3xl mx-auto pb-12 relative">
+      {/* Animated Toast */}
+      <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform ${toast.type ? 'translate-y-0 opacity-100' : '-translate-y-12 opacity-0'}`}>
+        {toast.type && (
+          <div className={`flex items-center gap-2 px-4 py-3 rounded-2xl shadow-lg border text-sm font-bold ${
+            toast.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 
+            toast.type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 
+            'bg-blue-50 border-blue-200 text-blue-700'
+          }`}>
+            {toast.type === 'success' && <CheckCircle2 className="w-5 h-5" />}
+            {toast.type === 'error' && <XCircle className="w-5 h-5" />}
+            {toast.type === 'loading' && <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />}
+            {toast.message}
+          </div>
+        )}
       </div>
 
-      {message && <div className="p-4 mb-6 bg-blue-50 text-blue-700 rounded-xl font-medium border border-blue-100">{message}</div>}
+      <div className="mb-6">
+        <h2 className="text-2xl font-extrabold text-[#0F172A]">Store Settings</h2>
+        <p className="text-sm text-slate-500 mt-1">Manage your account and preferences.</p>
+      </div>
 
-      <Card className="bg-white border-zyp-border shadow-sm rounded-3xl overflow-hidden">
-        <CardHeader className="bg-slate-50 border-b border-zyp-border pb-4 pt-6 px-6">
+      <Card className="bg-white border-slate-200 shadow-sm rounded-3xl overflow-hidden mb-6">
+        <CardHeader className="bg-slate-50 border-b border-slate-200 pb-4 pt-6 px-6">
           <CardTitle className="text-lg font-extrabold text-[#0F172A]">Business Details</CardTitle>
           <CardDescription className="text-sm font-medium text-slate-500">
             This information will be visible on your public store. <br/>
-            <a href={`/${business.username}`} target="_blank" className="text-zyp-primary hover:underline font-bold mt-1 inline-block">zypcart.com/{business.username} ↗</a>
+            <a href={`/${business.username}`} target="_blank" className="text-blue-600 hover:underline font-bold mt-1 inline-block">zypcart.com/{business.username} ↗</a>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 p-6">
@@ -79,21 +113,21 @@ export default function StoreSettingsPage() {
               <Input type="file" accept="image/*" onChange={async (e) => {
                 if (!e.target.files || e.target.files.length === 0) return;
                 const file = e.target.files[0];
-                setMessage("Uploading image...");
+                showToast("Uploading image...", 'loading');
                 
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${business.id}-${Math.random()}.${fileExt}`;
                 
                 const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file);
                 if (uploadError) {
-                  setMessage("Upload failed. Make sure you created a public 'images' bucket in Supabase.");
+                  showToast("Upload failed.", 'error');
                   return;
                 }
                 
                 const { data } = supabase.storage.from('images').getPublicUrl(fileName);
                 setBusiness({...business, profile_image: data.publicUrl});
-                setMessage("Image uploaded! Don't forget to click Save Profile.");
-              }} className="bg-slate-50 border-zyp-border cursor-pointer w-full max-w-sm" />
+                showToast("Image uploaded!", 'success');
+              }} className="bg-slate-50 border-slate-200 cursor-pointer w-full max-w-sm" />
             </div>
           </div>
 
@@ -110,7 +144,7 @@ export default function StoreSettingsPage() {
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-[#0F172A]">Description</label>
-            <Input value={business.description || ""} onChange={e => setBusiness({...business, description: e.target.value})} placeholder="Custom cakes for every celebration 💖" className="bg-slate-50" />
+            <Input value={business.description || ""} onChange={e => setBusiness({...business, description: e.target.value})} placeholder="Custom cakes for every celebration 🎉" className="bg-slate-50" />
           </div>
           
           <div className="grid sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
@@ -127,14 +161,49 @@ export default function StoreSettingsPage() {
               </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          <div className="pt-6 border-t border-slate-100 flex justify-end">
-             <Button onClick={handleSave} variant="primary" className="font-bold rounded-xl px-8 shadow-md">
-               Save Changes
-             </Button>
+      <Card className="bg-white border-slate-200 shadow-sm rounded-3xl overflow-hidden mb-6">
+        <CardHeader className="bg-slate-50 border-b border-slate-200 pb-4 pt-6 px-6">
+          <CardTitle className="text-lg font-extrabold text-[#0F172A] flex items-center gap-2">
+            <LayoutTemplate className="w-5 h-5 text-blue-500" />
+            Store Theme
+          </CardTitle>
+          <CardDescription className="text-sm font-medium text-slate-500">
+            Choose a design theme for your customer-facing store.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {['light', 'dark', 'playful'].map(t => (
+              <div 
+                key={t}
+                onClick={() => setBusiness({...business, theme: t})}
+                className={`border-2 rounded-2xl p-4 cursor-pointer transition-all ${business.theme === t ? 'border-blue-500 bg-blue-50/50' : 'border-slate-100 hover:border-slate-300'}`}
+              >
+                <div className={`w-full h-24 rounded-lg mb-3 ${
+                  t === 'light' ? 'bg-white border border-slate-200' : 
+                  t === 'dark' ? 'bg-slate-900 border border-slate-800' : 
+                  'bg-gradient-to-br from-pink-100 to-orange-100 border border-pink-200'
+                }`}>
+                   <div className="p-2 space-y-2">
+                     <div className={`w-1/2 h-2 rounded-full ${t === 'dark' ? 'bg-slate-700' : 'bg-slate-200'}`}></div>
+                     <div className={`w-3/4 h-2 rounded-full ${t === 'dark' ? 'bg-slate-800' : 'bg-slate-100'}`}></div>
+                   </div>
+                </div>
+                <h4 className="font-bold text-[#0F172A] text-center capitalize">{t} Theme</h4>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
+
+      <div className="flex justify-end pb-8">
+        <Button onClick={handleSave} variant="primary" className="font-bold rounded-xl px-8 shadow-md h-12">
+          Save All Changes
+        </Button>
+      </div>
     </div>
   );
 }

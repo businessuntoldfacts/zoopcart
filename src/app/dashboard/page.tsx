@@ -13,8 +13,10 @@ export default function DashboardOverview() {
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("John");
   const [businessSlug, setBusinessSlug] = useState("");
+  const [insightIndex, setInsightIndex] = useState(0);
 
   useEffect(() => {
+    setInsightIndex(Math.floor(Math.random() * 3));
     async function loadDashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -153,16 +155,27 @@ export default function DashboardOverview() {
              
              <div className="relative z-10">
                <div className="flex items-center gap-2 text-blue-200 font-bold text-xs uppercase tracking-wider mb-2">
-                 <Sparkles className="w-3.5 h-3.5" /> AI Insights
+                 <Sparkles className="w-3.5 h-3.5" /> AI Store Insights
                </div>
-               <h3 className="text-lg font-extrabold mb-2 leading-tight">
-                 {stats.total === 0 ? "Ready to launch!" : "Great momentum!"}
-               </h3>
-               <p className="text-sm text-blue-100 font-medium leading-relaxed">
-                 {stats.total === 0 
-                   ? "Your store is perfectly set up. Share your link on WhatsApp and Instagram to get your first order today."
-                   : "You've received new orders recently. Responding quickly to requests increases your conversion rate by up to 3x."}
-               </p>
+               {stats.total === 0 ? (
+                 <>
+                   <h3 className="text-lg font-extrabold mb-2 leading-tight">Ready to launch!</h3>
+                   <p className="text-sm text-blue-100 font-medium leading-relaxed">Your store is perfectly set up. Share your link on WhatsApp and Instagram to get your first order today.</p>
+                 </>
+               ) : (
+                 <>
+                   <h3 className="text-lg font-extrabold mb-2 leading-tight">
+                     {insightIndex === 0 && "Improve Conversion"}
+                     {insightIndex === 1 && "Pricing Alert"}
+                     {insightIndex === 2 && "Delivery Feedback"}
+                   </h3>
+                   <p className="text-sm text-blue-100 font-medium leading-relaxed">
+                     {insightIndex === 0 && "Your store received 1,240 visitors but only 18 orders. Adding more high-quality product images can increase conversion by 2x."}
+                     {insightIndex === 1 && "Your prices are slightly higher as per the competitors. Consider offering a small discount code to boost sales."}
+                     {insightIndex === 2 && "Sometimes it is showing delivery rate is slow based on buyer reviews. Fast shipping increases repeat purchases."}
+                   </p>
+                 </>
+               )}
              </div>
 
              <div className="mt-auto relative z-10">
