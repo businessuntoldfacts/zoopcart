@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
-import { ShieldCheck, ChevronLeft, CheckCircle2, Copy, MessageCircle } from "lucide-react";
+import { ShieldCheck, ChevronLeft, CheckCircle2, Copy, MessageCircle, UploadCloud } from "lucide-react";
 import Link from "next/link";
 
 export default function RequestForm({ params }: { params: { username: string, productSlug: string } }) {
@@ -21,10 +21,11 @@ export default function RequestForm({ params }: { params: { username: string, pr
     quantity: 1,
     budget: "",
     requiredDate: "",
-    address: "",
+    notes: "",
+    delivery_location: "",
     city: "",
     pincode: "",
-    notes: ""
+    reference_image: ""
   });
 
   useEffect(() => {
@@ -38,6 +39,29 @@ export default function RequestForm({ params }: { params: { username: string, pr
     }
     loadData();
   }, [params.username, params.productSlug]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    setUploadingImage(true);
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 600;
+        const scaleSize = Math.min(MAX_WIDTH / img.width, 1);
+        canvas.width = img.width * scaleSize;
+        canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        setFormData({...formData, reference_image: canvas.toDataURL('image/jpeg', 0.6)});
+        setUploadingImage(false);
+      };
+      if (event.target?.result) img.src = event.target.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,9 +77,13 @@ export default function RequestForm({ params }: { params: { username: string, pr
       customer_phone: formData.phone,
       customer_email: formData.email,
       quantity: formData.quantity,
-      budget: formData.budget,
+      budget: formData.budget ? parseFloat(formData.budget) : null,
       required_date: formData.requiredDate,
       notes: formData.notes,
+      delivery_location: formData.delivery_location,
+      city: formData.city,
+      pincode: formData.pincode,
+      reference_image: formData.reference_image,
       tracking_token: token,
       status: 'new'
     }]);
@@ -216,8 +244,46 @@ export default function RequestForm({ params }: { params: { username: string, pr
           </div>
 
           <div className="space-y-1.5">
+            <label className="text-xs font-bold text-[#0F172A] ml-1">Address / Location *</label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">📍</div>
+              <Input required placeholder="Enter your complete address" className="pl-10 bg-white" value={formData.delivery_location} onChange={e => setFormData({...formData, delivery_location: e.target.value})} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#0F172A] ml-1">City *</label>
+              <Input required placeholder="Lucknow" className="bg-white" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#0F172A] ml-1">Pincode *</label>
+              <Input required placeholder="226001" className="bg-white" value={formData.pincode} onChange={e => setFormData({...formData, pincode: e.target.value})} />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
             <label className="text-xs font-bold text-[#0F172A] ml-1">Notes (Optional)</label>
             <textarea placeholder="Any special request? (e.g. design, message on cake, etc.)" className="w-full rounded-xl border border-zyp-border bg-white px-4 py-3 text-sm text-[#0F172A] placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-zyp-primary/20 min-h-[100px]" value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-[#0F172A] ml-1">Reference Image (Optional)</label>
+            <div className="w-full rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-4 flex flex-col items-center justify-center relative cursor-pointer hover:border-zyp-primary/50 transition-colors">
+              {formData.reference_image ? (
+                <img src={formData.reference_image} className="h-32 object-contain" />
+              ) : (
+                <>
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-2 text-blue-600">
+                    <UploadCloud className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-bold text-zyp-textPrimary">Choose Image</span>
+                  <span className="text-[10px] text-slate-400 font-medium">JPG, PNG, WEBP (Max 5MB)</span>
+                </>
+              )}
+              <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+            </div>
+            {uploadingImage && <div className="text-[10px] font-bold text-zyp-primary text-center mt-1">Processing image...</div>}
           </div>
 
           <Button type="submit" variant="primary" className="w-full h-14 rounded-xl text-lg font-bold shadow-lg shadow-zyp-primary/20 mt-8">

@@ -134,6 +134,49 @@ export default function OrdersPage() {
               </div>
             </div>
 
+            {/* Request Details */}
+            <div>
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Request Details</h3>
+              <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">Quantity</div>
+                    <div className="text-sm font-bold text-[#0F172A] mt-0.5">{selectedOrder.quantity || 1}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">Budget</div>
+                    <div className="text-sm font-bold text-[#0F172A] mt-0.5">{selectedOrder.budget ? `₹${selectedOrder.budget}` : 'Not specified'}</div>
+                  </div>
+                </div>
+                {selectedOrder.required_date && (
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">Required Date</div>
+                    <div className="text-sm font-bold text-[#0F172A] mt-0.5">{new Date(selectedOrder.required_date).toLocaleDateString()}</div>
+                  </div>
+                )}
+                {selectedOrder.delivery_location && (
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">Delivery Location</div>
+                    <div className="text-sm font-medium text-[#0F172A] mt-0.5">{selectedOrder.delivery_location} {selectedOrder.city && `, ${selectedOrder.city}`} {selectedOrder.pincode && `- ${selectedOrder.pincode}`}</div>
+                  </div>
+                )}
+                {selectedOrder.notes && (
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">Notes</div>
+                    <div className="text-sm font-medium text-[#0F172A] mt-0.5 bg-white p-3 rounded-lg border border-slate-200">{selectedOrder.notes}</div>
+                  </div>
+                )}
+                {selectedOrder.reference_image && (
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Reference Image</div>
+                    <a href={selectedOrder.reference_image} target="_blank" className="block w-full max-w-[200px] h-32 rounded-lg border border-slate-200 overflow-hidden bg-white hover:opacity-90 transition-opacity">
+                      <img src={selectedOrder.reference_image} className="w-full h-full object-contain" />
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Status Update Actions */}
             <div>
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Update Order Status</h3>
