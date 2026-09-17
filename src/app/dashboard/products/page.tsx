@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Eye, Edit2, Share2, Trash2, ArrowLeft, UploadCloud, CheckCircle2, Box } from "lucide-react";
+
+import { Plus, Search, Eye, Edit2, Share2, Trash2, ArrowLeft, UploadCloud, Box, Camera, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
@@ -16,7 +17,19 @@ export default function ProductsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  const [formData, setFormData] = useState({ name: "", short_description: "", description: "", category: "", price: "", sale_price: "", availability: "in_stock", image: "" });
+  const [formData, setFormData] = useState({ 
+    name: "", 
+    description: "", 
+    category: "", 
+    price: "", 
+    sale_price: "", 
+    availability: "in_stock", 
+    image: "",
+    stock: "50",
+    videoLink: "",
+    published: true,
+    featured: false
+  });
   const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
@@ -42,19 +55,21 @@ export default function ProductsPage() {
     const file = e.target.files[0];
     setUploadingImage(true);
     
-    // Compress image client-side to ensure small base64 string
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 600;
-        const scaleSize = MAX_WIDTH / img.width;
-        canvas.width = MAX_WIDTH;
+        const MAX_WIDTH = 400; // Even smaller to guarantee it uploads
+        let scaleSize = 1;
+        if (img.width > MAX_WIDTH) {
+          scaleSize = MAX_WIDTH / img.width;
+        }
+        canvas.width = img.width * scaleSize;
         canvas.height = img.height * scaleSize;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); // 60% quality JPEG
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.5); // 50% quality
         setFormData({...formData, image: compressedBase64});
         setUploadingImage(false);
       };
@@ -72,13 +87,14 @@ export default function ProductsPage() {
 
     const slug = formData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
     
+    // We map price -> selling price, sale_price -> MRP
     const payload = {
       business_id: businessId,
       name: formData.name,
       slug: slug,
       price: parseFloat(formData.price),
       sale_price: formData.sale_price ? parseFloat(formData.sale_price) : null,
-      short_description: formData.short_description,
+      short_description: formData.description.substring(0, 100),
       description: formData.description,
       category: formData.category,
       availability: formData.availability,
@@ -87,22 +103,25 @@ export default function ProductsPage() {
 
     if (editingId) {
        const { data, error } = await supabase.from('products').update(payload).eq('id', editingId).select();
-       if (!error && data) {
+       if (error) {
+         alert("Error updating product: " + error.message);
+       } else if (data) {
          setProducts(products.map(p => p.id === editingId ? data[0] : p));
+         setShowAddForm(false);
        }
     } else {
        const { data, error } = await supabase.from('products').insert([payload]).select();
-       if (!error && data) {
+       if (error) {
+         alert("Error adding product: " + error.message);
+       } else if (data) {
          setProducts([data[0], ...products]);
-       } else {
-         alert("Error adding product");
+         setShowAddForm(false);
        }
     }
 
-    setShowAddForm(false);
     setEditingId(null);
     setSubmitting(false);
-    setFormData({ name: "", short_description: "", description: "", category: "", price: "", sale_price: "", availability: "in_stock", image: "" });
+    setFormData({ name: "", description: "", category: "", price: "", sale_price: "", availability: "in_stock", image: "", stock: "50", videoLink: "", published: true, featured: false });
   };
 
   if (loading) return <div className="p-4 text-zyp-textMuted font-medium">Loading products...</div>;
@@ -111,87 +130,158 @@ export default function ProductsPage() {
   if (showAddForm) {
     return (
       <div className="max-w-2xl mx-auto space-y-6 pb-12">
-        <button onClick={() => setShowAddForm(false)} className="flex items-center text-sm font-bold text-zyp-textMuted hover:text-zyp-textPrimary transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Back
-        </button>
+        <div className="flex items-center justify-between">
+          <button onClick={() => setShowAddForm(false)} className="flex items-center text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Products
+          </button>
+          <Button onClick={handleAddProduct} variant="primary" className="rounded-xl px-6 bg-pink-500 hover:bg-pink-600 border-none shadow-md" disabled={submitting}>
+            {submitting ? "Saving..." : "Save"}
+          </Button>
+        </div>
         
         <div>
-          <h2 className="text-2xl font-extrabold text-zyp-textPrimary">{editingId ? "Edit Product" : "Add New Product"}</h2>
-          <p className="text-sm text-zyp-textMuted mt-1">Add complete product details to showcase on your store.</p>
+          <h2 className="text-3xl font-extrabold text-slate-900">{editingId ? "Edit product" : "New product"}</h2>
         </div>
 
-        <form onSubmit={handleAddProduct} className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zyp-border space-y-6">
-          <div className="flex flex-col sm:flex-row gap-6 items-start">
-            <div className="w-full sm:w-32 flex flex-col gap-2">
-              <div className="w-full aspect-square rounded-2xl border-2 border-dashed border-zyp-border bg-slate-50 overflow-hidden relative flex flex-col items-center justify-center text-center p-2 group hover:border-zyp-primary/50 transition-colors">
-                {formData.image ? (
-                  <img src={formData.image} alt="Preview" className="w-full h-full object-cover absolute inset-0" />
-                ) : (
-                  <>
-                    <UploadCloud className="w-6 h-6 text-slate-400 mb-1 group-hover:text-zyp-primary" />
-                    <span className="text-[10px] font-bold text-slate-400">Upload Image<br/>JPG, PNG</span>
-                  </>
-                )}
-                <Input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+        <form id="productForm" onSubmit={handleAddProduct} className="space-y-6">
+          
+          {/* PHOTOS SECTION */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Photos</h3>
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-slate-800 shadow-xl">
+              <div className="flex flex-col items-center">
+                <div className="w-40 h-40 rounded-2xl border-2 border-dashed border-slate-600 bg-black/50 overflow-hidden relative flex flex-col items-center justify-center text-center p-2 group hover:border-pink-500/50 transition-colors mb-6">
+                  {formData.image ? (
+                    <img src={formData.image} alt="Preview" className="w-full h-full object-cover absolute inset-0" />
+                  ) : (
+                    <>
+                      <ImageIcon className="w-8 h-8 text-slate-500 mb-2 group-hover:text-pink-500" />
+                      <span className="text-xs font-bold text-slate-500">Cover Image</span>
+                    </>
+                  )}
+                  <Input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+                </div>
+                
+                <div className="flex gap-4 w-full justify-center">
+                  <div className="relative">
+                    <Button type="button" variant="ghost" className="rounded-full bg-white/10 text-white border-none hover:bg-white/20 text-sm h-10 px-6 font-bold">
+                      <UploadCloud className="w-4 h-4 mr-2" /> Gallery
+                    </Button>
+                    <Input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+                  </div>
+                  <div className="relative">
+                    <Button type="button" variant="ghost" className="rounded-full bg-white/10 text-white border-none hover:bg-white/20 text-sm h-10 px-6 font-bold">
+                      <Camera className="w-4 h-4 mr-2" /> Camera
+                    </Button>
+                    <Input type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500 mt-4 font-medium">JPG, PNG or WebP • up to 5 MB</p>
+                {uploadingImage && <p className="text-xs text-pink-500 mt-2 font-bold animate-pulse">Optimizing image...</p>}
               </div>
-              {uploadingImage && <div className="text-[10px] font-bold text-zyp-primary text-center">Optimizing...</div>}
-              {formData.image && <div className="text-[10px] font-bold text-center text-zyp-primary cursor-pointer">Change Image</div>}
             </div>
+            <p className="text-xs text-slate-500 ml-2 font-medium">Up to 10 • the cover is what customers see first.</p>
+          </div>
 
-            <div className="flex-1 space-y-4 w-full">
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-sm font-bold text-zyp-textPrimary">Product Details <span className="text-red-500">*</span></label>
-                <button 
-                  type="button" 
-                  onClick={() => setFormData({...formData, name: 'Premium ' + (formData.name || 'Product'), short_description: 'Discover the amazing quality of our premium offering, crafted with care for the best experience.'})}
-                  className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md hover:bg-blue-100 flex items-center gap-1"
-                >
-                  ✨ AI Suggest
+          {/* DETAILS SECTION */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Details</h3>
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+              <div>
+                <label className="text-sm font-bold text-white mb-1.5 block">Name <span className="text-pink-500">*</span></label>
+                <Input required value={formData.name} onChange={(e: any) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Shop Faisal" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl" />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-white mb-1.5 block">Category <span className="text-pink-500">*</span></label>
+                <Input required value={formData.category} onChange={(e: any) => setFormData({...formData, category: e.target.value})} placeholder="e.g. bags" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl" />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-white mb-1.5 block">Description</label>
+                <textarea value={formData.description} onChange={(e: any) => setFormData({...formData, description: e.target.value})} placeholder="Write a short description..." className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 min-h-[100px] rounded-xl resize-none" />
+              </div>
+            </div>
+          </div>
+
+          {/* PRICING & STOCK SECTION */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Pricing & Stock</h3>
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+              <div>
+                <label className="text-sm font-bold text-white mb-1.5 block">Price <span className="text-pink-500">*</span></label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
+                  <Input required type="number" value={formData.price} onChange={(e: any) => setFormData({...formData, price: e.target.value})} placeholder="20" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl pl-8" />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-bold text-white mb-1.5 block">MRP <span className="text-pink-500">*</span></label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
+                  <Input type="number" value={formData.sale_price} onChange={(e: any) => setFormData({...formData, sale_price: e.target.value})} placeholder="20" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl pl-8" />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-bold text-white mb-1.5 block">Stock <span className="text-pink-500">*</span></label>
+                <Input type="number" value={formData.stock} onChange={(e: any) => setFormData({...formData, stock: e.target.value})} placeholder="50" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl" />
+              </div>
+            </div>
+          </div>
+
+          {/* VARIANTS SECTION */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Variants</h3>
+            <div className="bg-[#1A1A1A] p-8 rounded-3xl border border-slate-800 shadow-xl flex flex-col items-center text-center">
+              <h4 className="text-white font-bold mb-2">Does this come in different sizes or colours?</h4>
+              <p className="text-sm text-slate-400 mb-6">Add variants and each combination gets its own stock. Leave this alone if the product only comes one way.</p>
+              <Button type="button" variant="ghost" className="rounded-full bg-transparent border-slate-600 text-white hover:bg-slate-800 font-bold px-6">
+                + Add variants
+              </Button>
+            </div>
+          </div>
+
+          {/* VIDEOS SECTION */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Videos</h3>
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4">
+              <div className="flex gap-2">
+                <Input value={formData.videoLink} onChange={(e: any) => setFormData({...formData, videoLink: e.target.value})} placeholder="Paste a YouTube or Instagram Reels link" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl flex-1" />
+                <Button type="button" variant="secondary" className="h-12 rounded-xl bg-white/10 text-white border-none hover:bg-white/20 font-bold px-6">Add</Button>
+              </div>
+              <div className="h-24 bg-black/30 rounded-xl border border-slate-800 flex flex-col items-center justify-center text-slate-500">
+                <div className="w-8 h-6 border-2 border-slate-500 rounded flex items-center justify-center mb-1">
+                  <div className="w-0 h-0 border-t-4 border-t-transparent border-l-[6px] border-l-slate-500 border-b-4 border-b-transparent ml-1"></div>
+                </div>
+                <span className="text-xs font-bold">YouTube or Instagram Reels</span>
+              </div>
+            </div>
+          </div>
+
+          {/* VISIBILITY SECTION */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Visibility</h3>
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-slate-800 shadow-xl space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-white font-bold">Published</h4>
+                  <p className="text-xs text-slate-400">Show this product on your storefront.</p>
+                </div>
+                <button type="button" onClick={() => setFormData({...formData, published: !formData.published})} className={`w-12 h-6 rounded-full transition-colors relative ${formData.published ? 'bg-pink-500' : 'bg-slate-700'}`}>
+                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${formData.published ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
                 </button>
               </div>
-              <div className="space-y-1.5">
-                <Input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Product Name (e.g. Chocolate Cake)" className="bg-slate-50" />
-              </div>
-              <div className="space-y-1.5">
-                <Input required value={formData.short_description} onChange={e => setFormData({...formData, short_description: e.target.value})} placeholder="Short Description (Rich and moist chocolate cake...)" className="bg-slate-50" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Input value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} placeholder="Category (e.g. Desserts)" className="bg-slate-50" />
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-white font-bold">Featured</h4>
+                  <p className="text-xs text-slate-400">Highlight it on the store's front page.</p>
                 </div>
-                <div className="space-y-1.5">
-                  <select value={formData.availability} onChange={e => setFormData({...formData, availability: e.target.value})} className="w-full h-10 px-3 rounded-md border border-slate-200 bg-slate-50 text-sm">
-                    <option value="in_stock">In Stock</option>
-                    <option value="out_of_stock">Out of Stock</option>
-                    <option value="preorder">Pre-order</option>
-                  </select>
-                </div>
+                <button type="button" onClick={() => setFormData({...formData, featured: !formData.featured})} className={`w-12 h-6 rounded-full transition-colors relative ${formData.featured ? 'bg-pink-500' : 'bg-slate-700'}`}>
+                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${formData.featured ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
+                </button>
               </div>
             </div>
+            <p className="text-xs text-slate-500 ml-2 mt-2 font-medium">Unpublished products are hidden from your store. Featured ones lead the storefront.</p>
           </div>
 
-          <div className="space-y-1.5 pt-4 border-t border-slate-100">
-            <label className="text-sm font-bold text-zyp-textPrimary">Detailed Description (Optional)</label>
-            <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Add more details about ingredients, sizing, etc." className="w-full min-h-[100px] rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zyp-border">
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-zyp-textPrimary">Price (₹) <span className="text-red-500">*</span></label>
-              <Input required type="number" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} placeholder="499" className="bg-slate-50" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-zyp-textPrimary">Sale Price (Optional)</label>
-              <Input type="number" min="0" value={formData.sale_price} onChange={e => setFormData({...formData, sale_price: e.target.value})} placeholder="699" className="bg-slate-50" />
-            </div>
-          </div>
-
-          <div className="pt-6 flex justify-end gap-3">
-            <Button type="button" variant="ghost" onClick={() => setShowAddForm(false)} className="font-bold">Cancel</Button>
-            <Button type="submit" variant="primary" className="w-full sm:w-auto px-8" disabled={submitting}>
-              {submitting ? "Saving..." : (editingId ? "Update Product" : "Publish Product")}
-            </Button>
-          </div>
         </form>
       </div>
     );
@@ -201,10 +291,10 @@ export default function ProductsPage() {
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-zyp-textPrimary">Your Products</h2>
-          <p className="text-sm text-zyp-textMuted mt-1">Manage your products and share them with your customers.</p>
+          <h2 className="text-2xl font-extrabold text-slate-900">Your Products</h2>
+          <p className="text-sm text-slate-500 mt-1">Manage your products and share them with your customers.</p>
         </div>
-        <Button variant="primary" className="font-bold rounded-xl shadow-md" onClick={() => setShowAddForm(true)}>
+        <Button variant="primary" className="font-bold rounded-xl shadow-md bg-pink-500 hover:bg-pink-600 border-none" onClick={() => setShowAddForm(true)}>
           <Plus className="w-4 h-4 mr-2" /> Add Product
         </Button>
       </div>
@@ -212,31 +302,25 @@ export default function ProductsPage() {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input placeholder="Search products..." className="pl-9 bg-white" />
+          <Input placeholder="Search products..." className="pl-9 bg-white border-slate-200" />
         </div>
-        <select className="bg-white border border-zyp-border text-sm font-semibold text-zyp-textPrimary rounded-lg px-4 h-12 outline-none">
-          <option>All Categories</option>
-        </select>
-        <select className="bg-white border border-zyp-border text-sm font-semibold text-zyp-textPrimary rounded-lg px-4 h-12 outline-none">
-          <option>All Status</option>
-        </select>
       </div>
 
       {products.length === 0 ? (
-        <div className="bg-white rounded-3xl border border-zyp-border p-12 text-center shadow-sm">
-          <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-sm">
+          <div className="w-16 h-16 bg-pink-50 text-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Box className="w-8 h-8" />
           </div>
-          <h3 className="font-extrabold text-lg text-zyp-textPrimary">No products yet</h3>
-          <p className="text-sm text-zyp-textMuted mt-1 mb-6 max-w-sm mx-auto">Add your first product to start taking orders from customers.</p>
-          <Button variant="primary" className="font-bold rounded-xl" onClick={() => setShowAddForm(true)}>
+          <h3 className="font-extrabold text-lg text-slate-900">No products yet</h3>
+          <p className="text-sm text-slate-500 mt-1 mb-6 max-w-sm mx-auto">Add your first product to start taking orders from customers.</p>
+          <Button variant="primary" className="font-bold rounded-xl bg-pink-500 hover:bg-pink-600 border-none" onClick={() => setShowAddForm(true)}>
             <Plus className="w-4 h-4 mr-2" /> Add Product
           </Button>
         </div>
       ) : (
         <div className="space-y-4">
           {products.map(p => (
-            <div key={p.id} className="bg-white rounded-2xl p-4 border border-zyp-border shadow-sm flex flex-col sm:flex-row items-center gap-4 hover:shadow-md transition-shadow">
+            <div key={p.id} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center gap-4 hover:shadow-md transition-shadow">
               <div className="w-full sm:w-24 h-40 sm:h-24 rounded-xl bg-slate-100 overflow-hidden shrink-0">
                 {p.image ? (
                   <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
@@ -245,26 +329,18 @@ export default function ProductsPage() {
                 )}
               </div>
               <div className="flex-1 min-w-0 w-full">
-                <h4 className="font-extrabold text-zyp-textPrimary text-lg truncate">{p.name}</h4>
-                <p className="text-sm text-zyp-textMuted truncate mt-0.5 mb-2">{p.short_description}</p>
+                <h4 className="font-extrabold text-slate-900 text-lg truncate">{p.name}</h4>
+                <p className="text-sm text-slate-500 truncate mt-0.5 mb-2">{p.short_description}</p>
                 <div className="flex items-center gap-3">
-                  <span className="font-extrabold text-zyp-textPrimary">₹{p.price}</span>
-                  <span className="text-xs font-bold text-slate-400 line-through">₹{Math.round(p.price * 1.3)}</span>
+                  <span className="font-extrabold text-slate-900">₹{p.price}</span>
+                  {p.sale_price && <span className="text-xs font-bold text-slate-400 line-through">₹{p.sale_price}</span>}
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 ml-2">In Stock</span>
                 </div>
-                  <div className="grid grid-cols-2 gap-2 mt-auto">
-                    <Link href={`/${businessUsername}/${p.slug}`} className="block" onClick={(e) => {
-                       e.preventDefault();
-                       window.open(`/${businessUsername}/${p.slug}`, '_blank');
-                    }}>
-                      <Button variant="secondary" className="w-full h-9 text-xs font-bold bg-blue-50 text-blue-600 border-none hover:bg-blue-100 rounded-lg">View</Button>
-                    </Link>
-                  </div>
               </div>
               <div className="flex sm:flex-col gap-2 w-full sm:w-auto mt-4 sm:mt-0 border-t sm:border-t-0 sm:border-l border-slate-100 pt-4 sm:pt-0 sm:pl-4">
                 <button 
                   onClick={() => window.open(`/${businessUsername}/${p.slug}`, '_blank')}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-pink-500 py-1 px-2 rounded-lg hover:bg-pink-50 transition-colors"
                 >
                   <Eye className="w-3.5 h-3.5" /> View
                 </button>
@@ -272,18 +348,21 @@ export default function ProductsPage() {
                   onClick={() => {
                     setFormData({
                       name: p.name,
-                      short_description: p.short_description,
-                      description: p.description || "",
+                      description: p.description || p.short_description || "",
                       category: p.category || "",
                       availability: p.availability || "in_stock",
                       price: p.price.toString(),
                       sale_price: p.sale_price ? p.sale_price.toString() : "",
-                      image: p.image || ""
+                      image: p.image || "",
+                      stock: "50",
+                      videoLink: "",
+                      published: true,
+                      featured: false
                     });
                     setEditingId(p.id);
                     setShowAddForm(true);
                   }}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-pink-500 py-1 px-2 rounded-lg hover:bg-pink-50 transition-colors"
                 >
                   <Edit2 className="w-3.5 h-3.5" /> Edit
                 </button>
@@ -293,7 +372,7 @@ export default function ProductsPage() {
                      navigator.clipboard.writeText(url);
                      alert("Product link copied to clipboard!");
                   }}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-pink-500 py-1 px-2 rounded-lg hover:bg-pink-50 transition-colors"
                 >
                   <Share2 className="w-3.5 h-3.5" /> Share
                 </button>
@@ -311,19 +390,9 @@ export default function ProductsPage() {
               </div>
             </div>
           ))}
-          
-          <div className="mt-8 bg-blue-50 border border-blue-100 rounded-3xl p-8 text-center flex flex-col items-center">
-            <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center mb-4">
-              <Box className="w-6 h-6 text-blue-500" />
-            </div>
-            <h3 className="font-extrabold text-[#0F172A] text-lg mb-1">Add more amazing products</h3>
-            <p className="text-sm font-medium text-slate-500 mb-6">The more products you add, the more requests you'll receive.</p>
-            <Button variant="primary" className="font-bold rounded-xl shadow-md" onClick={() => setShowAddForm(true)}>
-              <Plus className="w-4 h-4 mr-2" /> Add Product
-            </Button>
-          </div>
         </div>
       )}
     </div>
   );
 }
+

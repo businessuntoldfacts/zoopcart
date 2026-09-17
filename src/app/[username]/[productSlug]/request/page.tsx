@@ -13,6 +13,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [trackingToken, setTrackingToken] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",

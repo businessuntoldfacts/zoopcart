@@ -160,7 +160,7 @@ export default async function StorefrontPage({ params }: { params: { username: s
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-16">
-            {products.map((product) => (
+            {products.map((product: any) => (
               <div key={product.id} className={`${t.card} rounded-2xl overflow-hidden border shadow-sm hover:shadow-md transition-shadow group flex flex-col`}>
                 <div className="aspect-square bg-slate-100 relative overflow-hidden">
                   {product.image ? (
