@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, Instagram, MessageCircle, ShoppingBag, Grid, Palette, Camera, Heart, HelpCircle } from "lucide-react";
+import { Play, ArrowRight, MessageCircle, ShoppingBag, Grid, Palette, Camera, Heart, HelpCircle } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -133,7 +133,7 @@ export default function LandingPage() {
           {/* Floating UI elements near phone */}
           <div className="absolute -left-12 bottom-20 bg-white p-3 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce" style={{animationDuration: '3s'}}>
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 flex items-center justify-center text-white">
-              <Instagram className="w-5 h-5" />
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
             </div>
             <div>
               <div className="text-xs font-bold text-[#0F172A]">Share on</div>

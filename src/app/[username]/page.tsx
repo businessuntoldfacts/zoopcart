@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import { MapPin, MessageCircle, Instagram, Share2, Search, CheckCircle2 } from "lucide-react";
+import { MapPin, MessageCircle, Share2, Search, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default async function PublicStorePage({ params }: { params: { username: string } }) {
@@ -61,7 +61,7 @@ export default async function PublicStorePage({ params }: { params: { username: 
                   <span className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md"><MapPin className="w-3.5 h-3.5" /> Lucknow</span>
                   {business.instagram_handle && (
                      <a href={`https://instagram.com/${business.instagram_handle.replace('@','')}`} target="_blank" className="flex items-center gap-1 text-pink-600 bg-pink-50 px-2 py-1 rounded-md hover:bg-pink-100">
-                       <Instagram className="w-3.5 h-3.5" /> {business.instagram_handle}
+                       <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> {business.instagram_handle}
                      </a>
                   )}
                 </div>
