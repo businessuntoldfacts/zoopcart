@@ -1,8 +1,29 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Play, ArrowRight, MessageCircle, ShoppingBag, Grid, Palette, Camera, Heart, HelpCircle, Star, Store, LineChart, LayoutTemplate, CheckCircle2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const { data: realBusinesses } = await supabase
+    .from('businesses')
+    .select('business_name, username')
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  const defaultReviews = [
+    {name: "Priya Sharma", role: "Home Baker", text: "Zypcart completely changed how I take orders. No more messy DMs, just a clean catalog link on my Instagram bio!"},
+    {name: "Rahul Gupta", role: "Clothing Brand", text: "The checkout process is so smooth. My conversion rate doubled because customers can order in 3 clicks without downloading any app."},
+    {name: "Sneha Reddy", role: "Reseller", text: "I share my products on WhatsApp groups. Now I just share my Zypcart link and all requests come perfectly organized to my dashboard."}
+  ];
+
+  const displayReviews = realBusinesses && realBusinesses.length > 0 
+    ? realBusinesses.map((b, i) => ({
+        name: b.business_name || `Store ${b.username}`,
+        role: `zypcart.com/${b.username}`,
+        text: defaultReviews[i % 3].text
+      }))
+    : defaultReviews;
+
   return (
     <div className="min-h-screen bg-zyp-bg font-sans overflow-x-hidden selection:bg-zyp-primary/20">
       {/* Navbar */}
@@ -193,21 +214,17 @@ export default function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {name: "Priya Sharma", role: "Home Baker", text: "Zypcart completely changed how I take orders. No more messy DMs, just a clean catalog link on my Instagram bio!"},
-              {name: "Rahul Gupta", role: "Clothing Brand", text: "The checkout process is so smooth. My conversion rate doubled because customers can order in 3 clicks without downloading any app."},
-              {name: "Sneha Reddy", role: "Reseller", text: "I share my products on WhatsApp groups. Now I just share my Zypcart link and all requests come perfectly organized to my dashboard."}
-            ].map((review, i) => (
+            {displayReviews.map((review, i) => (
               <div key={i} className="bg-slate-50 border border-slate-100 rounded-3xl p-8 hover:shadow-md transition-shadow">
                 <div className="flex gap-1 mb-4">
                   {[1,2,3,4,5].map(s => <Star key={s} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
                 </div>
                 <p className="text-slate-700 font-medium leading-relaxed mb-6">"{review.text}"</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">{review.name.charAt(0)}</div>
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">{review.name.charAt(0).toUpperCase()}</div>
                   <div>
-                    <h4 className="font-bold text-[#0F172A] text-sm">{review.name}</h4>
-                    <p className="text-xs text-slate-500 font-medium">{review.role}</p>
+                    <h4 className="font-bold text-[#0F172A] text-sm line-clamp-1">{review.name}</h4>
+                    <p className="text-xs text-slate-500 font-medium line-clamp-1">{review.role}</p>
                   </div>
                 </div>
               </div>
@@ -290,7 +307,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2 lg:col-span-2">
               <Link href="/" className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-zyp-primary rounded flex items-center justify-center font-bold text-white text-xl tracking-tighter italic">e</div>
+                <img src="/logo.jpg" alt="Zypcart" className="h-8 object-contain rounded" />
                 <span className="font-extrabold text-2xl tracking-tight text-white">Zypcart</span>
               </Link>
               <p className="text-slate-400 text-sm leading-relaxed max-w-sm mb-6">
