@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Heart, ShoppingCart, ArrowLeft, ShoppingBag, Truck } from "lucide-react";
+import { Heart, ShoppingCart, ArrowLeft, ShoppingBag, Truck, Search } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default async function CartPage({ params }: { params: { username: string } }) {
+export default async function TrackPage({ params }: { params: { username: string } }) {
   const { data: business } = await supabase
     .from('businesses')
     .select('*')
@@ -34,10 +34,10 @@ export default async function CartPage({ params }: { params: { username: string 
           <Link href={`/${business.username}/saved`} className="text-slate-600 hover:text-pink-600 transition-colors">
             <Heart className="w-6 h-6" />
           </Link>
-          <div className="w-10 h-10 bg-pink-600 text-white rounded-xl flex items-center justify-center shadow-md relative">
+          <Link href={`/${business.username}/cart`} className="w-10 h-10 bg-pink-600 hover:bg-pink-700 text-white rounded-xl flex items-center justify-center shadow-md relative">
             <ShoppingCart className="w-5 h-5 fill-current" />
             <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-slate-900 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white">0</span>
-          </div>
+          </Link>
         </div>
       </header>
 
@@ -45,28 +45,27 @@ export default async function CartPage({ params }: { params: { username: string 
         
         <div className="w-full flex items-center gap-2 text-sm font-bold text-pink-600 mb-6">
           <ArrowLeft className="w-4 h-4" />
-          <Link href={`/${business.username}`}>Continue shopping</Link>
+          <Link href={`/${business.username}`}>Back to store</Link>
         </div>
 
         <div className="w-full">
-           <h2 className="font-extrabold text-3xl text-slate-900 mb-1">Your cart</h2>
-           <p className="text-sm font-medium text-slate-500 mb-12">0 items ready to checkout.</p>
+           <h2 className="font-extrabold text-3xl text-slate-900 mb-1">Track Order</h2>
+           <p className="text-sm font-medium text-slate-500 mb-8">Enter your order ID or phone number.</p>
         </div>
 
         <div className="w-full bg-slate-50 rounded-[32px] border border-slate-100 p-8 flex flex-col items-center text-center">
            <div className="w-24 h-24 bg-white rounded-3xl shadow-sm flex items-center justify-center mb-6">
-              <ShoppingCart className="w-10 h-10 text-slate-300" />
+              <Truck className="w-10 h-10 text-slate-300" />
            </div>
-           <h3 className="font-extrabold text-2xl text-slate-900 mb-2">Your cart is waiting.</h3>
-           <p className="text-slate-500 font-medium text-sm leading-relaxed mb-8 max-w-[250px]">
-             Add a few products and they'll show up right here, ready to go.
-           </p>
            
-           <Link href={`/${business.username}`}>
-             <Button className="h-12 px-8 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-extrabold shadow-md shadow-pink-600/20 border-none">
-               Continue Shopping
-             </Button>
-           </Link>
+           <div className="w-full relative mb-6">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input type="text" placeholder="Order ID or Phone" className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-pink-500 font-bold" />
+           </div>
+
+           <Button className="w-full h-12 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-extrabold shadow-md shadow-pink-600/20 border-none">
+             Track Package
+           </Button>
         </div>
 
       </div>
@@ -80,12 +79,9 @@ export default async function CartPage({ params }: { params: { username: string 
             <span className="text-[10px] font-extrabold">Shop</span>
           </Link>
 
-          <Link href={`/${business.username}/cart`} className="flex flex-col items-center justify-center w-16 h-full gap-1 group relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-pink-600 rounded-b-full"></div>
-            <div className="w-12 h-8 rounded-full bg-pink-50 flex flex-col items-center justify-center mb-0.5">
-               <ShoppingCart className="w-5 h-5 text-pink-600 fill-pink-600" />
-            </div>
-            <span className="text-[10px] font-extrabold text-slate-900">Cart</span>
+          <Link href={`/${business.username}/cart`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
+            <ShoppingCart className="w-5 h-5" />
+            <span className="text-[10px] font-extrabold">Cart</span>
           </Link>
 
           <Link href={`/${business.username}/saved`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
@@ -93,9 +89,12 @@ export default async function CartPage({ params }: { params: { username: string 
             <span className="text-[10px] font-extrabold">Saved</span>
           </Link>
 
-          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
-            <Truck className="w-5 h-5" />
-            <span className="text-[10px] font-extrabold">Track</span>
+          <Link href={`/${business.username}/track`} className="flex flex-col items-center justify-center w-16 h-full gap-1 group relative">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-pink-600 rounded-b-full"></div>
+            <div className="w-12 h-8 rounded-full bg-pink-50 flex flex-col items-center justify-center mb-0.5">
+               <Truck className="w-5 h-5 text-pink-600 fill-pink-600" />
+            </div>
+            <span className="text-[10px] font-extrabold text-slate-900">Track</span>
           </Link>
 
         </div>
@@ -104,4 +103,3 @@ export default async function CartPage({ params }: { params: { username: string 
     </div>
   );
 }
-

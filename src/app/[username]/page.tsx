@@ -213,3 +213,4 @@ export default async function StorefrontPage({ params }: { params: { username: s
     </div>
   );
 }
+
