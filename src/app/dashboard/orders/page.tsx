@@ -53,13 +53,26 @@ export default function OrdersPage() {
                 </div>
                 <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                   <div className="text-sm font-mono text-zyp-textMuted">#{order.tracking_token.substring(0,8)}</div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                    order.status === 'new' ? 'bg-zyp-accent/20 text-zyp-accent border-zyp-accent/20' : 
-                    order.status === 'completed' ? 'bg-zyp-success/20 text-zyp-success border-zyp-success/20' : 
-                    'bg-white/10 text-white border-white/10'
-                  }`}>
-                    {order.status.replace('_', ' ')}
-                  </span>
+                  
+                  <select 
+                    value={order.status}
+                    onChange={async (e) => {
+                      const newStatus = e.target.value;
+                      await supabase.from('orders').update({ status: newStatus }).eq('id', order.id);
+                      setOrders(orders.map(o => o.id === order.id ? { ...o, status: newStatus } : o));
+                    }}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border focus:outline-none appearance-none cursor-pointer ${
+                      order.status === 'new' ? 'bg-zyp-accent/20 text-zyp-accent border-zyp-accent/20' : 
+                      order.status === 'completed' ? 'bg-zyp-success/20 text-zyp-success border-zyp-success/20' : 
+                      order.status === 'accepted' ? 'bg-white/20 text-white border-white/20' :
+                      'bg-zyp-warning/20 text-zyp-warning border-zyp-warning/20'
+                    }`}
+                  >
+                    <option value="new" className="text-black bg-white">New Request</option>
+                    <option value="accepted" className="text-black bg-white">Accepted</option>
+                    <option value="in_progress" className="text-black bg-white">In Progress</option>
+                    <option value="completed" className="text-black bg-white">Completed</option>
+                  </select>
                 </div>
               </CardContent>
             </Card>
