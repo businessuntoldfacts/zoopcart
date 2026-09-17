@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { CheckCircle2, MapPin, Search, Star, MessageCircle, Share2, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Heart, ShoppingCart, ArrowLeft, ShieldCheck, Zap, Repeat, FileText, ShoppingBag, Truck, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export const revalidate = 0; // Dynamic route
 
@@ -18,204 +18,197 @@ export default async function StorefrontPage({ params }: { params: { username: s
   }
 
   const products = business.products || [];
-  
-  // Fetch real reviews by getting completed orders
-  const { data: completedOrders } = await supabase
-    .from('orders')
-    .select('customer_name, created_at')
-    .eq('business_id', business.id)
-    .eq('status', 'completed')
-    .order('created_at', { ascending: false })
-    .limit(10);
-    
-  const realReviews = (completedOrders || []).map(order => ({
-    name: order.customer_name,
-    rating: 5,
-    text: "Great product, excellent quality! Loved the seamless experience.",
-    date: order.created_at
-  }));
-
-  let themeStr = 'light';
-  try {
-    if (business.instagram_profile_url && business.instagram_profile_url.startsWith('{')) {
-      themeStr = JSON.parse(business.instagram_profile_url).theme || 'light';
-    } else if (business.instagram_profile_url) {
-      themeStr = business.instagram_profile_url;
-    }
-  } catch(e) {}
-  const theme = themeStr;
-
-  // Theme styling definitions
-  const themes = {
-    light: {
-      bg: "bg-[#F8FAFC]",
-      card: "bg-white border-slate-200",
-      text: "text-[#0F172A]",
-      muted: "text-slate-500",
-      primary: "text-pink-600",
-      btnPrimary: "bg-pink-600 hover:bg-pink-700 text-white",
-      btnSecondary: "bg-pink-50 text-pink-700 hover:bg-pink-100",
-    },
-    dark: {
-      bg: "bg-slate-950",
-      card: "bg-[#0F172A] border-slate-800",
-      text: "text-white",
-      muted: "text-slate-400",
-      primary: "text-blue-500",
-      btnPrimary: "bg-blue-600 hover:bg-blue-700 text-white",
-      btnSecondary: "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20",
-    },
-    playful: {
-      bg: "bg-yellow-50",
-      card: "bg-white border-yellow-200",
-      text: "text-orange-950",
-      muted: "text-orange-700/60",
-      primary: "text-orange-600",
-      btnPrimary: "bg-orange-500 hover:bg-orange-600 text-white",
-      btnSecondary: "bg-orange-100 text-orange-800 hover:bg-orange-200",
-    }
-  };
-
-  const t = themes[theme as keyof typeof themes] || themes.light;
 
   return (
-    <div className={`min-h-screen font-sans pb-20 ${t.bg}`}>
+    <div className="min-h-screen bg-slate-50 font-sans pb-20">
+      
       {/* Top Header */}
-      <header className={`${t.card} px-4 h-14 flex items-center justify-between sticky top-0 z-50 shadow-sm border-b`}>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center font-bold text-white text-sm tracking-tighter italic">e</div>
-          <span className={`font-bold text-lg tracking-tight ${t.text}`}>Zypcart</span>
+      <header className="bg-white px-4 h-16 flex items-center justify-between sticky top-0 z-50 border-b border-slate-100 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
+            {business.profile_image ? (
+              <img src={business.profile_image} alt={business.business_name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-pink-50 text-pink-600 font-bold text-lg">
+                {business.business_name?.charAt(0)}
+              </div>
+            )}
+          </div>
+          <h1 className="font-extrabold text-xl text-slate-900 tracking-tight">{business.business_name}</h1>
         </div>
-        <div className={`text-xs font-bold ${t.primary} bg-current/10 px-3 py-1.5 rounded-full truncate max-w-[150px]`}>
-          zypcart.com/{business.username}
+        <div className="flex items-center gap-4">
+          <button className="text-slate-600 hover:text-pink-600 transition-colors">
+            <Heart className="w-6 h-6" />
+          </button>
+          <button className="w-10 h-10 bg-pink-600 hover:bg-pink-700 text-white rounded-xl flex items-center justify-center shadow-md transition-colors relative">
+            <ShoppingCart className="w-5 h-5 fill-current" />
+            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-slate-900 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white">0</span>
+          </button>
         </div>
       </header>
 
-      {/* Cover Image */}
-      <div className="w-full h-40 md:h-64 bg-slate-200 relative">
-        <img src="https://images.unsplash.com/photo-1557308536-ee471ef2c390?q=80&w=1000&auto=format&fit=crop" alt="Cover" className="w-full h-full object-cover" />
-      </div>
-
-      {/* Store Info Profile (Centered) */}
-      <div className="max-w-4xl mx-auto px-4 md:px-8 relative -mt-12 md:-mt-16 z-10">
-        <div className={`${t.card} rounded-[32px] p-6 shadow-sm border`}>
-          <div className="flex flex-col items-center text-center">
-            
-            {/* Avatar */}
-            <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-md ${t.card} overflow-hidden shrink-0 -mt-16 md:-mt-20 mb-4 bg-white`}>
-              {business.profile_image ? (
-                <img src={business.profile_image} alt={business.business_name} className="w-full h-full object-cover" />
-              ) : (
-                <div className={`w-full h-full flex items-center justify-center ${t.primary} text-4xl font-bold bg-black/5`}>
-                  {business.business_name?.charAt(0)}
-                </div>
-              )}
-            </div>
-            
-            {/* Details */}
-            <h1 className={`text-2xl md:text-3xl font-extrabold flex items-center justify-center gap-2 ${t.text}`}>
-              {business.business_name}
-              <CheckCircle2 className="w-5 h-5 text-green-500 fill-green-500/20" />
-            </h1>
-            <p className={`text-sm mt-2 mb-4 max-w-md mx-auto ${t.muted}`}>
-              {business.description || "Welcome to our store!"}
-            </p>
-            
-            <div className={`flex flex-wrap items-center justify-center gap-3 text-xs font-bold ${t.muted} mb-6`}>
-              <span className="flex items-center gap-1 bg-black/5 px-3 py-1.5 rounded-full">
-                <MapPin className="w-3.5 h-3.5" /> Worldwide
-              </span>
-              {business.instagram_handle && (
-                 <a href={`https://instagram.com/${business.instagram_handle.replace('@','')}`} target="_blank" className={`flex items-center gap-1 px-3 py-1.5 rounded-full transition-colors ${t.btnSecondary}`}>
-                   <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> 
-                   {business.instagram_handle}
-                 </a>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-3 w-full max-w-xs mx-auto">
-               <Button className={`flex-1 rounded-xl h-12 text-sm font-bold shadow-md border-none ${t.btnPrimary}`}>
-                 <Share2 className="w-4 h-4 mr-2" /> Share Store
-               </Button>
-               <Button variant="secondary" className={`rounded-xl h-12 w-12 p-0 shrink-0 ${t.btnSecondary}`}>
-                 <MessageCircle className="w-5 h-5" />
-               </Button>
-            </div>
-            
-          </div>
-        </div>
-      </div>
-
-      {/* Products Grid */}
-      <div className="max-w-4xl mx-auto px-4 md:px-8 mt-12">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className={`text-xl font-extrabold ${t.text}`}>Our Products</h2>
-          <div className="relative">
-            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${t.muted}`} />
-            <input type="text" placeholder="Search..." className={`pl-9 pr-4 py-2.5 rounded-full border ${t.card} text-sm font-medium outline-none w-32 focus:w-48 transition-all`} />
-          </div>
+      <div className="max-w-md mx-auto bg-white min-h-screen relative shadow-sm border-x border-slate-100">
+        
+        {/* Breadcrumbs */}
+        <div className="px-4 py-4 flex items-center gap-2 text-sm font-bold text-slate-500">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Store</span>
+          <span className="text-slate-300">/</span>
+          <span className="text-slate-800">Shop {business.business_name}</span>
         </div>
 
-        {products.length === 0 ? (
-          <div className={`${t.card} rounded-3xl p-12 text-center border shadow-sm`}>
-            <h3 className={`font-extrabold text-lg ${t.text}`}>No products available</h3>
-            <p className={`text-sm mt-1 ${t.muted}`}>This seller hasn't added any products yet.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-16">
-            {products.map((product: any) => (
-              <Link href={`/${business.username}/${product.slug}`} key={product.id} className={`${t.card} rounded-[24px] overflow-hidden border shadow-sm hover:shadow-md transition-shadow group flex flex-col`}>
-                <div className="aspect-[4/5] bg-slate-100 relative overflow-hidden flex-shrink-0 border-b border-black/5">
+        {/* Products List */}
+        <div className="px-4 space-y-8 mt-2 pb-10 border-b border-slate-100">
+          {products.length === 0 ? (
+            <div className="text-center py-12 bg-slate-50 rounded-3xl border border-slate-100">
+              <h3 className="font-extrabold text-lg text-slate-900">No products yet</h3>
+              <p className="text-sm text-slate-500 mt-1">Check back soon!</p>
+            </div>
+          ) : (
+            products.map((product: any) => (
+              <Link href={`/${business.username}/${product.slug}`} key={product.id} className="block group">
+                <div className="w-full aspect-[4/5] sm:aspect-square bg-slate-100 rounded-[28px] overflow-hidden relative mb-4">
                   {product.image ? (
                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                     <div className="w-full h-full flex items-center justify-center text-slate-400 font-medium bg-slate-50">No Image</div>
+                     <div className="w-full h-full flex items-center justify-center text-slate-400 font-medium">No Image</div>
+                  )}
+                  {product.sale_price && (
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-extrabold text-pink-600 shadow-sm uppercase tracking-wider">
+                      Sale
+                    </div>
                   )}
                 </div>
-                <div className="p-4 md:p-5 flex flex-col flex-1">
-                  <h3 className={`font-bold text-sm md:text-base line-clamp-1 ${t.text}`}>{product.name}</h3>
-                  <div className="flex items-center gap-2 mt-2 mb-4">
-                    <span className={`font-extrabold text-sm md:text-base ${t.text}`}>₹{product.price}</span>
-                    {product.sale_price && <span className={`text-[10px] md:text-xs font-bold line-through ${t.muted}`}>₹{product.sale_price}</span>}
+                
+                <div>
+                  <div className="text-[10px] font-extrabold text-pink-500 uppercase tracking-widest mb-1.5">{product.category || "General"}</div>
+                  <h3 className="font-extrabold text-2xl text-slate-900 mb-1 leading-tight">{product.name}</h3>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="font-extrabold text-2xl text-slate-900">₹{product.price}</span>
+                    {product.sale_price && <span className="font-bold text-lg text-slate-400 line-through">₹{product.sale_price}</span>}
                   </div>
-                  
-                  <div className={`mt-auto w-full flex items-center justify-center py-2.5 rounded-xl text-xs font-bold border-none transition-colors ${t.btnSecondary}`}>
-                    View Product
+                  <div className="flex items-center gap-1.5 text-sm font-bold text-green-600">
+                    <div className="w-2 h-2 rounded-full bg-green-600"></div>
+                    In stock · ships soon
                   </div>
                 </div>
               </Link>
-            ))}
+            ))
+          )}
+        </div>
+
+        {/* USPs Section */}
+        <div className="px-4 py-10 bg-white">
+          <div className="space-y-4">
+            
+            <div className="flex items-start gap-4 p-5 rounded-[24px] border border-slate-100 shadow-sm bg-white">
+              <div className="w-12 h-12 rounded-2xl bg-pink-50 flex flex-col items-center justify-center shrink-0">
+                <ShieldCheck className="w-6 h-6 text-pink-500" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-slate-900 text-lg mb-1">Genuine products</h4>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">Every item is sourced direct — no surprises.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-5 rounded-[24px] border border-slate-100 shadow-sm bg-white">
+              <div className="w-12 h-12 rounded-2xl bg-yellow-50 flex flex-col items-center justify-center shrink-0">
+                <Zap className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-slate-900 text-lg mb-1">Fast shipping</h4>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">Dispatched quickly with tracking to your door.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-5 rounded-[24px] border border-slate-100 shadow-sm bg-white">
+              <div className="w-12 h-12 rounded-2xl bg-pink-50 flex flex-col items-center justify-center shrink-0">
+                <div className="w-3 h-3 bg-pink-500 rotate-45"></div>
+              </div>
+              <div>
+                <h4 className="font-extrabold text-slate-900 text-lg mb-1">Easy returns</h4>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">A fair, no-fuss return window on every order.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-5 rounded-[24px] border border-slate-100 shadow-sm bg-white">
+              <div className="w-12 h-12 rounded-2xl bg-pink-50 flex flex-col items-center justify-center shrink-0">
+                <FileText className="w-6 h-6 text-pink-500" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-slate-900 text-lg mb-1">Secure payments</h4>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">Pay safely over UPI, straight to the seller.</p>
+              </div>
+            </div>
+
           </div>
-        )}
-        
-        {realReviews.length > 0 && (
-          <div className="mb-16">
-             <div className="flex items-center justify-between mb-6">
-                <h2 className={`text-xl font-extrabold ${t.text}`}>Customer Reviews</h2>
-                <div className="flex items-center gap-1 text-yellow-500 font-bold text-sm">
-                   <Star className="w-4 h-4 fill-current" /> 5.0 ({realReviews.length})
-                </div>
+        </div>
+
+        {/* Dark Footer */}
+        <footer className="bg-[#0b1021] text-white px-6 py-12 rounded-t-[32px] mt-4">
+          <div className="flex items-center gap-2 mb-8">
+             <div className="w-8 h-8 bg-pink-600 rounded-lg flex items-center justify-center font-bold text-white text-sm">
+                {business.business_name?.charAt(0)}
              </div>
-             <div className="space-y-4">
-                {realReviews.map((r, i) => (
-                   <div key={i} className={`${t.card} p-5 rounded-2xl border shadow-sm`}>
-                      <div className="flex items-center gap-3 mb-2">
-                         <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs uppercase">{r.name.charAt(0)}</div>
-                         <div>
-                            <div className={`font-bold text-sm ${t.text}`}>{r.name}</div>
-                            <div className="flex items-center text-yellow-400">
-                               {[...Array(5)].map((_,j) => <Star key={j} className="w-3 h-3 fill-current" />)}
-                            </div>
-                         </div>
-                      </div>
-                      <p className={`text-sm ${t.muted}`}>{r.text}</p>
-                   </div>
-                ))}
-             </div>
+             <span className="font-extrabold text-xl">{business.business_name}</span>
           </div>
-        )}
+
+          <div className="mb-8">
+            <h5 className="text-[11px] font-extrabold text-slate-400 tracking-widest uppercase mb-4">Shop</h5>
+            <ul className="space-y-4 font-bold text-sm text-slate-200">
+              <li><Link href={`/${business.username}`}>All products</Link></li>
+            </ul>
+          </div>
+
+          <div className="mb-12 border-b border-white/10 pb-12">
+            <h5 className="text-[11px] font-extrabold text-slate-400 tracking-widest uppercase mb-4">Account</h5>
+            <ul className="space-y-4 font-bold text-sm text-slate-200">
+              <li><Link href="#">Cart</Link></li>
+              <li><Link href="#">Favourites</Link></li>
+              <li><Link href="#">Track order</Link></li>
+              {business.instagram_handle && (
+                <li><a href={`https://instagram.com/${business.instagram_handle.replace('@','')}`} target="_blank" className="text-pink-400 hover:text-pink-300 transition-colors">@{business.instagram_handle.replace('@','')}</a></li>
+              )}
+            </ul>
+          </div>
+
+          <div className="text-xs font-bold text-slate-500 flex flex-col gap-2">
+            <p>© 2026 {business.business_name}. All rights reserved.</p>
+            <p>Powered by <a href="/" className="text-slate-400 hover:text-white transition-colors">Zypcart</a></p>
+          </div>
+        </footer>
+
       </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+        <div className="max-w-md mx-auto flex items-center justify-around h-16 px-2">
+          
+          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 group relative">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-pink-600 rounded-b-full"></div>
+            <div className="w-12 h-8 rounded-full bg-pink-50 flex flex-col items-center justify-center mb-0.5">
+               <ShoppingBag className="w-5 h-5 text-pink-600" />
+            </div>
+            <span className="text-[10px] font-extrabold text-slate-900">Shop</span>
+          </Link>
+
+          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
+            <ShoppingCart className="w-5 h-5" />
+            <span className="text-[10px] font-extrabold">Cart</span>
+          </Link>
+
+          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
+            <Heart className="w-5 h-5" />
+            <span className="text-[10px] font-extrabold">Saved</span>
+          </Link>
+
+          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
+            <Truck className="w-5 h-5" />
+            <span className="text-[10px] font-extrabold">Track</span>
+          </Link>
+
+        </div>
+      </nav>
 
     </div>
   );
