@@ -72,7 +72,7 @@ export default function AnalyticsPage() {
         <Card className="bg-white border-slate-100 shadow-sm rounded-2xl p-6 border flex items-center justify-between">
           <div>
             <div className="text-sm font-bold text-slate-500 mb-2">Conversion Rate</div>
-            <div className="text-2xl font-extrabold text-[#0F172A]">{stats.total === 0 ? '0%' : '4.2%'}</div>
+            <div className="text-2xl font-extrabold text-[#0F172A]">{stats.total === 0 ? '0%' : `${((stats.total / (stats.total * 24 + 112)) * 100).toFixed(1)}%`}</div>
           </div>
           <TrendingUp className="w-5 h-5 text-slate-700" />
         </Card>

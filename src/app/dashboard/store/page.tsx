@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
-import { CheckCircle2, XCircle, LayoutTemplate } from "lucide-react";
+import { CheckCircle2, XCircle, LayoutTemplate, LogOut } from "lucide-react";
 
 export default function StoreSettingsPage() {
   const [business, setBusiness] = useState<any>(null);
@@ -162,6 +162,19 @@ export default function StoreSettingsPage() {
                 <Input className="flex-1 bg-slate-50" value={business.whatsapp_number || ""} onChange={e => setBusiness({...business, whatsapp_number: e.target.value})} placeholder="9876543210" />
               </div>
             </div>
+          </div>
+
+          {/* Mobile Logout Button */}
+          <div className="md:hidden pt-4 pb-2 border-t border-slate-100 flex justify-center">
+            <button 
+              onClick={async () => {
+                await supabase.auth.signOut();
+                window.location.href = '/login';
+              }}
+              className="flex items-center gap-2 text-sm font-bold text-red-500 bg-red-50 px-6 py-3 rounded-xl hover:bg-red-100 transition-colors"
+            >
+              <LogOut className="w-4 h-4" /> Log out of Zypcart
+            </button>
           </div>
         </CardContent>
       </Card>

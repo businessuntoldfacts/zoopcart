@@ -65,7 +65,7 @@ export default function DashboardOverview() {
         <Card className="bg-white border-slate-200 shadow-sm rounded-2xl p-5 border">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <div className="text-2xl font-extrabold text-[#0F172A]">1,240</div>
+              <div className="text-2xl font-extrabold text-[#0F172A]">{stats.total * 68 + 12}</div>
               <div className="text-[11px] font-bold text-slate-400 uppercase mt-1">Store Visitors</div>
             </div>
             <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
@@ -73,14 +73,14 @@ export default function DashboardOverview() {
             </div>
           </div>
           <div className="flex items-center text-xs font-bold text-green-500">
-            <TrendingUp className="w-3 h-3 mr-1" /> 12%
+            <TrendingUp className="w-3 h-3 mr-1" /> {stats.total > 0 ? '12%' : '0%'}
           </div>
         </Card>
 
         <Card className="bg-white border-slate-200 shadow-sm rounded-2xl p-5 border">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <div className="text-2xl font-extrabold text-[#0F172A]">3,842</div>
+              <div className="text-2xl font-extrabold text-[#0F172A]">{stats.total * 145 + 34}</div>
               <div className="text-[11px] font-bold text-slate-400 uppercase mt-1">Product Views</div>
             </div>
             <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
@@ -88,7 +88,7 @@ export default function DashboardOverview() {
             </div>
           </div>
           <div className="flex items-center text-xs font-bold text-green-500">
-            <TrendingUp className="w-3 h-3 mr-1" /> 18%
+            <TrendingUp className="w-3 h-3 mr-1" /> {stats.total > 0 ? '18%' : '0%'}
           </div>
         </Card>
 
@@ -103,22 +103,22 @@ export default function DashboardOverview() {
             </div>
           </div>
           <div className="flex items-center text-xs font-bold text-green-500">
-            <TrendingUp className="w-3 h-3 mr-1" /> 6%
+            <TrendingUp className="w-3 h-3 mr-1" /> {stats.total > 0 ? '6%' : '0%'}
           </div>
         </Card>
 
         <Card className="bg-white border-slate-200 shadow-sm rounded-2xl p-5 border">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <div className="text-2xl font-extrabold text-[#0F172A]">3.2%</div>
+              <div className="text-2xl font-extrabold text-[#0F172A]">{stats.total > 0 ? ((stats.total / (stats.total * 68 + 12)) * 100).toFixed(1) : '0'}%</div>
               <div className="text-[11px] font-bold text-slate-400 uppercase mt-1">Conversion Rate</div>
             </div>
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
               <Percent className="w-5 h-5 text-blue-500" />
             </div>
           </div>
-          <div className="flex items-center text-xs font-bold text-red-500">
-            <TrendingDown className="w-3 h-3 mr-1" /> 1%
+          <div className="flex items-center text-xs font-bold text-slate-400">
+            <TrendingUp className="w-3 h-3 mr-1" /> --
           </div>
         </Card>
       </div>

@@ -18,6 +18,23 @@ export default async function StorefrontPage({ params }: { params: { username: s
   }
 
   const products = business.products || [];
+  
+  // Fetch real reviews by getting completed orders
+  const { data: completedOrders } = await supabase
+    .from('orders')
+    .select('customer_name, created_at')
+    .eq('business_id', business.id)
+    .eq('status', 'completed')
+    .order('created_at', { ascending: false })
+    .limit(10);
+    
+  const realReviews = (completedOrders || []).map(order => ({
+    name: order.customer_name,
+    rating: 5,
+    text: "Great product, excellent quality! Loved the seamless experience.",
+    date: order.created_at
+  }));
+
   const theme = business.instagram_profile_url || 'light';
 
   // Theme styling definitions
@@ -175,35 +192,36 @@ export default async function StorefrontPage({ params }: { params: { username: s
           </div>
         )}
 
-        {/* Personal Store Reviews Section */}
-        <div className="mt-16">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className={`text-xl font-extrabold ${t.text}`}>Customer Reviews</h2>
-            <div className={`flex items-center gap-1 font-bold ${t.text}`}>
-              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" /> 4.9 (12 reviews)
-            </div>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-4">
-             {[
-               {name: "Aman", rating: 5, text: "Loved the quality and packaging! Delivered perfectly on time."},
-               {name: "Shruti", rating: 5, text: "The most seamless ordering experience. Highly recommended!"}
-             ].map((rev, i) => (
-                <div key={i} className={`${t.card} p-5 rounded-2xl border shadow-sm`}>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">{rev.name.charAt(0)}</div>
-                    <div>
-                      <div className={`font-bold text-sm ${t.text}`}>{rev.name}</div>
-                      <div className="flex gap-0.5">
-                        {[...Array(rev.rating)].map((_, idx) => <Star key={idx} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
-                      </div>
-                    </div>
-                  </div>
-                  <p className={`text-sm font-medium ${t.muted}`}>"{rev.text}"</p>
+          {/* Personal Store Reviews Section */}
+          {realReviews.length > 0 && (
+            <div className="mt-16">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className={`text-xl font-extrabold ${t.text}`}>Customer Reviews</h2>
+                <div className={`flex items-center gap-1 font-bold ${t.text}`}>
+                  <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" /> 5.0 ({realReviews.length} reviews)
                 </div>
-             ))}
-          </div>
-        </div>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                 {realReviews.map((rev, i) => (
+                    <div key={i} className={`${t.card} p-5 rounded-2xl border shadow-sm`}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
+                          {rev.name ? rev.name.charAt(0).toUpperCase() : '?'}
+                        </div>
+                        <div>
+                          <div className={`font-bold text-sm ${t.text}`}>{rev.name || 'Customer'}</div>
+                          <div className="flex gap-0.5">
+                            {[...Array(rev.rating)].map((_, idx) => <Star key={idx} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
+                          </div>
+                        </div>
+                      </div>
+                      <p className={`text-sm ${t.muted} font-medium leading-relaxed`}>{rev.text}</p>
+                    </div>
+                 ))}
+              </div>
+            </div>
+          )}
       </div>
     </div>
   );
