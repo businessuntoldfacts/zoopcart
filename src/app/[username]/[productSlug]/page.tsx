@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ClientTracker from "@/components/ClientTracker";
 import ReviewSystem from "@/components/ReviewSystem";
+import CheckoutModal from "@/components/CheckoutModal";
 
 export default async function ProductDetailPage({ params }: { params: { username: string, productSlug: string } }) {
   const { data: business } = await supabase
@@ -113,9 +114,7 @@ export default async function ProductDetailPage({ params }: { params: { username
             </div>
 
             <div className="flex gap-3 mt-8">
-               <a href={`https://wa.me/${business.whatsapp_country_code}${business.whatsapp_number}?text=Hi, I am interested in ${product.name}`} target="_blank" className="flex-1 h-14 rounded-2xl bg-pink-600 hover:bg-pink-700 text-white flex items-center justify-center font-extrabold shadow-md transition-colors">
-                  Request on WhatsApp <ArrowRight className="w-5 h-5 ml-2" />
-               </a>
+               <CheckoutModal business={business} product={product} />
             </div>
         </div>
 
@@ -125,14 +124,13 @@ export default async function ProductDetailPage({ params }: { params: { username
       {/* Fixed Sticky Footer for Mobile */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 p-4 pb-safe z-50">
         <div className="max-w-md mx-auto">
-          <a href={`https://wa.me/${business.whatsapp_country_code}${business.whatsapp_number}?text=Hi, I am interested in ${product.name}`} target="_blank" className="w-full flex">
-            <Button className="w-full h-14 rounded-2xl bg-pink-600 hover:bg-pink-700 text-white font-extrabold text-base shadow-xl shadow-pink-600/20 mb-3">
-               Request on WhatsApp
-            </Button>
-          </a>
+          <CheckoutModal business={business} product={product} />
         </div>
       </div>
 
     </div>
   );
 }
+
+
+
