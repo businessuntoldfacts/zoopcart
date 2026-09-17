@@ -52,6 +52,10 @@ export default function RequestForm({ params }: { params: { username: string, pr
       customer_name: formData.name,
       customer_phone: formData.phone,
       customer_email: formData.email,
+      quantity: formData.quantity,
+      budget: formData.budget,
+      required_date: formData.requiredDate,
+      notes: formData.notes,
       tracking_token: token,
       status: 'new'
     }]);
@@ -61,7 +65,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
       setTrackingToken(token);
       setIsSubmitted(true);
     } else {
-      alert("Error submitting request.");
+      alert("Error submitting request. Please try again.");
     }
   };
 

@@ -18,7 +18,7 @@ export default function StoreSettingsPage() {
       if (user) {
         const { data } = await supabase.from('businesses').select('*').eq('user_id', user.id).single();
         if (data) {
-          if (!data.theme) data.theme = 'light';
+          if (!data.theme) data.theme = data.instagram_profile_url || 'light';
           setBusiness(data);
         }
       }
@@ -37,26 +37,18 @@ export default function StoreSettingsPage() {
   const handleSave = async () => {
     showToast("Saving changes...", 'loading');
     
-    // We try to update everything including theme. If theme column doesn't exist, it might error.
-    // If it errors, we will fallback to updating without theme.
     const updateData: any = {
         business_name: business.business_name,
         description: business.description,
         profile_image: business.profile_image,
         category: business.category,
         instagram_handle: business.instagram_handle,
+        instagram_profile_url: business.theme, // Storing theme here since there is no dedicated column
         whatsapp_country_code: business.whatsapp_country_code,
         whatsapp_number: business.whatsapp_number,
     };
 
-    let error = null;
-    try {
-      const { error: err1 } = await supabase.from('businesses').update({...updateData, theme: business.theme}).eq('id', business.id);
-      error = err1;
-    } catch (e) {
-      const { error: err2 } = await supabase.from('businesses').update(updateData).eq('id', business.id);
-      error = err2;
-    }
+    const { error } = await supabase.from('businesses').update(updateData).eq('id', business.id);
 
     if (error) {
       showToast("Error saving profile.", 'error');
@@ -113,20 +105,15 @@ export default function StoreSettingsPage() {
               <Input type="file" accept="image/*" onChange={async (e) => {
                 if (!e.target.files || e.target.files.length === 0) return;
                 const file = e.target.files[0];
-                showToast("Uploading image...", 'loading');
+                showToast("Processing image...", 'loading');
                 
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${business.id}-${Math.random()}.${fileExt}`;
-                
-                const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file);
-                if (uploadError) {
-                  showToast("Upload failed.", 'error');
-                  return;
-                }
-                
-                const { data } = supabase.storage.from('images').getPublicUrl(fileName);
-                setBusiness({...business, profile_image: data.publicUrl});
-                showToast("Image uploaded!", 'success');
+                // Convert to base64 to avoid needing a Supabase Storage Bucket setup
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setBusiness({...business, profile_image: reader.result as string});
+                  showToast("Image updated! Don't forget to click Save.", 'success');
+                };
+                reader.readAsDataURL(file);
               }} className="bg-slate-50 border-slate-200 cursor-pointer w-full max-w-sm" />
             </div>
           </div>

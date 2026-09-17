@@ -18,7 +18,7 @@ export default async function StorefrontPage({ params }: { params: { username: s
   }
 
   const products = business.products || [];
-  const theme = business.theme || 'light';
+  const theme = business.instagram_profile_url || 'light';
 
   // Theme styling definitions
   const themes = {

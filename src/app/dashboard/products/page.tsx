@@ -49,17 +49,17 @@ export default function ProductsPage() {
     const file = e.target.files[0];
     setUploadingImage(true);
     
-    const fileExt = file.name.split('.').pop();
-    const fileName = `product-${Math.random()}.${fileExt}`;
-    
-    const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file);
-    if (!uploadError) {
-      const { data } = supabase.storage.from('images').getPublicUrl(fileName);
-      setFormData({...formData, image: data.publicUrl});
-    } else {
-      alert("Image upload failed. Ensure you created the public 'images' bucket.");
-    }
-    setUploadingImage(false);
+    // Using base64 to avoid Supabase storage bucket setup requirements for this demo
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData({...formData, image: reader.result as string});
+      setUploadingImage(false);
+    };
+    reader.onerror = () => {
+      alert("Error reading file.");
+      setUploadingImage(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleAddProduct = async (e: React.FormEvent) => {
