@@ -26,13 +26,12 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-zyp-bg font-sans overflow-x-hidden selection:bg-zyp-primary/20">
-      {/* Navbar */}
+      {/* Header */}
       <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-zyp-border">
         <div className="container mx-auto px-6 h-16 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <img src="/logo.jpg" alt="Zypcart" className="h-8 object-contain rounded-md" />
-            <span className="font-bold text-xl tracking-tight text-[#0F172A]">Zypcart</span>
-          </div>
+          <Link href="/" className="flex items-center">
+            <img src="/logo.jpg" alt="Zypcart" className="h-10 object-contain rounded-md" />
+          </Link>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-zyp-textPrimary">
             <Link href="#" className="hover:text-zyp-primary transition-colors">Home</Link>
             <Link href="#how-it-works" className="hover:text-zyp-primary transition-colors">How it works</Link>
@@ -306,9 +305,8 @@ export default async function LandingPage() {
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2 lg:col-span-2">
-              <Link href="/" className="flex items-center gap-2 mb-4">
-                <img src="/logo.jpg" alt="Zypcart" className="h-8 object-contain rounded" />
-                <span className="font-extrabold text-2xl tracking-tight text-white">Zypcart</span>
+              <Link href="/" className="flex items-center mb-6">
+                <img src="/logo.jpg" alt="Zypcart" className="h-12 object-contain rounded" />
               </Link>
               <p className="text-slate-400 text-sm leading-relaxed max-w-sm mb-6">
                 The easiest way to turn your social media followers into paying customers. Create your digital storefront in minutes, completely free.

@@ -46,12 +46,10 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-zyp-bg text-zyp-textPrimary overflow-hidden font-sans">
-      {/* Sidebar (Desktop) - Dark Navy theme like Figma */}
       <aside className="hidden md:flex w-[260px] flex-col bg-[#0F172A] text-slate-300 shrink-0">
         <div className="p-6">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <img src="/logo.jpg" alt="Zypcart" className="h-6 object-contain rounded" />
-            <span className="font-bold text-xl text-white tracking-tight">Zypcart</span>
+          <Link href="/dashboard" className="flex items-center">
+            <img src="/logo.jpg" alt="Zypcart" className="h-10 object-contain rounded" />
           </Link>
         </div>
 
@@ -99,9 +97,8 @@ export default function DashboardLayout({
         {/* Header matching Figma */}
         <header className="h-[72px] border-b border-zyp-border flex items-center justify-between px-6 md:px-8 bg-white shrink-0">
           <div className="flex items-center md:hidden">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <img src="/logo.jpg" alt="Zypcart" className="h-6 object-contain rounded" />
-              <span className="font-bold text-lg text-zyp-textPrimary tracking-tight">Zypcart</span>
+            <Link href="/dashboard" className="flex items-center">
+              <img src="/logo.jpg" alt="Zypcart" className="h-10 object-contain rounded" />
             </Link>
           </div>
           

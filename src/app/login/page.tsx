@@ -41,9 +41,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
       <header className="p-6 flex justify-between items-center max-w-2xl mx-auto w-full">
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/logo.jpg" alt="Zypcart" className="h-6 object-contain rounded" />
-          <span className="font-bold text-lg tracking-tight">Zypcart</span>
+        <Link href="/" className="flex items-center">
+          <img src="/logo.jpg" alt="Zypcart" className="h-10 object-contain rounded" />
         </Link>
         <div className="text-sm">
           <span className="text-zyp-textMuted">New to Zypcart? </span>

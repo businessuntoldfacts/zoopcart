@@ -75,9 +75,8 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
       <header className="p-6 flex justify-center items-center w-full">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-white shadow-sm border border-slate-100 rounded flex items-center justify-center font-bold text-zyp-primary text-xl tracking-tighter italic">e</div>
-          <span className="font-bold text-xl tracking-tight">Zypcart</span>
+        <Link href="/" className="flex items-center">
+          <img src="/logo.jpg" alt="Zypcart" className="h-10 object-contain rounded" />
         </Link>
       </header>
 
