@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, CheckCircle2, Shield, Zap, Users } from "lucide-react";
+import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function SignupPage() {
@@ -74,22 +74,18 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
-      <header className="p-6 flex justify-between items-center max-w-2xl mx-auto w-full">
+      <header className="p-6 flex justify-center items-center w-full">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/logo.jpg" alt="Zypcart" className="h-6 object-contain rounded" />
-          <span className="font-bold text-lg tracking-tight">Zypcart</span>
+          <div className="w-8 h-8 bg-white shadow-sm border border-slate-100 rounded flex items-center justify-center font-bold text-zyp-primary text-xl tracking-tighter italic">e</div>
+          <span className="font-bold text-xl tracking-tight">Zypcart</span>
         </Link>
-        <div className="text-sm">
-          <span className="text-zyp-textMuted">Already have an account? </span>
-          <Link href="/login" className="font-bold text-zyp-primary hover:underline">Login</Link>
-        </div>
       </header>
 
       <main className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-lg border border-zyp-border">
+        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-lg border border-zyp-border mb-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold mb-2 tracking-tight">Create your Zypcart</h1>
-            <p className="text-zyp-textMuted">Join thousands of social sellers</p>
+            <p className="text-zyp-textMuted font-medium">Join thousands of social sellers</p>
           </div>
 
           {error && <div className="p-3 mb-6 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">{error}</div>}
@@ -166,35 +162,21 @@ export default function SignupPage() {
             </div>
 
             <div className="flex items-center gap-2 pt-2 pb-4">
-              <input type="checkbox" required id="terms" className="rounded text-zyp-primary focus:ring-zyp-primary border-gray-300 w-4 h-4" />
-              <label htmlFor="terms" className="text-xs text-zyp-textMuted">
+              <input type="checkbox" required id="terms" className="rounded text-zyp-primary focus:ring-zyp-primary border-gray-300 w-4 h-4 cursor-pointer" />
+              <label htmlFor="terms" className="text-xs font-medium text-zyp-textMuted cursor-pointer">
                 I agree to the <a href="#" className="font-bold text-zyp-primary hover:underline">Terms & Privacy Policy</a>
               </label>
             </div>
 
-            <Button type="submit" variant="primary" className="w-full text-base py-6 rounded-xl font-bold">
+            <Button type="submit" variant="primary" className="w-full text-base py-6 rounded-xl font-bold shadow-md hover:shadow-lg transition-all">
               {loading ? "Creating..." : "Create My Zypcart →"}
             </Button>
+            
+            <div className="text-center mt-6 pt-6 border-t border-slate-100">
+              <span className="text-slate-500 font-medium text-sm">Already have an account? </span>
+              <Link href="/login" className="font-bold text-zyp-primary hover:underline text-sm">Login here</Link>
+            </div>
           </form>
-
-          <div className="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center opacity-60">
-            <div className="flex flex-col items-center gap-1 text-[10px] font-bold text-center">
-              <Shield className="w-5 h-5 mb-1" />
-              Secure &<br/>Private
-            </div>
-            <div className="flex flex-col items-center gap-1 text-[10px] font-bold text-center">
-              <Zap className="w-5 h-5 mb-1" />
-              No Customer<br/>Account Required
-            </div>
-            <div className="flex flex-col items-center gap-1 text-[10px] font-bold text-center">
-              <Users className="w-5 h-5 mb-1" />
-              Built for<br/>Social Sellers
-            </div>
-          </div>
-        </div>
-        
-        <div className="fixed bottom-6 w-full text-center text-sm font-medium text-zyp-textMuted italic max-w-sm">
-          "Simple, powerful and exactly what I needed!" <br/> - A Happy Seller
         </div>
       </main>
     </div>
