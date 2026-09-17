@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, BarChart2, Ticket, Zap, Store, Palette, Wallet, MessageCircle, Globe, Sun, HelpCircle, Bell, LogOut, ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { ChevronRight, BarChart2, Store, Palette, Wallet, Sun, HelpCircle, Bell, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
@@ -15,6 +16,8 @@ export default function SettingsHubPage() {
     }
   };
 
+  const [appearance, setAppearance] = useState("light");
+
   const menuSections: any[] = [
     {
       title: "MANAGE",
@@ -26,7 +29,7 @@ export default function SettingsHubPage() {
       title: "STORE",
       items: [
         { icon: Store, label: "Store Settings", description: "Name, description and shipping", href: "/dashboard/settings/store" },
-        { icon: Palette, label: "Website Theme", description: "Choose theme and brand colour", href: "#" },
+        { icon: Palette, label: "Website Theme", description: "Choose theme and brand colour", href: "/dashboard/settings/theme" },
         { icon: Wallet, label: "Payment Details", description: "UPI or Razorpay checkout", href: "/dashboard/settings/payment" },
         ]
     },
@@ -35,22 +38,22 @@ export default function SettingsHubPage() {
       items: [
         { icon: Sun, label: "Appearance", description: "Dashboard theme · press D to toggle", customAction: (
           <div className="flex gap-2 mt-4">
-            <button className="flex flex-col items-center gap-1 border-2 border-pink-500 rounded-xl p-2 w-16">
+            <button onClick={() => setAppearance("light")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "light" ? "border-pink-500" : "border-slate-200"}`}>
               <div className="w-full h-8 bg-white border border-slate-200 rounded flex flex-col gap-1 p-1"><div className="w-1/2 h-1 bg-slate-200 rounded"></div><div className="w-full h-1 bg-slate-100 rounded"></div></div>
               <span className="text-[10px] font-bold text-slate-700">Light</span>
             </button>
-            <button className="flex flex-col items-center gap-1 border-2 border-transparent rounded-xl p-2 w-16 opacity-50 cursor-not-allowed">
+            <button onClick={() => setAppearance("dark")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "dark" ? "border-pink-500" : "border-transparent opacity-50"}`}>
               <div className="w-full h-8 bg-slate-900 border border-slate-700 rounded flex flex-col gap-1 p-1"><div className="w-1/2 h-1 bg-slate-700 rounded"></div><div className="w-full h-1 bg-slate-800 rounded"></div></div>
               <span className="text-[10px] font-bold text-slate-700">Dark</span>
             </button>
-            <button className="flex flex-col items-center gap-1 border-2 border-transparent rounded-xl p-2 w-16 opacity-50 cursor-not-allowed">
+            <button onClick={() => setAppearance("auto")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "auto" ? "border-pink-500" : "border-transparent opacity-50"}`}>
               <div className="w-full h-8 bg-gradient-to-br from-white to-slate-900 border border-slate-300 rounded flex flex-col gap-1 p-1"></div>
               <span className="text-[10px] font-bold text-slate-700">Auto</span>
             </button>
           </div>
         ) },
-        { icon: HelpCircle, label: "Contact Us", description: "Questions, problems or suggestions", href: "#" },
-        { icon: Bell, label: "What's New", description: "Updates, and suggest a feature", href: "#" },
+        { icon: HelpCircle, label: "Contact Us", description: "Questions, problems or suggestions", href: "mailto:support@zypcart.com" },
+        { icon: Bell, label: "What's New", description: "Updates, and suggest a feature", action: () => alert("Welcome to Zypcart v1.0!\n- Redesigned Dashboard\n- New Website Themes\n- Advanced UPI Payment Integration\n- Improved Storefront UI") },
         { icon: LogOut, label: "Logout", description: "Sign out of your account", action: handleLogout, isDanger: true }
       ]
     }
