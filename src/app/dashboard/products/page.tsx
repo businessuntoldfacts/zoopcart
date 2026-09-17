@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, Eye, Edit2, Share2, Trash2, ArrowLeft, UploadCloud, CheckCircle2, Box } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
