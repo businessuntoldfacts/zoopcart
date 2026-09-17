@@ -1,27 +1,25 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import { ShieldCheck, ChevronLeft, CheckCircle2, Copy, MessageCircle } from "lucide-react";
+import Link from "next/link";
 
-export default function RequestFormPage({ params }: { params: { username: string, productSlug: string } }) {
-  const { username, productSlug } = params;
-  const [submitted, setSubmitted] = useState(false);
+export default function RequestForm({ params }: { params: { username: string, productSlug: string } }) {
+  const [product, setProduct] = useState<any>(null);
+  const [business, setBusiness] = useState<any>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [trackingToken, setTrackingToken] = useState("");
-  
-  const [productData, setProductData] = useState<any>(null);
-  
-  // Form State
+
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
     phone: "",
+    email: "",
     quantity: 1,
+    budget: "",
     requiredDate: "",
     address: "",
     city: "",
@@ -31,173 +29,200 @@ export default function RequestFormPage({ params }: { params: { username: string
 
   useEffect(() => {
     async function loadData() {
-      // 1. Get Business
-      const { data: business } = await supabase.from('businesses').select('id').eq('username', username).single();
-      if (!business) return;
-      
-      // 2. Get Product
-      const { data: product } = await supabase.from('products').select('id, name, price').eq('business_id', business.id).eq('slug', productSlug).single();
-      if (product) {
-        setProductData({ ...product, business_id: business.id });
+      const { data: b } = await supabase.from('businesses').select('*').eq('username', params.username.toLowerCase()).single();
+      if (b) {
+        setBusiness(b);
+        const { data: p } = await supabase.from('products').select('*').eq('business_id', b.id).eq('slug', params.productSlug).single();
+        if (p) setProduct(p);
       }
     }
     loadData();
-  }, [username, productSlug]);
+  }, [params.username, params.productSlug]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!productData) {
-      setError("Product not found");
-      return;
-    }
+    if (!product || !business) return;
     setLoading(true);
-    setError("");
 
-    try {
-      const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      
-      const { error: insertError } = await supabase.from('orders').insert([{
-        business_id: productData.business_id,
-        product_id: productData.id,
-        tracking_token: token,
-        customer_name: formData.name,
-        customer_email: formData.email,
-        customer_phone: formData.phone,
-        quantity: formData.quantity,
-        required_date: formData.requiredDate || null,
-        delivery_location: formData.address,
-        city: formData.city,
-        pincode: formData.pincode,
-        notes: formData.notes,
-        status: 'new'
-      }]);
+    const token = Math.random().toString(36).substring(2, 10).toUpperCase();
 
-      if (insertError) throw insertError;
-      
+    const { error } = await supabase.from('orders').insert([{
+      business_id: business.id,
+      product_id: product.id,
+      customer_name: formData.name,
+      customer_phone: formData.phone,
+      customer_email: formData.email,
+      tracking_token: token,
+      status: 'new'
+    }]);
+
+    setLoading(false);
+    if (!error) {
       setTrackingToken(token);
-      setSubmitted(true);
-    } catch (err: any) {
-      setError(err.message || "Failed to submit request");
-    } finally {
-      setLoading(false);
+      setIsSubmitted(true);
+    } else {
+      alert("Error submitting request.");
     }
   };
 
-  if (submitted) {
+  if (!product || !business) return <div className="p-8 text-center text-slate-500 font-bold">Loading...</div>;
+
+  if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-zyp-lightSurface flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-white text-center py-8">
-          <CardContent className="space-y-4 flex flex-col items-center">
-            <div className="w-16 h-16 bg-zyp-success/10 text-zyp-success rounded-full flex items-center justify-center mb-4">
-              <Check className="w-8 h-8" />
+      <div className="min-h-screen bg-zyp-bg flex flex-col items-center justify-center p-6 font-sans text-center">
+        <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 border-8 border-white shadow-xl shadow-green-900/5 relative">
+          <CheckCircle2 className="w-12 h-12 text-green-500 absolute" />
+          <div className="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full animate-ping"></div>
+          <div className="absolute bottom-2 left-2 w-2 h-2 bg-yellow-400 rounded-full"></div>
+          <div className="absolute top-4 left-0 w-1.5 h-1.5 bg-red-400 rounded-full"></div>
+        </div>
+        
+        <h1 className="text-3xl font-extrabold text-[#0F172A] mb-2">Request Submitted!</h1>
+        <p className="text-sm font-medium text-slate-500 max-w-xs mb-8">
+          Your request has been sent to <span className="font-bold text-[#0F172A]">{business.business_name}</span>.
+        </p>
+
+        <div className="bg-white p-6 rounded-3xl border border-zyp-border shadow-sm w-full max-w-sm mb-6 relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Order ID</p>
+          <div className="text-2xl font-extrabold text-[#0F172A] font-mono mb-2 tracking-widest flex items-center justify-center gap-3">
+            ORD-{trackingToken} <Copy className="w-5 h-5 text-slate-300 hover:text-zyp-primary cursor-pointer transition-colors" />
+          </div>
+          <p className="text-xs text-slate-500 font-medium leading-relaxed">
+            The seller will review your request and update the status. You can track your order anytime using the link below.
+          </p>
+        </div>
+
+        <div className="w-full max-w-sm space-y-3 mb-8">
+          <Link href={`/order/${trackingToken}`}>
+            <Button variant="primary" className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-zyp-primary/20 bg-zyp-primary">
+              View Request &rarr;
+            </Button>
+          </Link>
+          <Link href={`/${business.username}`}>
+            <Button variant="secondary" className="w-full h-12 rounded-xl text-sm font-bold bg-white text-[#0F172A] border border-zyp-border hover:bg-slate-50">
+              <ChevronLeft className="w-4 h-4 mr-1" /> Back to Store
+            </Button>
+          </Link>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-zyp-border shadow-sm w-full max-w-sm text-left">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Track your order anytime</p>
+          <p className="text-[10px] text-slate-500 mb-3 font-medium">Save this link to check updates</p>
+          <div className="flex gap-2">
+            <input readOnly value={`zypcart.com/order/${trackingToken}`} className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 text-xs font-mono text-slate-600 outline-none" />
+            <button className="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center shrink-0 hover:bg-blue-100"><Copy className="w-4 h-4" /></button>
+          </div>
+        </div>
+        
+        <a href={`https://wa.me/${business.whatsapp_country_code}${business.whatsapp_number}?text=Hi, I just submitted an order request (ORD-${trackingToken})`} target="_blank" className="mt-4 w-full max-w-sm">
+          <div className="bg-green-50 p-4 rounded-2xl flex items-center gap-4 text-left border border-green-100">
+            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-md">
+              <MessageCircle className="w-5 h-5 fill-current" />
             </div>
-            <h2 className="font-display text-2xl font-bold text-zyp-bg">Request Submitted</h2>
-            <p className="text-black/60">
-              Your request has been sent. The seller will review your request and update the status.
-            </p>
-            <div className="bg-black/5 rounded-lg px-4 py-2 mt-4 text-sm font-mono text-black/70">
-              Tracking Token: {trackingToken}
+            <div>
+              <div className="text-sm font-bold text-green-900">Need to talk to the seller?</div>
+              <div className="text-xs font-medium text-green-700">You can also contact {business.business_name} on WhatsApp.</div>
             </div>
-            <Link href={`/order/${trackingToken}`} className="w-full mt-6 block">
-              <Button className="w-full">View Request Status</Button>
-            </Link>
-          </CardContent>
-        </Card>
+          </div>
+        </a>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zyp-lightSurface text-zyp-bg py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
-          <Link href={`/${username}/${productSlug}`} className="text-black/60 hover:text-black">
-            ← Cancel Request
-          </Link>
-          <img src="/logo.jpg" alt="Zypcart" className="h-8" />
+    <div className="min-h-screen bg-zyp-bg font-sans pb-8">
+      <header className="bg-white px-4 h-14 flex items-center justify-between sticky top-0 z-50 border-b border-zyp-border">
+        <Link href={`/${business.username}/${product.slug}`} className="flex items-center text-sm font-bold text-[#0F172A] -ml-2">
+          <ChevronLeft className="w-6 h-6" /> Back to Product
+        </Link>
+        <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 px-2 py-1 rounded">
+          <ShieldCheck className="w-3.5 h-3.5 text-green-500" /> Secure Request
+        </div>
+      </header>
+
+      <div className="max-w-md mx-auto p-4 pt-6">
+        <h1 className="text-2xl font-extrabold text-[#0F172A] mb-1">Request This Product</h1>
+        <p className="text-sm font-medium text-slate-500 mb-6">Fill in your details to send a request to <span className="font-bold text-[#0F172A]">{business.business_name}</span>.</p>
+
+        <div className="bg-white p-3 rounded-2xl flex items-center gap-4 border border-zyp-border shadow-sm mb-8">
+          <div className="w-16 h-16 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-100">
+            {product.image ? <img src={product.image} className="w-full h-full object-cover" /> : <div className="w-full h-full" />}
+          </div>
+          <div>
+            <h3 className="font-extrabold text-[#0F172A] text-sm">{product.name}</h3>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="font-extrabold text-[#0F172A]">₹{product.price}</span>
+              <span className="text-xs font-bold text-slate-400 line-through">₹{Math.round(product.price * 1.3)}</span>
+            </div>
+            <div className="mt-1 flex items-center text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded w-max">
+              <CheckCircle2 className="w-3 h-3 mr-1" /> By {business.business_name}
+            </div>
+          </div>
         </div>
 
-        <h1 className="font-display text-3xl font-bold mb-8">Request Order {productData ? `- ${productData.name}` : ''}</h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && <div className="p-4 bg-zyp-danger/10 text-zyp-danger rounded-[16px]">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-[#0F172A] ml-1">Full Name *</label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">👤</div>
+              <Input required placeholder="Enter your full name" className="pl-10 bg-white" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+            </div>
+          </div>
           
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle>Contact Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Full Name</label>
-                <Input required value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} className="border-black/10 bg-white text-black" />
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-[#0F172A] ml-1">Phone Number *</label>
+            <div className="flex gap-2">
+              <div className="w-24 bg-white border border-zyp-border rounded-lg flex items-center justify-center gap-2 text-sm font-bold text-[#0F172A]">
+                🇮🇳 +91
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Email (Optional)</label>
-                  <Input type="email" value={formData.email} onChange={e=>setFormData({...formData, email: e.target.value})} className="border-black/10 bg-white text-black" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Phone</label>
-                  <div className="flex gap-2">
-                    <select className="flex h-12 w-24 rounded-[16px] border border-black/10 bg-white px-4 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-zyp-accent">
-                      <option value="+91">+91</option>
-                    </select>
-                    <Input required value={formData.phone} onChange={e=>setFormData({...formData, phone: e.target.value})} className="flex-1 border-black/10 bg-white text-black" />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              <Input required type="tel" placeholder="9876543210" className="flex-1 bg-white" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+            </div>
+          </div>
 
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle>Request Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Quantity</label>
-                  <Input type="number" min="1" required value={formData.quantity} onChange={e=>setFormData({...formData, quantity: parseInt(e.target.value)})} className="border-black/10 bg-white text-black" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Required Date (Optional)</label>
-                  <Input type="date" value={formData.requiredDate} onChange={e=>setFormData({...formData, requiredDate: e.target.value})} className="border-black/10 bg-white text-black" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Delivery Address</label>
-                <textarea required value={formData.address} onChange={e=>setFormData({...formData, address: e.target.value})} className="flex w-full rounded-[16px] border border-black/10 bg-white px-4 py-3 text-sm text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zyp-accent min-h-[80px]" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">City</label>
-                  <Input required value={formData.city} onChange={e=>setFormData({...formData, city: e.target.value})} className="border-black/10 bg-white text-black" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Pincode</label>
-                  <Input required value={formData.pincode} onChange={e=>setFormData({...formData, pincode: e.target.value})} className="border-black/10 bg-white text-black" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Additional Notes</label>
-                <textarea value={formData.notes} onChange={e=>setFormData({...formData, notes: e.target.value})} className="flex w-full rounded-[16px] border border-black/10 bg-white px-4 py-3 text-sm text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zyp-accent min-h-[80px]" placeholder="Any customizations or instructions..." />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-[#0F172A] ml-1">Email Address *</label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">✉️</div>
+              <Input required type="email" placeholder="you@example.com" className="pl-10 bg-white" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+            </div>
+          </div>
 
-          <Button type="submit" size="lg" className="w-full" disabled={loading || !productData}>
-            {loading ? "Submitting..." : "Submit Request"}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#0F172A] ml-1">Quantity *</label>
+              <div className="flex items-center justify-between border border-zyp-border rounded-lg bg-white overflow-hidden h-12">
+                <button type="button" onClick={() => setFormData({...formData, quantity: Math.max(1, formData.quantity - 1)})} className="w-12 h-full flex items-center justify-center font-bold text-slate-400 hover:bg-slate-50">-</button>
+                <div className="font-extrabold text-[#0F172A]">{formData.quantity}</div>
+                <button type="button" onClick={() => setFormData({...formData, quantity: formData.quantity + 1})} className="w-12 h-full flex items-center justify-center font-bold text-slate-400 hover:bg-slate-50">+</button>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#0F172A] ml-1">Your Budget (₹) *</label>
+              <Input required type="number" placeholder="1000" className="bg-white" value={formData.budget} onChange={e => setFormData({...formData, budget: e.target.value})} />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-[#0F172A] ml-1">Required Date *</label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">📅</div>
+              <Input required type="date" className="pl-10 bg-white" value={formData.requiredDate} onChange={e => setFormData({...formData, requiredDate: e.target.value})} />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-[#0F172A] ml-1">Notes (Optional)</label>
+            <textarea placeholder="Any special request? (e.g. design, message on cake, etc.)" className="w-full rounded-xl border border-zyp-border bg-white px-4 py-3 text-sm text-[#0F172A] placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-zyp-primary/20 min-h-[100px]" value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} />
+          </div>
+
+          <Button type="submit" variant="primary" className="w-full h-14 rounded-xl text-lg font-bold shadow-lg shadow-zyp-primary/20 mt-8">
+            {loading ? "Submitting..." : (
+               <span className="flex items-center">Submit Request <span className="text-xl ml-2">✈️</span></span>
+            )}
           </Button>
         </form>
       </div>
     </div>
-  );
-}
-
-function Check(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
   );
 }

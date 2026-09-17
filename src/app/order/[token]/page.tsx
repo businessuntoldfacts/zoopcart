@@ -1,85 +1,131 @@
-import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Circle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { notFound } from "next/navigation";
+import { Package, CheckCircle2, Clock, MapPin, Phone, RefreshCw } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function OrderTrackingPage({ params }: { params: { token: string } }) {
   const { data: order } = await supabase
     .from('orders')
-    .select(`
-      *,
-      products ( name ),
-      businesses ( business_name )
-    `)
+    .select('*, businesses(*), products(*)')
     .eq('tracking_token', params.token)
     .single();
 
-  if (!order) {
-    notFound();
-  }
-
-  const statusMap: Record<string, number> = {
-    'new': 0,
-    'accepted': 1,
-    'in_progress': 2,
-    'completed': 3
-  };
+  if (!order) notFound();
   
-  const currentStatusIndex = statusMap[order.status] || 0;
-
-  const steps = [
-    { id: "new", label: "Request Submitted", done: currentStatusIndex >= 0 },
-    { id: "accepted", label: "Accepted", done: currentStatusIndex >= 1 },
-    { id: "in_progress", label: "In Progress", done: currentStatusIndex >= 2 },
-    { id: "completed", label: "Completed", done: currentStatusIndex >= 3 },
-  ];
+  const statusOrder = ['new', 'accepted', 'in_progress', 'completed'];
+  const currentIndex = statusOrder.indexOf(order.status);
 
   return (
-    <div className="min-h-screen bg-zyp-lightSurface text-zyp-bg py-12 px-4">
-      <div className="max-w-xl mx-auto space-y-6">
-        <div className="text-center mb-8">
-          <img src="/logo.jpg" alt="Zypcart" className="h-10 mx-auto mb-4" />
-          <h1 className="font-display text-3xl font-bold text-center">Order Tracking</h1>
+    <div className="min-h-screen bg-zyp-bg font-sans flex flex-col items-center">
+      <header className="bg-white w-full h-14 flex items-center justify-between px-4 sticky top-0 z-50 border-b border-zyp-border max-w-lg shadow-sm">
+        <Link href={`/${order.businesses.username}`} className="text-sm font-bold text-[#0F172A]">
+          ← Back to Store
+        </Link>
+        <div className="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full uppercase tracking-wider">
+          ORD-{order.tracking_token}
+        </div>
+      </header>
+
+      <main className="flex-1 w-full max-w-lg p-4 space-y-6 pt-6 pb-20">
+        
+        {/* Status Header */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-zyp-border text-center">
+          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-blue-100">
+            <Package className="w-8 h-8 text-blue-500" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-[#0F172A] mb-1">
+            {order.status === 'new' ? 'Request Submitted' : 
+             order.status === 'accepted' ? 'Order Accepted' : 
+             order.status === 'in_progress' ? 'Work in Progress' : 
+             'Order Completed!'}
+          </h1>
+          <p className="text-sm font-medium text-slate-500">
+            From <Link href={`/${order.businesses.username}`} className="font-bold text-zyp-primary hover:underline">{order.businesses.business_name}</Link>
+          </p>
+
+          <div className="mt-6 flex items-center justify-center gap-2 border-t border-slate-100 pt-6">
+            <div className="w-12 h-12 bg-slate-100 rounded-xl overflow-hidden shadow-sm shrink-0">
+               {order.products.image && <img src={order.products.image} className="w-full h-full object-cover" />}
+            </div>
+            <div className="text-left">
+              <div className="font-extrabold text-[#0F172A] text-sm">{order.products.name}</div>
+              <div className="text-xs font-bold text-zyp-primary mt-0.5">₹{order.products.price}</div>
+            </div>
+          </div>
         </div>
 
-        <Card className="bg-white border-black/5">
-          <CardHeader>
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-sm text-black/60">Token #{params.token.substring(0, 8)}</span>
-              <span className="text-sm text-black/60">{new Date(order.created_at).toLocaleDateString()}</span>
+        {/* Message from Seller (Mock) */}
+        {order.status === 'completed' && (
+          <div className="bg-green-50 p-4 rounded-2xl rounded-tl-none border border-green-200 relative ml-4 shadow-sm">
+            <div className="absolute -left-3 -top-3 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs border-2 border-white shadow-sm font-bold">
+              {order.businesses.business_name.charAt(0)}
             </div>
-            <CardTitle className="text-xl">{order.products?.name}</CardTitle>
-            <p className="text-sm text-black/60">from {order.businesses?.business_name}</p>
-          </CardHeader>
-          <CardContent className="space-y-8 pt-4">
-            
-            {/* Timeline */}
-            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-[15px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-black/10 before:to-transparent">
-              {steps.map((step, idx) => (
-                <div key={step.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-zyp-lightSurface text-black/20 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
-                    {step.done ? (
-                      <CheckCircle2 className="w-5 h-5 text-zyp-success" />
-                    ) : (
-                      <Circle className="w-4 h-4" />
-                    )}
-                  </div>
-                  <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl bg-black/5 border border-black/5 shadow-sm">
-                    <h3 className={`font-semibold ${step.done ? 'text-black' : 'text-black/40'}`}>{step.label}</h3>
-                  </div>
-                </div>
-              ))}
+            <p className="text-sm font-medium text-green-900 leading-relaxed ml-2">
+              "Hi {order.customer_name.split(' ')[0]}, your order is ready! Thank you for shopping with us. 🥰"
+            </p>
+          </div>
+        )}
+
+        {/* Timeline */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-zyp-border">
+          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Order Status Timeline</h2>
+          
+          <div className="relative pl-6 space-y-8">
+            {/* Connecting Line */}
+            <div className="absolute left-3 top-2 bottom-4 w-0.5 bg-slate-100">
+               <div className="w-full bg-zyp-primary transition-all duration-1000" style={{height: `${(currentIndex / 3) * 100}%`}}></div>
             </div>
 
-            {order.seller_message && (
-              <div className="bg-zyp-accent/10 p-4 rounded-xl border border-zyp-accent/20">
-                <p className="text-sm font-semibold mb-1 text-black">Message from seller:</p>
-                <p className="text-sm text-black/80">"{order.seller_message}"</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            {[
+              { id: 'new', title: 'Request Submitted', desc: 'Sent to seller for review', icon: CheckCircle2 },
+              { id: 'accepted', title: 'Order Accepted', desc: 'Seller has accepted your request', icon: CheckCircle2 },
+              { id: 'in_progress', title: 'Work In Progress', desc: 'Seller is working on your order', icon: RefreshCw },
+              { id: 'completed', title: 'Order Ready', desc: 'Your order is ready', icon: Package },
+            ].map((step, index) => {
+              const isCompleted = currentIndex > index;
+              const isCurrent = currentIndex === index;
+              const isPending = currentIndex < index;
+              const Icon = step.icon;
+
+              return (
+                <div key={step.id} className={`relative ${isPending ? 'opacity-40' : ''}`}>
+                  <div className={`absolute -left-10 w-8 h-8 rounded-full flex items-center justify-center border-4 border-white shadow-sm transition-colors ${
+                    isCompleted ? 'bg-zyp-primary text-white' : 
+                    isCurrent ? 'bg-blue-100 text-zyp-primary border-blue-50 ring-4 ring-blue-50' : 
+                    'bg-slate-200 text-slate-400'
+                  }`}>
+                    {isCurrent && !isCompleted && step.id === 'in_progress' ? (
+                       <RefreshCw className="w-3 h-3 animate-spin" />
+                    ) : (
+                       <Icon className="w-3.5 h-3.5" />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className={`font-extrabold text-sm ${isCurrent ? 'text-zyp-primary' : 'text-[#0F172A]'}`}>{step.title}</h3>
+                    <p className="text-xs font-medium text-slate-500 mt-0.5">{step.desc}</p>
+                    {isCurrent && (
+                      <div className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Updated {new Date(order.updated_at || order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Support Section */}
+        <div className="bg-slate-50 rounded-3xl p-5 border border-slate-200 text-center">
+          <p className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">Need Help?</p>
+          <a href={`https://wa.me/${order.businesses.whatsapp_country_code}${order.businesses.whatsapp_number}?text=Hi, regarding my order ORD-${order.tracking_token}`} target="_blank">
+            <Button variant="secondary" className="w-full h-12 bg-white rounded-xl shadow-sm border border-slate-200 font-bold text-[#0F172A] hover:bg-slate-100">
+              <Phone className="w-4 h-4 mr-2 text-slate-400" /> Contact Seller Support
+            </Button>
+          </a>
+        </div>
+      </main>
     </div>
   );
 }

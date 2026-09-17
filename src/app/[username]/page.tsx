@@ -1,111 +1,143 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
+import { MapPin, MessageCircle, Instagram, Share2, Search, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export default async function PublicStore({ params }: { params: { username: string } }) {
-  const { username } = params;
-
-  // Fetch business details
+export default async function PublicStorePage({ params }: { params: { username: string } }) {
   const { data: business } = await supabase
-    .from("BUSINESSES")
-    .select("*")
-    .eq("username", username)
+    .from('businesses')
+    .select('*, products(*)')
+    .eq('username', params.username.toLowerCase())
     .single();
 
   if (!business) {
     notFound();
   }
 
-  // Fetch products
-  const { data: products } = await supabase
-    .from("PRODUCTS")
-    .select("*")
-    .eq("business_id", business.id);
+  const products = business.products || [];
 
   return (
-    <div className="min-h-screen bg-zyp-lightSurface text-zyp-bg">
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        {/* Store Header */}
-        <div className="flex flex-col items-center text-center mb-16">
-          <div className="w-24 h-24 rounded-full bg-white/10 mb-4 overflow-hidden relative shadow-md">
-            {business.profile_image ? (
-              <img src={business.profile_image} alt={business.business_name} className="object-cover w-full h-full" />
-            ) : (
-              <div className="w-full h-full bg-zyp-surface/10 flex items-center justify-center text-2xl font-bold">
-                {business.business_name?.charAt(0)}
-              </div>
-            )}
-          </div>
-          
-          <h1 className="font-display text-4xl font-bold mb-2">{business.business_name}</h1>
-          <p className="text-zyp-bg/70 max-w-lg mb-6">{business.description || "Welcome to my store!"}</p>
-          
-          <div className="flex gap-4">
-            {business.instagram_handle && (
-              <a href={business.instagram_profile_url || `https://instagram.com/${business.instagram_handle}`} target="_blank" rel="noopener noreferrer">
-                <Button variant="secondary" className="border-zyp-bg/20 text-zyp-bg hover:bg-black/5">Instagram</Button>
-              </a>
-            )}
-            {business.whatsapp_number && (
-              <a href={`https://wa.me/${business.whatsapp_country_code?.replace('+', '')}${business.whatsapp_number}`} target="_blank" rel="noopener noreferrer">
-                <Button className="bg-[#25D366] text-white hover:bg-[#20b858]">WhatsApp</Button>
-              </a>
-            )}
-          </div>
+    <div className="min-h-screen bg-zyp-bg font-sans pb-20">
+      {/* Top Header */}
+      <header className="bg-white px-4 h-14 flex items-center justify-between sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-zyp-primary rounded flex items-center justify-center font-bold text-white text-sm tracking-tighter italic">e</div>
+          <span className="font-bold text-lg text-[#0F172A] tracking-tight">Zypcart</span>
         </div>
+        <div className="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full truncate max-w-[150px]">
+          zypcart.com/{business.username}
+        </div>
+      </header>
 
-        {/* Products Grid */}
-        <div>
-          <h2 className="font-display text-2xl font-bold mb-6">Products</h2>
-          
-          {!products || products.length === 0 ? (
-            <div className="text-center py-16 text-zyp-bg/50">
-              <PackageIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>This store hasn't added any products yet.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <Card key={product.id} className="bg-white border-black/5 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-                  <div className="aspect-square bg-black/5 relative">
-                    {product.image ? (
-                      <img src={product.image} alt={product.name} className="object-cover w-full h-full" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-black/20">No Image</div>
-                    )}
+      {/* Cover Image */}
+      <div className="w-full h-40 md:h-64 bg-slate-200 relative">
+        <img src="https://images.unsplash.com/photo-1557308536-ee471ef2c390?q=80&w=1000&auto=format&fit=crop" alt="Cover" className="w-full h-full object-cover" />
+      </div>
+
+      {/* Store Info Profile */}
+      <div className="max-w-4xl mx-auto px-4 md:px-8 relative -mt-12 md:-mt-16 z-10">
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-zyp-border">
+          <div className="flex flex-col md:flex-row gap-6 md:items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-md bg-white overflow-hidden shrink-0">
+                {business.profile_image ? (
+                  <img src={business.profile_image} alt={business.business_name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-blue-50 flex items-center justify-center text-blue-200 text-3xl font-bold">
+                    {business.business_name?.charAt(0)}
                   </div>
-                  <CardContent className="p-4 flex flex-col flex-1">
-                    <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-                    <p className="text-sm text-black/60 line-clamp-2 mb-4">{product.short_description}</p>
-                    <div className="mt-auto flex items-center justify-between">
-                      <span className="font-display font-bold">
-                        {product.currency_symbol || '₹'}{product.price}
-                      </span>
-                      <Link href={`/${username}/${product.slug}`}>
-                        <Button size="sm">View</Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                )}
+              </div>
+              
+              <div className="mt-2 md:mt-0">
+                <h1 className="text-2xl md:text-3xl font-extrabold text-[#0F172A] flex items-center gap-2">
+                  {business.business_name}
+                  <CheckCircle2 className="w-5 h-5 text-zyp-success fill-zyp-success/20" />
+                </h1>
+                <p className="text-sm text-zyp-textMuted mt-1 mb-3 max-w-md">{business.description || "Welcome to our store!"}</p>
+                
+                <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-slate-500">
+                  <span className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md"><MapPin className="w-3.5 h-3.5" /> Lucknow</span>
+                  {business.instagram_handle && (
+                     <a href={`https://instagram.com/${business.instagram_handle.replace('@','')}`} target="_blank" className="flex items-center gap-1 text-pink-600 bg-pink-50 px-2 py-1 rounded-md hover:bg-pink-100">
+                       <Instagram className="w-3.5 h-3.5" /> {business.instagram_handle}
+                     </a>
+                  )}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-      </main>
-    </div>
-  );
-}
+            
+            <div className="flex gap-3 w-full md:w-auto mt-2 md:mt-0">
+               <a href={`https://wa.me/${business.whatsapp_country_code}${business.whatsapp_number}`} target="_blank" className="flex-1">
+                 <Button className="w-full bg-green-500 hover:bg-green-600 text-white rounded-xl shadow-md font-bold h-12">
+                   <MessageCircle className="w-4 h-4 mr-2" /> Chat on WhatsApp
+                 </Button>
+               </a>
+               <Button variant="secondary" className="rounded-xl h-12 w-12 p-0 shrink-0">
+                 <Share2 className="w-4 h-4" />
+               </Button>
+            </div>
+          </div>
 
-function PackageIcon(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m7.5 4.27 9 5.15" />
-      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-      <path d="m3.3 7 8.7 5 8.7-5" />
-      <path d="M12 22V12" />
-    </svg>
+          {/* Tabs */}
+          <div className="flex gap-8 mt-8 border-b border-zyp-border">
+            <button className="pb-3 border-b-2 border-zyp-primary text-sm font-extrabold text-zyp-primary">Products</button>
+            <button className="pb-3 border-b-2 border-transparent text-sm font-bold text-slate-400 hover:text-slate-600">About</button>
+            <button className="pb-3 border-b-2 border-transparent text-sm font-bold text-slate-400 hover:text-slate-600">Reviews</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Products Grid */}
+      <div className="max-w-4xl mx-auto px-4 md:px-8 mt-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-extrabold text-[#0F172A]">Our Products</h2>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input type="text" placeholder="Search..." className="pl-9 pr-4 py-2 rounded-full border border-zyp-border bg-white text-sm outline-none w-32 focus:w-48 transition-all" />
+          </div>
+        </div>
+
+        {products.length === 0 ? (
+          <div className="bg-white rounded-3xl p-12 text-center border border-zyp-border shadow-sm">
+            <h3 className="font-extrabold text-lg text-slate-800">No products available</h3>
+            <p className="text-sm text-slate-500 mt-1">This seller hasn't added any products yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            {products.map((product) => (
+              <div key={product.id} className="bg-white rounded-2xl overflow-hidden border border-zyp-border shadow-sm hover:shadow-md transition-shadow group flex flex-col">
+                <div className="aspect-square bg-slate-100 relative overflow-hidden">
+                  {product.image ? (
+                     <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                     <div className="w-full h-full flex items-center justify-center text-slate-300">No Image</div>
+                  )}
+                </div>
+                <div className="p-4 flex flex-col flex-1">
+                  <h3 className="font-extrabold text-[#0F172A] text-sm md:text-base line-clamp-1">{product.name}</h3>
+                  <p className="text-[11px] md:text-xs text-slate-500 mt-1 mb-3 line-clamp-2 leading-relaxed flex-1">{product.short_description}</p>
+                  
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="font-extrabold text-zyp-primary text-sm md:text-base">₹{product.price}</span>
+                    <span className="text-[10px] md:text-xs font-bold text-slate-400 line-through">₹{Math.round(product.price * 1.3)}</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 mt-auto">
+                    <Link href={`/${business.username}/${product.slug}`} className="block">
+                      <Button variant="secondary" className="w-full h-9 text-xs font-bold bg-blue-50 text-blue-600 border-none hover:bg-blue-100 rounded-lg">View</Button>
+                    </Link>
+                    <Link href={`/${business.username}/${product.slug}/request`} className="block">
+                      <Button variant="primary" className="w-full h-9 text-xs font-bold rounded-lg shadow-sm">Request</Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
