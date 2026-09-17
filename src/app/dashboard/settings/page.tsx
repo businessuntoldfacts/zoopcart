@@ -20,9 +20,7 @@ export default function SettingsHubPage() {
       title: "MANAGE",
       items: [
         { icon: BarChart2, label: "Analytics", description: "Views, funnel and conversion", href: "/dashboard/analytics" },
-        { icon: Ticket, label: "Coupons", description: "Create and manage discounts", href: "#" },
-        { icon: Zap, label: "Credits & Billing", description: "Balance, top-ups and plans", href: "#" }
-      ]
+        ]
     },
     {
       title: "STORE",
@@ -30,10 +28,7 @@ export default function SettingsHubPage() {
         { icon: Store, label: "Store Settings", description: "Name, description and shipping", href: "/dashboard/settings/store" },
         { icon: Palette, label: "Website Theme", description: "Choose theme and brand colour", href: "#" },
         { icon: Wallet, label: "Payment Details", description: "UPI or Razorpay checkout", href: "/dashboard/settings/payment" },
-        { icon: MessageCircle, label: "WhatsApp Updates", description: "Order updates sent to customers", badge: "Growth", href: "#" },
-        { icon: Globe, label: "Custom Domain", description: "Use your own domain", badge: "Growth", href: "#" },
-        { icon: Zap, label: "Subscription", description: "Your plan and credit top-ups", href: "#" }
-      ]
+        ]
     },
     {
       title: "ACCOUNT",
@@ -127,4 +122,5 @@ export default function SettingsHubPage() {
     </div>
   );
 }
+
 

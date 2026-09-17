@@ -35,7 +35,15 @@ export default async function StorefrontPage({ params }: { params: { username: s
     date: order.created_at
   }));
 
-  const theme = business.instagram_profile_url || 'light';
+  let themeStr = 'light';
+  try {
+    if (business.instagram_profile_url && business.instagram_profile_url.startsWith('{')) {
+      themeStr = JSON.parse(business.instagram_profile_url).theme || 'light';
+    } else if (business.instagram_profile_url) {
+      themeStr = business.instagram_profile_url;
+    }
+  } catch(e) {}
+  const theme = themeStr;
 
   // Theme styling definitions
   const themes = {

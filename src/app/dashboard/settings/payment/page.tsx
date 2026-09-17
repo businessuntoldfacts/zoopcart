@@ -10,31 +10,109 @@ import { supabase } from "@/lib/supabase";
 export default function PaymentSettingsPage() {
   const [method, setMethod] = useState("upi");
   const [upiData, setUpiData] = useState({
-    id: "9305293501@ybl",
-    name: "Faisal",
+    id: "",
+    name: "",
     qr: ""
   });
+  const [businessId, setBusinessId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
-  const [businessName, setBusinessName] = useState("");
+  const [uploadingQr, setUploadingQr] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchName() {
+    async function fetchData() {
+       setLoading(true);
        const { data: { user } } = await supabase.auth.getUser();
        if (user) {
-         const { data } = await supabase.from('businesses').select('business_name').eq('user_id', user.id).single();
-         if (data?.business_name) setBusinessName(data.business_name);
+         const { data } = await supabase.from('businesses').select('*').eq('user_id', user.id).single();
+         if (data) {
+           setBusinessId(data.id);
+           
+           let extraSettings: any = {};
+           try {
+             if (data.instagram_profile_url && data.instagram_profile_url.startsWith('{')) {
+               extraSettings = JSON.parse(data.instagram_profile_url);
+             }
+           } catch (e) {}
+           
+           setMethod(extraSettings.paymentMethod || "upi");
+           setUpiData({
+             id: extraSettings.upiId || "",
+             name: extraSettings.upiName || data.business_name || "",
+             qr: extraSettings.upiQr || ""
+           });
+         }
        }
+       setLoading(false);
     }
-    fetchName();
+    fetchData();
   }, []);
 
-  const handleSave = () => {
-    setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
-      alert("Payment details saved successfully!");
-    }, 500);
+  const handleQrUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setUploadingQr(true);
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 500; 
+        let scaleSize = 1;
+        if (img.width > MAX_WIDTH) {
+          scaleSize = MAX_WIDTH / img.width;
+        }
+        canvas.width = img.width * scaleSize;
+        canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); 
+        setUpiData({...upiData, qr: compressedBase64});
+        setUploadingQr(false);
+      };
+      if (event.target?.result) {
+        img.src = event.target.result as string;
+      }
+    };
+    reader.readAsDataURL(file);
   };
+
+  const handleSave = async () => {
+    if (!businessId) return;
+    setSaving(true);
+    
+    const { data: currentData } = await supabase.from('businesses').select('instagram_profile_url').eq('id', businessId).single();
+    let extraSettings: any = {};
+    try {
+      if (currentData?.instagram_profile_url && currentData.instagram_profile_url.startsWith('{')) {
+        extraSettings = JSON.parse(currentData.instagram_profile_url);
+      } else if (currentData?.instagram_profile_url) {
+        extraSettings = { theme: currentData.instagram_profile_url };
+      }
+    } catch (e) {}
+
+    const newExtraSettings = {
+      ...extraSettings,
+      paymentMethod: method,
+      upiId: upiData.id,
+      upiName: upiData.name,
+      upiQr: upiData.qr
+    };
+    
+    const { error } = await supabase.from('businesses').update({
+      instagram_profile_url: JSON.stringify(newExtraSettings)
+    }).eq('id', businessId);
+    
+    if (error) {
+      alert("Error saving: " + error.message);
+    } else {
+      alert("Payment details saved successfully!");
+    }
+    setSaving(false);
+  };
+
+  if (loading) return <div className="p-4 text-slate-500 font-medium">Loading settings...</div>;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-12 pt-4">
@@ -74,7 +152,7 @@ export default function PaymentSettingsPage() {
           
           <div className="flex items-center gap-2 text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span className="font-medium">Live now: <strong>UPI</strong></span>
+            <span className="font-medium">Live now: <strong className="uppercase">{method}</strong></span>
           </div>
           
           <p className="text-sm text-slate-600 font-medium leading-relaxed">
@@ -85,11 +163,23 @@ export default function PaymentSettingsPage() {
         <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1 mt-8">UPI</h3>
         
         <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm space-y-6">
-          <div className="border border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-colors">
-            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center mb-2">
-              <QrCode className="w-6 h-6 text-slate-600" />
-            </div>
-            <span className="text-sm font-bold text-slate-900">Upload your UPI QR</span>
+          <div className="relative border border-dashed border-slate-300 rounded-xl overflow-hidden flex flex-col items-center justify-center hover:bg-slate-50 transition-colors">
+            {upiData.qr ? (
+              <img src={upiData.qr} alt="UPI QR" className="w-full max-w-[200px] object-contain p-4" />
+            ) : (
+              <div className="p-8 flex flex-col items-center">
+                <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center mb-2">
+                  <QrCode className="w-6 h-6 text-slate-600" />
+                </div>
+                <span className="text-sm font-bold text-slate-900">Upload your UPI QR</span>
+              </div>
+            )}
+            <Input type="file" accept="image/*" onChange={handleQrUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+            {uploadingQr && (
+              <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-20">
+                <span className="text-sm font-bold text-pink-500 animate-pulse">Uploading...</span>
+              </div>
+            )}
           </div>
           <p className="text-xs text-slate-500">
             Screenshot the QR from your bank or payment app and we'll fill in the details below.
@@ -97,12 +187,12 @@ export default function PaymentSettingsPage() {
           
           <div>
             <label className="text-sm font-bold text-slate-900 mb-1.5 block">UPI ID <span className="text-pink-500">*</span></label>
-            <Input value={upiData.id} onChange={e => setUpiData({...upiData, id: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
+            <Input value={upiData.id} onChange={(e: any) => setUpiData({...upiData, id: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
           </div>
           
           <div>
             <label className="text-sm font-bold text-slate-900 mb-1.5 block">Payee name <span className="text-pink-500">*</span></label>
-            <Input value={businessName || upiData.name} onChange={e => setUpiData({...upiData, name: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
+            <Input value={upiData.name} onChange={(e: any) => setUpiData({...upiData, name: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
             <p className="text-xs text-slate-500 mt-2">Shown in the customer's UPI app. Match your bank account name.</p>
           </div>
           

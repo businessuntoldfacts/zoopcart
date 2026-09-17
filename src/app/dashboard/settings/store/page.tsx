@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import { ArrowLeft, UploadCloud } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
@@ -18,8 +17,7 @@ export default function StoreSettingsPage() {
     instagram_handle: "",
     city: "",
     description: "",
-    // Fake states for UI matching
-    email: "mofaisalmalik885522@gmail.com",
+    email: "",
     orderPrefix: "FAI",
     freeShipping: false,
     shippingCharge: "500",
@@ -39,6 +37,13 @@ export default function StoreSettingsPage() {
       
       const { data } = await supabase.from('businesses').select('*').eq('user_id', user.id).single();
       if (data) {
+        let extraSettings = {};
+        try {
+          if (data.instagram_profile_url && data.instagram_profile_url.startsWith('{')) {
+            extraSettings = JSON.parse(data.instagram_profile_url);
+          }
+        } catch (e) {}
+
         setBusiness({
           ...business,
           id: data.id,
@@ -47,7 +52,8 @@ export default function StoreSettingsPage() {
           username: data.username || "",
           instagram_handle: data.instagram_handle || "",
           city: data.city || "",
-          description: data.description || ""
+          description: data.description || "",
+          ...extraSettings
         });
       }
       setLoading(false);
@@ -89,12 +95,35 @@ export default function StoreSettingsPage() {
     if (!business.id) return;
     setSaving(true);
     
+    // Merge existing JSON to not overwrite payment details etc.
+    const { data: currentData } = await supabase.from('businesses').select('instagram_profile_url').eq('id', business.id).single();
+    let extraSettings = {};
+    try {
+      if (currentData?.instagram_profile_url && currentData.instagram_profile_url.startsWith('{')) {
+        extraSettings = JSON.parse(currentData.instagram_profile_url);
+      } else if (currentData?.instagram_profile_url) {
+        extraSettings = { theme: currentData.instagram_profile_url };
+      }
+    } catch (e) {}
+
+    const newExtraSettings = {
+      ...extraSettings,
+      email: business.email,
+      orderPrefix: business.orderPrefix,
+      freeShipping: business.freeShipping,
+      shippingCharge: business.shippingCharge,
+      freeAbove: business.freeAbove,
+      oneCityOnly: business.oneCityOnly,
+      dispatchDays: business.dispatchDays
+    };
+    
     const { error } = await supabase.from('businesses').update({
       business_name: business.business_name,
       instagram_handle: business.instagram_handle,
       city: business.city,
       description: business.description,
-      profile_image: business.profile_image
+      profile_image: business.profile_image,
+      instagram_profile_url: JSON.stringify(newExtraSettings)
     }).eq('id', business.id);
     
     if (error) {
@@ -135,7 +164,7 @@ export default function StoreSettingsPage() {
                   <img src={business.profile_image} alt="Logo" className="w-full h-full object-cover absolute inset-0" />
                 ) : (
                   <div className="w-full h-full bg-blue-50 text-blue-500 flex items-center justify-center text-sm font-bold">
-                    {business.business_name.charAt(0).toUpperCase() || "S"}
+                    {business.business_name?.charAt(0).toUpperCase() || "S"}
                   </div>
                 )}
                 <Input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
@@ -156,23 +185,23 @@ export default function StoreSettingsPage() {
             <div className="space-y-5">
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Store name <span className="text-pink-500">*</span></label>
-                <Input value={business.business_name} onChange={e => setBusiness({...business, business_name: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
+                <Input value={business.business_name} onChange={(e: any) => setBusiness({...business, business_name: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Instagram username</label>
-                <Input value={business.instagram_handle} onChange={e => setBusiness({...business, instagram_handle: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" placeholder="@ " />
+                <Input value={business.instagram_handle} onChange={(e: any) => setBusiness({...business, instagram_handle: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" placeholder="@ " />
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Email</label>
-                <Input value={business.email} onChange={e => setBusiness({...business, email: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
+                <Input value={business.email} onChange={(e: any) => setBusiness({...business, email: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Location</label>
-                <Input value={business.city} onChange={e => setBusiness({...business, city: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
+                <Input value={business.city} onChange={(e: any) => setBusiness({...business, city: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Description</label>
-                <textarea value={business.description} onChange={e => setBusiness({...business, description: e.target.value})} className="w-full bg-slate-50 border border-slate-200 p-3 h-24 rounded-xl text-slate-900 resize-none text-sm outline-none focus:border-pink-500" placeholder="Shown on your storefront. What you make, and for whom." />
+                <textarea value={business.description} onChange={(e: any) => setBusiness({...business, description: e.target.value})} className="w-full bg-slate-50 border border-slate-200 p-3 h-24 rounded-xl text-slate-900 resize-none text-sm outline-none focus:border-pink-500" placeholder="Shown on your storefront. What you make, and for whom." />
                 <p className="text-xs text-slate-500 mt-2">Shown on your storefront. What you make, and for whom.</p>
               </div>
               <div className="pt-2">
@@ -187,7 +216,7 @@ export default function StoreSettingsPage() {
           <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Orders</h3>
           <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm">
             <label className="text-sm font-bold text-slate-900 mb-1.5 block">Order prefix</label>
-            <Input value={business.orderPrefix} onChange={e => setBusiness({...business, orderPrefix: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
+            <Input value={business.orderPrefix} onChange={(e: any) => setBusiness({...business, orderPrefix: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
             <p className="text-xs text-slate-500 mt-2">Order numbers will look like {business.orderPrefix}-1001.</p>
           </div>
         </div>
@@ -211,7 +240,7 @@ export default function StoreSettingsPage() {
               <label className="text-sm font-bold text-slate-900 mb-1.5 block">Charge</label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
-                <Input type="number" value={business.shippingCharge} onChange={e => setBusiness({...business, shippingCharge: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl pl-8 text-slate-900" />
+                <Input type="number" value={business.shippingCharge} onChange={(e: any) => setBusiness({...business, shippingCharge: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl pl-8 text-slate-900" />
               </div>
             </div>
 
@@ -219,7 +248,7 @@ export default function StoreSettingsPage() {
               <label className="text-sm font-bold text-slate-900 mb-1.5 block">Free above</label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
-                <Input type="number" value={business.freeAbove} onChange={e => setBusiness({...business, freeAbove: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl pl-8 text-slate-900" />
+                <Input type="number" value={business.freeAbove} onChange={(e: any) => setBusiness({...business, freeAbove: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl pl-8 text-slate-900" />
               </div>
               <p className="text-xs text-slate-500 mt-2">Order value that earns free shipping. 0 for never.</p>
             </div>
@@ -236,7 +265,7 @@ export default function StoreSettingsPage() {
 
             <div>
               <label className="text-sm font-bold text-slate-900 mb-1.5 block">Dispatch</label>
-              <Input type="number" value={business.dispatchDays} onChange={e => setBusiness({...business, dispatchDays: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
+              <Input type="number" value={business.dispatchDays} onChange={(e: any) => setBusiness({...business, dispatchDays: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
               <p className="text-xs text-slate-500 mt-2">How many days it usually takes to dispatch an order.</p>
             </div>
 
@@ -247,4 +276,3 @@ export default function StoreSettingsPage() {
     </div>
   );
 }
-
