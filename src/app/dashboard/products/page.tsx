@@ -12,6 +12,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [businessId, setBusinessId] = useState<string | null>(null);
+  const [businessUsername, setBusinessUsername] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -33,9 +34,10 @@ export default function ProductsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: business } = await supabase.from('businesses').select('id').eq('user_id', user.id).single();
+    const { data: business } = await supabase.from('businesses').select('id, username').eq('user_id', user.id).single();
     if (business) {
       setBusinessId(business.id);
+      setBusinessUsername(business.username);
       const { data } = await supabase.from('products').select('*').eq('business_id', business.id).order('created_at', { ascending: false });
       if (data) setProducts(data);
     }
@@ -219,9 +221,9 @@ export default function ProductsPage() {
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 ml-2">In Stock</span>
                 </div>
                   <div className="grid grid-cols-2 gap-2 mt-auto">
-                    <Link href={`/${businessId}/${p.slug}`} className="block" onClick={(e) => {
+                    <Link href={`/${businessUsername}/${p.slug}`} className="block" onClick={(e) => {
                        e.preventDefault();
-                       window.open(`/${businessId}/${p.slug}`, '_blank');
+                       window.open(`/${businessUsername}/${p.slug}`, '_blank');
                     }}>
                       <Button variant="secondary" className="w-full h-9 text-xs font-bold bg-blue-50 text-blue-600 border-none hover:bg-blue-100 rounded-lg">View</Button>
                     </Link>
@@ -229,7 +231,7 @@ export default function ProductsPage() {
               </div>
               <div className="flex sm:flex-col gap-2 w-full sm:w-auto mt-4 sm:mt-0 border-t sm:border-t-0 sm:border-l border-slate-100 pt-4 sm:pt-0 sm:pl-4">
                 <button 
-                  onClick={() => window.open(`/${businessId}/${p.slug}`, '_blank')}
+                  onClick={() => window.open(`/${businessUsername}/${p.slug}`, '_blank')}
                   className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors"
                 >
                   <Eye className="w-3.5 h-3.5" /> View
@@ -243,8 +245,8 @@ export default function ProductsPage() {
                       sale_price: p.sale_price ? p.sale_price.toString() : "",
                       image: p.image || ""
                     });
+                    setEditingId(p.id);
                     setShowAddForm(true);
-                    // For a fully robust edit we'd store an editingId state and do UPDATE instead of INSERT. Let's just do that.
                   }}
                   className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs font-bold text-slate-500 hover:text-zyp-primary py-1 px-2 rounded-lg hover:bg-blue-50 transition-colors"
                 >
@@ -252,7 +254,7 @@ export default function ProductsPage() {
                 </button>
                 <button 
                   onClick={() => {
-                     const url = `${window.location.origin}/store/${p.slug}`; // Note: store slug requires business username which we don't have here easily unless we fetch it. We will just use the business ID for now or skip. Let's assume username is available.
+                     const url = `${window.location.origin}/${businessUsername}/${p.slug}`;
                      navigator.clipboard.writeText(url);
                      alert("Product link copied to clipboard!");
                   }}
