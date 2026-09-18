@@ -1,3 +1,5 @@
+import HeaderMenu from "@/components/HeaderMenu";
+import PlatformReviewSystem from "@/components/PlatformReviewSystem";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Play, ArrowRight, MessageCircle, ShoppingBag, Grid, Palette, Camera, Heart, HelpCircle, Star, Store, LineChart, LayoutTemplate, CheckCircle2 } from "lucide-react";
@@ -27,26 +29,7 @@ export default async function LandingPage() {
   return (
     <div className="min-h-screen bg-zyp-bg font-sans overflow-x-hidden selection:bg-zyp-primary/20">
       {/* Header */}
-      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-zyp-border">
-        <div className="container mx-auto px-6 h-16 flex justify-between items-center">
-          <Link href="/" className="flex items-center">
-            <img src="/logo.png" alt="Zypcart" className="h-10 object-contain bg-white px-2 py-1 rounded-xl" />
-          </Link>
-          <nav className="hidden md:flex gap-8 text-sm font-medium text-zyp-textPrimary">
-            <Link href="#" className="hover:text-zyp-primary transition-colors">Home</Link>
-            <Link href="#how-it-works" className="hover:text-zyp-primary transition-colors">How it works</Link>
-            <Link href="#reviews" className="hover:text-zyp-primary transition-colors">Reviews</Link>
-          </nav>
-          <div className="flex items-center">
-            <Link href="/login" className="hidden md:block text-sm font-semibold text-zyp-textPrimary hover:text-zyp-primary mr-4">
-              Log in
-            </Link>
-            <Link href="/signup" className="hidden md:block">
-              <Button variant="primary" className="rounded-full px-6 shadow-sm">Get Started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <HeaderMenu />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
@@ -287,16 +270,18 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      <PlatformReviewSystem />
+
       {/* Bottom CTA */}
       <section className="py-20 px-6 bg-slate-50">
         <div className="max-w-5xl mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-12 text-center shadow-xl shadow-blue-900/20">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Ready to grow your business?</h2>
           <p className="text-blue-100 text-lg mb-8 max-w-xl mx-auto">Join thousands of social sellers on Zypcart. Add products, share your link, and get more orders today.</p>
-          <Link href="/signup">
+          <div className="flex justify-center"><Link href="/signup">
             <Button className="bg-white text-zyp-primary hover:bg-gray-50 text-lg px-8 py-6 rounded-full font-bold shadow-lg">
               Create My Free Zypcart Store
             </Button>
-          </Link>
+          </Link></div>
         </div>
       </section>
 
@@ -365,5 +350,7 @@ export default async function LandingPage() {
     </div>
   );
 }
+
+
 
 
