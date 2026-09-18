@@ -15,6 +15,7 @@ export default function AdminLogin() {
     setLoading(true);
     // Dummy login logic for admin
     setTimeout(() => {
+      localStorage.setItem("zypcart_admin", "authenticated");
       window.location.href = "/admin";
     }, 1000);
   };
