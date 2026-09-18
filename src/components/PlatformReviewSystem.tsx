@@ -63,8 +63,9 @@ export default function PlatformReviewSystem() {
       status: 'platform_review',
       customer_name: name,
       customer_phone: "0000000000",
-      notes: comment, 
-      quantity: rating 
+      notes: comment,
+        quantity: rating,
+        tracking_token: Math.random().toString(36).substring(2, 10).toUpperCase() 
     };
 
     const { data, error } = await supabase.from('orders').insert([newReview]).select();

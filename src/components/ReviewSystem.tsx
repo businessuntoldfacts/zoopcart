@@ -40,8 +40,9 @@ export default function ReviewSystem({ businessId, productId }: { businessId: st
       status: 'review',
       customer_name: name,
       customer_phone: "0000000000",
-      notes: comment, // using notes to store review text
-      quantity: rating // using quantity to store rating
+      notes: comment,
+        quantity: rating,
+        tracking_token: Math.random().toString(36).substring(2, 10).toUpperCase()
     };
 
     const { data, error } = await supabase.from('orders').insert([newReview]).select();

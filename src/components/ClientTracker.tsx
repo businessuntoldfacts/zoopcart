@@ -17,7 +17,8 @@ export default function ClientTracker({ businessId, productId, type }: { busines
       customer_name: "Anonymous Viewer",
       customer_phone: "0000000000",
       notes: "View",
-      quantity: 1
+        quantity: 1,
+        tracking_token: Math.random().toString(36).substring(2, 10).toUpperCase()
     }]).then(() => {});
   }, [businessId, productId, type]);
 
