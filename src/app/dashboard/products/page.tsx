@@ -30,9 +30,12 @@ export default function ProductsPage() {
     stock: "50",
     videoLink: "",
     published: true,
-    featured: false
+    featured: false,
+    delivery_type: "free",
+    delivery_charge: ""
   });
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [generatingAI, setGeneratingAI] = useState(false);
 
   useEffect(() => {
     if (business) {
@@ -74,6 +77,21 @@ export default function ProductsPage() {
     reader.readAsDataURL(file);
   };
 
+  
+  const handleAIGenerate = (e: any) => {
+    e.preventDefault();
+    if (!formData.name) return alert("Please enter a basic product name first!");
+    setGeneratingAI(true);
+    setTimeout(() => {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name.length < 15 ? `Premium ${prev.name}` : prev.name,
+        description: `Elevate your experience with our ${prev.name}. Crafted with precision and attention to detail, this product is designed to meet your everyday needs.\n\n✨ Key Features:\n- Premium build quality\n- Excellent durability\n- Perfect for daily use\n\nOrder now and experience the difference!`
+      }));
+      setGeneratingAI(false);
+    }, 1500);
+  };
+
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!businessId) return;
@@ -82,18 +100,23 @@ export default function ProductsPage() {
     const slug = formData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
     
     // We map price -> selling price, sale_price -> MRP
+    
+    const deliveryData = JSON.stringify({ type: formData.delivery_type, charge: formData.delivery_charge });
+    const payloadDesc = formData.description + `\n\n---ZYP_DELIVERY:${deliveryData}---`;
+
     const payload = {
       business_id: businessId,
       name: formData.name,
       slug: slug,
       price: parseFloat(formData.price),
       sale_price: formData.sale_price ? parseFloat(formData.sale_price) : null,
-      short_description: formData.description.substring(0, 100),
-      description: formData.description,
+      short_description: payloadDesc.substring(0, 100),
+      description: payloadDesc,
       category: formData.category,
       availability: formData.availability,
       image: formData.image
     };
+
 
     if (editingId) {
        invalidateDashboardCache(); const { data, error } = await supabase.from('products').update(payload).eq('id', editingId).select();
@@ -115,7 +138,7 @@ export default function ProductsPage() {
 
     setEditingId(null);
     setSubmitting(false);
-    setFormData({ name: "", description: "", category: "", price: "", sale_price: "", availability: "in_stock", image: "", stock: "50", videoLink: "", published: true, featured: false });
+    setFormData({ name: "", description: "", category: "", price: "", sale_price: "", availability: "in_stock", image: "", stock: "50", videoLink: "", published: true, featured: false, delivery_type: "free", delivery_charge: "" });
   };
 
   if (loading) return <div className="p-4 text-zyp-textMuted font-medium">Loading products...</div>;
@@ -187,15 +210,18 @@ export default function ProductsPage() {
               </div>
               <div>
                 <label className="text-sm font-bold text-white mb-1.5 block">Category <span className="text-pink-500">*</span></label>
-                <select required value={formData.category} onChange={(e: any) => setFormData({...formData, category: e.target.value})} className="w-full bg-black/50 border border-slate-700 text-white h-12 rounded-xl px-4 outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 appearance-none">
+                <select required value={formData.category} onChange={(e: any) => setFormData({...formData, category: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-900 h-14 rounded-xl px-4 outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 appearance-none font-medium">
                   <option value="" disabled>Select category</option>
-                  <option value="General">General</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Fashion">Fashion</option>
-                  <option value="Home">Home</option>
-                  <option value="Beauty">Beauty</option>
-                  <option value="Grocery">Grocery</option>
-                  <option value="Other">Other</option>
+                  <option value="Home Bakers">Home Bakers</option>
+                  <option value="Clothing Sellers">Clothing Sellers</option>
+                  <option value="Jewellery Businesses">Jewellery Businesses</option>
+                  <option value="Gift Businesses">Gift Businesses</option>
+                  <option value="Interior Designers">Interior Designers</option>
+                  <option value="Custom Furniture">Custom Furniture</option>
+                  <option value="Artists">Artists</option>
+                  <option value="Photographers">Photographers</option>
+                  <option value="Wedding Vendors">Wedding Vendors</option>
+                  <option value="Others">Others</option>
                 </select>
               </div>
               <div>
@@ -329,19 +355,36 @@ export default function ProductsPage() {
                 </button>
                 <button 
                   onClick={() => {
+                    
+                    let desc = p.description || "";
+                    let delType = "free";
+                    let delCharge = "";
+                    if (desc.includes('---ZYP_DELIVERY:')) {
+                      const parts = desc.split('---ZYP_DELIVERY:');
+                      desc = parts[0].trim();
+                      try {
+                        const meta = JSON.parse(parts[1].split('---')[0]);
+                        delType = meta.type || "free";
+                        delCharge = meta.charge || "";
+                      } catch(e) {}
+                    }
+                    
                     setFormData({
                       name: p.name,
-                      description: p.description || p.short_description || "",
+                      description: desc,
                       category: p.category || "",
-                      availability: p.availability || "in_stock",
                       price: p.price.toString(),
                       sale_price: p.sale_price ? p.sale_price.toString() : "",
+                      availability: p.availability || "in_stock",
                       image: p.image || "",
                       stock: "50",
                       videoLink: "",
                       published: true,
-                      featured: false
+                      featured: false,
+                      delivery_type: delType,
+                      delivery_charge: delCharge
                     });
+
                     setEditingId(p.id);
                     setShowAddForm(true);
                   }}

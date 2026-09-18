@@ -19,8 +19,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
     phone: "",
     email: "",
     quantity: 1,
-    budget: "",
-    requiredDate: "",
+        requiredDate: "",
     delivery_location: ""
   });
 
@@ -37,6 +36,22 @@ export default function RequestForm({ params }: { params: { username: string, pr
     fetchData();
   }, [params.username, params.productSlug, router]);
 
+  
+  let deliveryType = "free";
+  let deliveryCharge = 0;
+  let cleanDescription = product?.description || "";
+  if (cleanDescription.includes('---ZYP_DELIVERY:')) {
+    const parts = cleanDescription.split('---ZYP_DELIVERY:');
+    try {
+      const meta = JSON.parse(parts[1].split('---')[0]);
+      deliveryType = meta.type || "free";
+      deliveryCharge = meta.charge ? parseFloat(meta.charge) : 0;
+    } catch(e) {}
+  }
+  
+  const productTotal = (product?.price || 0) * formData.quantity;
+  const finalPrice = productTotal + (deliveryType === 'paid' ? deliveryCharge : 0);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!product || !business) return;
@@ -51,9 +66,9 @@ export default function RequestForm({ params }: { params: { username: string, pr
       customer_phone: formData.phone,
       customer_email: formData.email,
       quantity: formData.quantity,
-      budget: formData.budget ? parseFloat(formData.budget) : null,
+      budget: finalPrice,
       required_date: formData.requiredDate || null,
-      notes: "Total Amount: ₹" + ((product.price || 0) * formData.quantity),
+      notes: `Total: ₹${finalPrice} (Product: ₹${productTotal} + Delivery: ₹${deliveryType === "paid" ? deliveryCharge : 0})`,
       delivery_location: formData.delivery_location,
       tracking_token: token,
       status: 'new'
@@ -204,6 +219,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
             </div>
           </div>
 
+          
           <h3 className="font-extrabold text-slate-900 mb-4 mt-8 text-sm tracking-wider uppercase">Request Details</h3>
           
           <div className="space-y-4">
@@ -214,14 +230,6 @@ export default function RequestForm({ params }: { params: { username: string, pr
                   {[1, 2, 3, 4, 5, 10, 20, 50].map(num => <option key={num} value={num}>{num}</option>)}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Your Budget (₹) <span className="text-pink-500">*</span></label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-extrabold text-slate-400">₹</span>
-                <input required type="number" value={formData.budget} onChange={(e) => setFormData({...formData, budget: e.target.value})} placeholder="Enter your budget" className="w-full h-14 pl-10 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 text-sm font-medium transition-all" />
               </div>
             </div>
 
@@ -239,6 +247,23 @@ export default function RequestForm({ params }: { params: { username: string, pr
                 <MapPin className="absolute left-4 top-4 w-4 h-4 text-slate-400" />
                 <textarea required value={formData.delivery_location} onChange={(e) => setFormData({...formData, delivery_location: e.target.value})} placeholder="Enter full address" className="w-full h-24 pt-4 pb-4 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 text-sm font-medium transition-all resize-none"></textarea>
               </div>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mt-6 mb-24">
+
+            <h4 className="font-extrabold text-slate-900 text-sm mb-3">Order Summary</h4>
+            <div className="flex justify-between text-sm font-medium text-slate-600 mb-2">
+              <span>Item Total ({formData.quantity}x)</span>
+              <span>₹{productTotal}</span>
+            </div>
+            <div className="flex justify-between text-sm font-medium text-slate-600 mb-3 pb-3 border-b border-slate-200">
+              <span>Delivery Charge</span>
+              <span className={deliveryType === 'free' ? "text-green-600 font-bold" : ""}>{deliveryType === 'free' ? "Free" : `₹${deliveryCharge}`}</span>
+            </div>
+            <div className="flex justify-between text-lg font-extrabold text-slate-900">
+              <span>Final Price</span>
+              <span>₹{finalPrice}</span>
             </div>
           </div>
 

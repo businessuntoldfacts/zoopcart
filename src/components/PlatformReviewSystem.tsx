@@ -85,7 +85,7 @@ export default function PlatformReviewSystem() {
   return (
     <div className="w-full max-w-4xl mx-auto py-12">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-extrabold text-[#0F172A]">Real Sellers, Real Stories</h2>
+        <h2 className="text-3xl font-extrabold text-[#0F172A]">Real Stories & Reviews</h2>
         <Button onClick={() => setShowForm(!showForm)} variant="secondary" className="font-bold border-blue-200 text-blue-600 hover:bg-blue-50">
           Write a Review
         </Button>

@@ -187,33 +187,29 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Reviews Section */}
-      <section id="reviews" className="py-24 bg-white border-y border-slate-200">
+      
+      {/* Real Sellers Section */}
+      <section id="real-sellers" className="py-24 bg-slate-50 border-y border-slate-200">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">Loved by Social Sellers</h2>
-            <p className="text-slate-500 text-lg">See how Zypcart is helping creators and businesses grow.</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">Meet Our Real Sellers</h2>
+            <p className="text-slate-500 text-lg">Thousands of businesses use Zypcart to power their online sales.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {displayReviews.map((review, i) => (
-              <div key={i} className="bg-slate-50 border border-slate-100 rounded-3xl p-8 hover:shadow-md transition-shadow">
-                <div className="flex gap-1 mb-4">
-                  {[1,2,3,4,5].map(s => <Star key={s} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {realBusinesses && realBusinesses.map((b, i) => (
+              <Link key={i} href={`/${b.username}`} className="bg-white rounded-3xl p-6 flex flex-col items-center text-center border border-slate-100 shadow-sm hover:shadow-md hover:border-pink-200 transition-all group">
+                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-extrabold text-2xl mb-4 group-hover:scale-110 transition-transform">
+                  {b.business_name ? b.business_name.charAt(0).toUpperCase() : 'S'}
                 </div>
-                <p className="text-slate-700 font-medium leading-relaxed mb-6">"{review.text}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">{review.name.charAt(0).toUpperCase()}</div>
-                  <div>
-                    <h4 className="font-bold text-[#0F172A] text-sm line-clamp-1">{review.name}</h4>
-                    <p className="text-xs text-slate-500 font-medium line-clamp-1">{review.role}</p>
-                  </div>
-                </div>
-              </div>
+                <h4 className="font-extrabold text-[#0F172A] line-clamp-1">{b.business_name || `Store ${b.username}`}</h4>
+                <p className="text-xs font-medium text-pink-500 mt-1">zypcart.com/{b.username}</p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
+
 
       {/* Powerful Features */}
       <section className="py-24 bg-white border-y border-slate-200">
