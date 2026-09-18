@@ -39,7 +39,7 @@ export default function AdminLayout({
     { name: "Overview", href: "/admin", icon: LayoutDashboard },
     { name: "Sellers", href: "/admin/sellers", icon: Users },
     { name: "All Orders", href: "/admin/orders", icon: ShoppingBag },
-    { name: "Payouts", href: "/admin/payouts", icon: CreditCard },
+    
     { name: "Platform Settings", href: "/admin/settings", icon: Settings },
   ];
 
