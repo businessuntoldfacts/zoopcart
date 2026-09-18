@@ -27,9 +27,9 @@ export default function DashboardOverview() {
   const conversionRate = storeViews > 0 ? ((totalOrdersCount / storeViews) * 100).toFixed(1) : "0";
 
   const stats = [
-    { label: "STORE VISITORS", value: (storeViews || 12).toString(), trend: "+12%", icon: "👥", color: "text-purple-600", bg: "bg-purple-50" },
-    { label: "PRODUCT VIEWS", value: (productViews || 34).toString(), trend: "+18%", icon: "👁️", color: "text-green-600", bg: "bg-green-50" },
-    { label: "ORDERS RECEIVED", value: totalOrdersCount.toString(), trend: "+6%", icon: "🛍️", color: "text-orange-600", bg: "bg-orange-50" },
+    { label: "STORE VISITORS", value: storeViews.toString(), trend: "", icon: "👥", color: "text-purple-600", bg: "bg-purple-50" },
+    { label: "PRODUCT VIEWS", value: productViews.toString(), trend: "", icon: "👁️", color: "text-green-600", bg: "bg-green-50" },
+    { label: "ORDERS RECEIVED", value: totalOrdersCount.toString(), trend: "", icon: "🛍️", color: "text-orange-600", bg: "bg-orange-50" },
     { label: "CONVERSION RATE", value: `${conversionRate}%`, trend: "--", icon: "📈", color: "text-blue-600", bg: "bg-blue-50" }
   ];
 

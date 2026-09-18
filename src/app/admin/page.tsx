@@ -24,7 +24,7 @@ export default function AdminDashboard() {
       let ordCount = 0;
       if (orders) {
         orders.forEach(o => {
-           if (o.status !== 'platform_review') {
+           if (!['store_view', 'product_view', 'review', 'platform_review'].includes(o.status)) {
              ordCount++;
              if (o.budget) {
                vol += o.budget;
