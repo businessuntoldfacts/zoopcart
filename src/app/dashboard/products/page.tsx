@@ -101,8 +101,10 @@ export default function ProductsPage() {
     
     // We map price -> selling price, sale_price -> MRP
     
-    const deliveryData = JSON.stringify({ type: formData.delivery_type, charge: formData.delivery_charge });
+    
+    const deliveryData = JSON.stringify({ type: formData.delivery_type, charge: formData.delivery_charge, video: formData.videoLink });
     const payloadDesc = formData.description + `\n\n---ZYP_DELIVERY:${deliveryData}---`;
+
 
     const payload = {
       business_id: businessId,
@@ -205,7 +207,14 @@ export default function ProductsPage() {
             <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Details</h3>
             <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
               <div>
-                <label className="text-sm font-bold text-white mb-1.5 block">Name <span className="text-pink-500">*</span></label>
+                
+              <div className="flex justify-between items-end mb-1.5">
+                <label className="text-sm font-bold text-white">Name <span className="text-pink-500">*</span></label>
+                <button onClick={handleAIGenerate} disabled={generatingAI} className="text-xs font-extrabold text-pink-400 bg-pink-500/10 px-2.5 py-1 rounded-lg flex items-center gap-1 hover:bg-pink-500/20 transition-colors">
+                  {generatingAI ? "✨ Generating..." : "✨ Optimize with AI"}
+                </button>
+              </div>
+
                 <Input required value={formData.name} onChange={(e: any) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Shop Faisal" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl" />
               </div>
               <div>
@@ -223,7 +232,25 @@ export default function ProductsPage() {
                   <option value="Wedding Vendors">Wedding Vendors</option>
                   <option value="Others">Others</option>
                 </select>
-              </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-bold text-white mb-1.5 block">Delivery <span className="text-pink-500">*</span></label>
+                    <select required value={formData.delivery_type} onChange={(e: any) => setFormData({...formData, delivery_type: e.target.value})} className="w-full bg-black/50 border border-slate-700 text-white h-12 rounded-xl px-4 outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 appearance-none">
+                      <option value="free">Free Delivery</option>
+                      <option value="paid">Paid (Charge)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-bold text-white mb-1.5 block">Delivery Charge (₹)</label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
+                      <input type="number" disabled={formData.delivery_type === 'free'} value={formData.delivery_charge} onChange={(e: any) => setFormData({...formData, delivery_charge: e.target.value})} placeholder={formData.delivery_type === 'free' ? "0" : "e.g. 50"} className="w-full bg-black/50 border border-slate-700 text-white h-12 rounded-xl pl-8 pr-4 outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 font-medium disabled:opacity-50 disabled:bg-slate-900" />
+                    </div>
+                  </div>
+                </div>
+
               <div>
                 <label className="text-sm font-bold text-white mb-1.5 flex items-center justify-between">
                   <span>Description</span>
@@ -236,7 +263,16 @@ export default function ProductsPage() {
                   className="w-full bg-black/50 border border-slate-700 text-white placeholder:text-slate-600 p-4 min-h-[160px] rounded-xl resize-y outline-none focus:border-pink-500 transition-colors" 
                 />
                 <p className="text-xs text-slate-500 mt-2">A good description helps customers decide and builds trust.</p>
-              </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-bold text-white mb-1.5 flex items-center justify-between">
+                    <span>YouTube/Instagram Video Link</span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-800 px-2 py-0.5 rounded-full">Optional</span>
+                  </label>
+                  <Input value={formData.videoLink} onChange={(e: any) => setFormData({...formData, videoLink: e.target.value})} placeholder="https://youtube.com/..." className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl" />
+                </div>
+
             </div>
           </div>
 
@@ -356,9 +392,11 @@ export default function ProductsPage() {
                 <button 
                   onClick={() => {
                     
+                    
                     let desc = p.description || "";
                     let delType = "free";
                     let delCharge = "";
+                    let vLink = "";
                     if (desc.includes('---ZYP_DELIVERY:')) {
                       const parts = desc.split('---ZYP_DELIVERY:');
                       desc = parts[0].trim();
@@ -366,6 +404,7 @@ export default function ProductsPage() {
                         const meta = JSON.parse(parts[1].split('---')[0]);
                         delType = meta.type || "free";
                         delCharge = meta.charge || "";
+                        vLink = meta.video || "";
                       } catch(e) {}
                     }
                     
@@ -378,12 +417,13 @@ export default function ProductsPage() {
                       availability: p.availability || "in_stock",
                       image: p.image || "",
                       stock: "50",
-                      videoLink: "",
+                      videoLink: vLink,
                       published: true,
                       featured: false,
                       delivery_type: delType,
                       delivery_charge: delCharge
                     });
+
 
                     setEditingId(p.id);
                     setShowAddForm(true);
