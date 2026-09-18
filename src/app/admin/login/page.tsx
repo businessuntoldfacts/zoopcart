@@ -4,20 +4,27 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { loginAdmin } from "./actions";
 
 export default function AdminLogin() {
+  const [email, setEmail] = useState("admin@zypcart.com");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Dummy login logic for admin
-    setTimeout(() => {
-      localStorage.setItem("zypcart_admin", "authenticated");
+    setErrorMsg("");
+    
+    const res = await loginAdmin(email, password);
+    if (res.success) {
       window.location.href = "/admin";
-    }, 1000);
+    } else {
+      setErrorMsg(res.error || "Login failed");
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,13 +43,20 @@ export default function AdminLogin() {
             <p className="text-slate-400 text-sm">Please log in with your master credentials.</p>
           </div>
 
+          {errorMsg && (
+            <div className="mb-6 p-3 bg-red-500/10 border border-red-500/50 rounded-xl text-red-400 text-sm font-bold text-center">
+              {errorMsg}
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <label className="text-xs font-bold text-slate-300 mb-1.5 block">Admin Email</label>
               <Input 
                 required 
                 type="email"
-                defaultValue="admin@zypcart.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 h-12"
               />
             </div>
@@ -67,15 +81,15 @@ export default function AdminLogin() {
               </div>
             </div>
             
-            <Button type="submit" variant="primary" className="w-full text-base py-6 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 mt-4 shadow-lg shadow-blue-900/50">
-              {loading ? "Authenticating..." : "Login to Dashboard →"}
+            <Button type="submit" variant="primary" disabled={loading} className="w-full text-base py-6 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 mt-4 shadow-lg shadow-blue-900/50">
+              {loading ? "Authenticating..." : "Login to Dashboard"}
             </Button>
           </form>
 
           <div className="mt-8 pt-6 border-t border-slate-700/50 flex justify-center">
             <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
               <ShieldCheck className="w-4 h-4 text-green-500" />
-              Secure connection
+              Secure encrypted connection
             </div>
           </div>
         </div>

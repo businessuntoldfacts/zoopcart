@@ -2,37 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { LayoutDashboard, Users, ShoppingBag, CreditCard, Settings, LogOut, Bell, Shield } from "lucide-react";
+import { LayoutDashboard, Users, ShoppingBag, Settings, LogOut, Bell, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logoutAdmin } from "./login/actions";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  
   const pathname = usePathname();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (pathname === '/admin/login') {
-      setLoading(false);
-      return;
-    }
-    const token = localStorage.getItem('zypcart_admin');
-    if (!token) {
-      window.location.href = '/admin/login';
-    } else {
-      setIsAuthenticated(true);
-      setLoading(false);
-    }
-  }, [pathname]);
-
-  if (loading) return <div className="h-screen bg-slate-900 flex items-center justify-center text-white">Loading Admin...</div>;
   if (pathname === '/admin/login') return <>{children}</>;
-  if (!isAuthenticated) return null;
+
+  const handleLogout = async () => {
+    await logoutAdmin();
+    window.location.href = "/admin/login";
+  };
 
 
   const navigation = [
@@ -80,7 +66,7 @@ export default function AdminLayout({
         </nav>
 
         <div className="p-4 mt-auto">
-          <button onClick={() => { localStorage.removeItem("zypcart_admin"); window.location.href = "/admin/login"; }} className="flex w-full items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-red-400 transition-colors">
+          <button onClick={handleLogout} className="flex w-full items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-red-400 transition-colors">
             <LogOut className="w-5 h-5" />
             Logout
           </button>
