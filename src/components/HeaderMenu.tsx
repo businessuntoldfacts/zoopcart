@@ -13,7 +13,7 @@ export default function HeaderMenu() {
       <header className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-slate-200">
         <div className="container mx-auto px-6 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center z-50">
-            <img src="/logo.png" alt="Zoopcart" className="h-10 object-contain bg-white px-2 py-1 rounded-xl" />
+            <img src="/logo.png" alt="Zoopcart" className="h-10 object-contain" />
           </Link>
           
           {/* Desktop Nav */}

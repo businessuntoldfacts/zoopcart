@@ -31,7 +31,7 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-slate-900 flex flex-col font-sans selection:bg-zyp-primary/20 text-white">
       <main className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="mb-8 flex items-center gap-2">
-          <img src="/logo.png" alt="Zoopcart" className="h-10 object-contain bg-white px-2 py-1 rounded-xl" />
+          <img src="/logo.png" alt="Zoopcart" className="h-10 object-contain" />
           <span className="font-bold text-3xl tracking-tight ml-2">Admin</span>
         </div>
 

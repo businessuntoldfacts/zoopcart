@@ -75,7 +75,7 @@ export default function SignupPage() {
     <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
       <header className="p-6 flex justify-center items-center w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo.png" alt="Zoopcart" className="h-12 object-contain bg-white px-2 py-1 rounded-xl" />
+          <img src="/logo.png" alt="Zoopcart" className="h-12 object-contain" />
         </Link>
       </header>
 
