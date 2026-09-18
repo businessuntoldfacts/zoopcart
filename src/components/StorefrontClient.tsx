@@ -7,6 +7,7 @@ import StoreBottomNav from "@/components/StoreBottomNav";
 
 export default function StorefrontClient({ business, products }: { business: any, products: any[] }) {
   const [activeTab, setActiveTab] = useState("Products");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-24 relative">
@@ -79,9 +80,6 @@ export default function StorefrontClient({ business, products }: { business: any
 
             {/* Action Buttons */}
             <div className="flex gap-3 mt-6">
-              <button className="flex-1 py-3 rounded-2xl border-2 border-pink-500 text-pink-500 font-extrabold flex items-center justify-center gap-2 transition-colors hover:bg-pink-50">
-                <Heart className="w-4 h-4" /> Follow
-              </button>
               <button onClick={() => window.open(`https://wa.me/${business.whatsapp_country_code || '91'}${business.whatsapp_number}`, '_blank')} className="flex-1 py-3 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-sm shadow-green-500/30 hover:bg-green-600 transition-colors">
                 <MessageCircle className="w-4 h-4" /> Chat
               </button>
@@ -123,23 +121,36 @@ export default function StorefrontClient({ business, products }: { business: any
               </button>
             </div>
 
+            
             {/* Categories */}
             <div className="flex gap-2 overflow-x-auto no-scrollbar mt-4 pb-2">
-              <button className="px-5 py-2 bg-pink-500 text-white rounded-xl text-xs font-extrabold whitespace-nowrap shadow-sm shadow-pink-500/20">All</button>
-              <button className="px-5 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-extrabold whitespace-nowrap">Electronics</button>
-              <button className="px-5 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-extrabold whitespace-nowrap">Fashion</button>
-              <button className="px-5 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-extrabold whitespace-nowrap">Home</button>
+              <button 
+                onClick={() => setSelectedCategory('All')} 
+                className={`px-5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-colors ${selectedCategory === 'All' ? 'bg-pink-500 text-white shadow-sm shadow-pink-500/20' : 'bg-white border border-slate-200 text-slate-600'}`}
+              >
+                All
+              </button>
+              {Array.from(new Set(products.map(p => p.category).filter(Boolean))).map(cat => (
+                <button 
+                  key={cat} 
+                  onClick={() => setSelectedCategory(cat)} 
+                  className={`px-5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-colors ${selectedCategory === cat ? 'bg-pink-500 text-white shadow-sm shadow-pink-500/20' : 'bg-white border border-slate-200 text-slate-600'}`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
+
 
             {/* Product Grid */}
             <div className="grid grid-cols-2 gap-3 mt-4">
-              {products.length === 0 ? (
+              {(selectedCategory === "All" ? products : products.filter(p => p.category === selectedCategory)).length === 0 ? (
                 <div className="col-span-2 text-center py-12 bg-white rounded-3xl border border-slate-100">
                   <h3 className="font-extrabold text-lg text-slate-900">No products yet</h3>
                   <p className="text-sm text-slate-500 mt-1">Check back soon!</p>
                 </div>
               ) : (
-                products.map((product) => (
+                (selectedCategory === "All" ? products : products.filter(p => p.category === selectedCategory)).map((product) => (
                   <Link href={`/${business.username}/${product.slug}`} key={product.id} className="block group bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden hover:border-pink-200 transition-colors relative pb-3">
                     <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-pink-500 hover:bg-white z-10 transition-colors shadow-sm">
                       <Heart className="w-4 h-4" />
@@ -152,7 +163,7 @@ export default function StorefrontClient({ business, products }: { business: any
                       )}
                     </div>
                     <div className="px-3 pt-3">
-                      <div className="text-[9px] font-extrabold tracking-widest text-pink-500 uppercase mb-1">General</div>
+                      <div className="text-[9px] font-extrabold tracking-widest text-pink-500 uppercase mb-1">{product.category || "General"}</div>
                       <h3 className="font-extrabold text-sm text-slate-900 leading-tight mb-2 line-clamp-2">{product.name}</h3>
                       <div className="flex items-baseline gap-1.5">
                         <span className="text-base font-extrabold text-slate-900">₹{product.price}</span>

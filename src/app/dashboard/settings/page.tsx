@@ -48,10 +48,7 @@ export default function SettingsHubPage() {
               <div className="w-full h-8 bg-slate-900 border border-slate-700 rounded flex flex-col gap-1 p-1"><div className="w-1/2 h-1 bg-slate-700 rounded"></div><div className="w-full h-1 bg-slate-800 rounded"></div></div>
               <span className="text-[10px] font-bold text-slate-700">Dark</span>
             </button>
-            <button onClick={() => changeTheme("auto")} className={`flex flex-col items-center gap-1 border-2 rounded-xl p-2 w-16 transition-colors ${appearance === "auto" ? "border-pink-500" : "border-transparent opacity-50"}`}>
-              <div className="w-full h-8 bg-gradient-to-br from-white to-slate-900 border border-slate-300 rounded flex flex-col gap-1 p-1"></div>
-              <span className="text-[10px] font-bold text-slate-700">Auto</span>
-            </button>
+            
           </div>
         ) },
         { icon: HelpCircle, label: "Contact Us", description: "Questions, problems or suggestions", href: "mailto:support@zypcart.com" },

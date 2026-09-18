@@ -3,12 +3,12 @@ import { useDashboardData } from "@/lib/useDashboardData";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, Store, LineChart, Settings, LogOut, HelpCircle, Bell, ArrowUpRight } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Store, LineChart, Settings, LogOut, HelpCircle, Bell, ArrowUpRight, User, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function DashboardLayout({
   children,
@@ -18,15 +18,27 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [theme, setTheme] = useState('light');
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const t = localStorage.getItem('zypcart-theme') || 'light';
     setTheme(t);
     const handleTheme = () => setTheme(localStorage.getItem('zypcart-theme') || 'light');
     window.addEventListener('theme-changed', handleTheme);
-    return () => window.removeEventListener('theme-changed', handleTheme);
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener('theme-changed', handleTheme);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
-
-
 
   const { business } = useDashboardData();
   const [businessData, setBusinessData] = useState<{name: string, username: string, image: string | null}>({
@@ -109,7 +121,7 @@ export default function DashboardLayout({
       {/* Main Content */}
       <main className={`flex-1 min-w-0 flex flex-col mb-16 md:mb-0 ${theme === "dark" ? "zyp-dark-mode" : ""}`}>
         <style dangerouslySetInnerHTML={{__html: `\n          .zyp-dark-mode {\n            filter: invert(1) hue-rotate(180deg);\n            background-color: #000;\n            transition: filter 0.5s ease;\n          }\n          .zyp-dark-mode img, .zyp-dark-mode svg, .zyp-dark-mode [data-theme-ignore] {\n            filter: invert(1) hue-rotate(180deg);\n          }\n        `}} />
-        <header className="h-[72px] border-b border-zyp-border flex items-center justify-between px-6 md:px-8 bg-white shrink-0">
+        <header className="h-[72px] border-b border-zyp-border flex items-center justify-between px-6 md:px-8 bg-white shrink-0 relative z-50">
           <div className="flex items-center md:hidden">
             <Link href="/dashboard" className="flex items-center">
               <img src="/logo.png" alt="Zypcart" className="h-10 object-contain bg-white px-2 py-1 rounded-xl" />
@@ -127,15 +139,14 @@ export default function DashboardLayout({
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
             </button>
-            <div className="flex items-center gap-3 border-l border-zyp-border pl-6">
+            <div className="flex items-center gap-3 border-l border-zyp-border pl-6 relative" ref={profileRef}>
               <div className="hidden sm:block text-right">
                 <div className="text-sm font-bold text-slate-900 leading-tight">{businessData.name}</div>
                 <div className="text-xs text-slate-500 font-medium">Seller</div>
               </div>
-              <Link 
-                href={businessData.username ? `/${businessData.username}` : '#'} 
-                target="_blank"
-                className="relative w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700 border border-slate-200 hover:ring-2 hover:ring-pink-500 transition-all shadow-sm group"
+              <button 
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="relative w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700 border border-slate-200 hover:ring-2 hover:ring-pink-500 transition-all shadow-sm group cursor-pointer"
               >
                 <div className="w-full h-full rounded-full overflow-hidden">
                   {businessData.image ? (
@@ -144,10 +155,22 @@ export default function DashboardLayout({
                     businessData.name.charAt(0).toUpperCase()
                   )}
                 </div>
-                <div className="absolute -top-1 -right-1 bg-pink-500 text-white p-0.5 rounded-full border-2 border-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <ArrowUpRight className="w-3 h-3" />
+              </button>
+
+              {profileOpen && (
+                <div className="absolute top-12 right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-1 flex flex-col z-50">
+                   <Link href={businessData.username ? `/${businessData.username}` : '#'} onClick={() => setProfileOpen(false)} className="px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                     <ExternalLink className="w-4 h-4" /> View Store
+                   </Link>
+                   <Link href="/dashboard/settings" onClick={() => setProfileOpen(false)} className="px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                     <Settings className="w-4 h-4" /> Settings
+                   </Link>
+                   <div className="h-px bg-slate-100 my-1"></div>
+                   <button onClick={handleLogout} className="px-4 py-2 text-sm font-bold text-red-600 hover:bg-slate-50 flex items-center gap-2 text-left w-full">
+                     <LogOut className="w-4 h-4" /> Logout
+                   </button>
                 </div>
-              </Link>
+              )}
             </div>
           </div>
         </header>
@@ -160,34 +183,37 @@ export default function DashboardLayout({
       </main>
 
       {/* Mobile Bottom Navigation (Light theme) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex items-center justify-around p-2 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-safe">
-        {navigation.slice(0, 5).map((item) => {
-          const isActive = pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard");
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-[10px] font-bold transition-all ${
-                isActive 
-                  ? "bg-pink-500 text-white shadow-md shadow-pink-500/30 -translate-y-1" 
-                  : "text-slate-400 hover:text-slate-600"
-              }`}
-            >
-              <Icon className={cn("w-5 h-5", isActive ? "" : "")} />
-              {item.name}
-            </Link>
-          );
-        })}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-[90] pb-safe">
+        <div className="flex justify-around items-center h-16">
+          {navigation.map((item) => {
+            const isActive = pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard");
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "flex flex-col items-center justify-center w-full h-full space-y-1 relative",
+                  isActive ? "text-pink-600" : "text-slate-500"
+                )}
+              >
+                {isActive && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-pink-500 rounded-b-full"></div>
+                )}
+                <div className="relative">
+                  <Icon className={cn("w-5 h-5", isActive && "fill-current/10")} />
+                  {item.badge && (
+                    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-bold px-1 rounded-full border border-white">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] font-semibold">{item.name}</span>
+              </Link>
+            );
+          })}
+        </div>
       </nav>
     </div>
   );
 }
-
-
-
-
-
-
-
-
