@@ -2,30 +2,68 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck } from "lucide-react";
 import StoreBottomNav from "@/components/StoreBottomNav";
+import { useRouter } from "next/navigation";
 
 export default function StorefrontClient({ business, products }: { business: any, products: any[] }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("Products");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
+  
+  let theme = 'light';
+  if (business?.instagram_profile_url) {
+    try {
+      if (business.instagram_profile_url.startsWith('{')) {
+        theme = JSON.parse(business.instagram_profile_url).theme || 'light';
+      } else {
+        theme = business.instagram_profile_url;
+      }
+    } catch(e) {}
+  }
+
+  
+  const getHeroGradient = () => {
+    if (theme === 'dark') return 'bg-gradient-to-br from-slate-900 via-indigo-900 to-blue-900';
+    if (theme === 'playful') return 'bg-gradient-to-br from-orange-400 via-amber-500 to-yellow-400';
+    return 'bg-gradient-to-br from-indigo-700 via-purple-600 to-pink-500';
+  };
+
+  const primaryColor = theme === 'playful' ? 'bg-orange-500 shadow-orange-500/20' : 'bg-pink-500 shadow-pink-500/20';
+  const primaryText = theme === 'playful' ? 'text-orange-500' : 'text-pink-500';
+  const activeTabColor = theme === 'playful' ? 'bg-orange-500' : 'bg-pink-500';
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-24 relative">
+      
+
       {/* Top Header - Floating over purple gradient */}
       <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 h-14 bg-white/10 backdrop-blur-md">
-        <Link href="/" className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm">
+        <button onClick={() => { if (window.history.length > 1) router.back(); }} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30">
           <ArrowLeft className="w-5 h-5" />
-        </Link>
+        </button>
         <div className="flex items-center gap-1">
           <span className="font-extrabold text-white text-lg tracking-tight shadow-sm">Zypcart</span>
         </div>
-        <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm">
+        <button onClick={() => {
+            if (navigator.share) {
+              navigator.share({
+                title: business.business_name,
+                text: business.business_description || 'Check out this store on Zypcart!',
+                url: window.location.href,
+              }).catch(console.error);
+            } else {
+              navigator.clipboard.writeText(window.location.href);
+              alert("Store link copied to clipboard!");
+            }
+        }} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30">
           <Share2 className="w-5 h-5" />
         </button>
       </header>
 
-      {/* Curved Purple Hero */}
-      <div className="absolute top-0 w-full h-[220px] bg-gradient-to-br from-indigo-700 via-purple-600 to-pink-500 rounded-b-[40px] shadow-inner" style={{ clipPath: 'ellipse(120% 100% at 50% 0%)' }}></div>
+      {/* Curved Hero */}
+      <div className={`absolute top-0 w-full h-[220px] ${getHeroGradient()} rounded-b-[40px] shadow-inner`} style={{ clipPath: 'ellipse(120% 100% at 50% 0%)' }}></div>
 
       <div className="max-w-md mx-auto relative pt-[160px] px-4">
         
@@ -97,7 +135,7 @@ export default function StorefrontClient({ business, products }: { business: any
             >
               {tab}
               {activeTab === tab && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-pink-500 rounded-t-full"></div>
+                <div className={`absolute bottom-0 left-0 w-full h-0.5 rounded-t-full ${activeTabColor}`}></div>
               )}
             </button>
           ))}
@@ -113,7 +151,7 @@ export default function StorefrontClient({ business, products }: { business: any
                 <input 
                   type="text" 
                   placeholder="Search products..." 
-                  className="w-full h-12 pl-10 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/20"
+                  className={`w-full h-12 pl-10 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/20`}
                 />
               </div>
               <button className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-600 hover:bg-slate-50">
@@ -121,12 +159,11 @@ export default function StorefrontClient({ business, products }: { business: any
               </button>
             </div>
 
-            
             {/* Categories */}
             <div className="flex gap-2 overflow-x-auto no-scrollbar mt-4 pb-2">
               <button 
                 onClick={() => setSelectedCategory('All')} 
-                className={`px-5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-colors ${selectedCategory === 'All' ? 'bg-pink-500 text-white shadow-sm shadow-pink-500/20' : 'bg-white border border-slate-200 text-slate-600'}`}
+                className={`px-5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-colors ${selectedCategory === 'All' ? `${primaryColor} text-white shadow-sm` : 'bg-white border border-slate-200 text-slate-600'}`}
               >
                 All
               </button>
@@ -134,25 +171,24 @@ export default function StorefrontClient({ business, products }: { business: any
                 <button 
                   key={cat} 
                   onClick={() => setSelectedCategory(cat)} 
-                  className={`px-5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-colors ${selectedCategory === cat ? 'bg-pink-500 text-white shadow-sm shadow-pink-500/20' : 'bg-white border border-slate-200 text-slate-600'}`}
+                  className={`px-5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-colors ${selectedCategory === cat ? `${primaryColor} text-white shadow-sm` : 'bg-white border border-slate-200 text-slate-600'}`}
                 >
                   {cat}
                 </button>
               ))}
             </div>
 
-
             {/* Product Grid */}
             <div className="grid grid-cols-2 gap-3 mt-4">
               {(selectedCategory === "All" ? products : products.filter(p => p.category === selectedCategory)).length === 0 ? (
                 <div className="col-span-2 text-center py-12 bg-white rounded-3xl border border-slate-100">
-                  <h3 className="font-extrabold text-lg text-slate-900">No products yet</h3>
-                  <p className="text-sm text-slate-500 mt-1">Check back soon!</p>
+                  <h3 className="font-extrabold text-lg text-slate-900">No products found</h3>
+                  <p className="text-sm text-slate-500 mt-1">Try another category</p>
                 </div>
               ) : (
                 (selectedCategory === "All" ? products : products.filter(p => p.category === selectedCategory)).map((product) => (
                   <Link href={`/${business.username}/${product.slug}`} key={product.id} className="block group bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden hover:border-pink-200 transition-colors relative pb-3">
-                    <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-pink-500 hover:bg-white z-10 transition-colors shadow-sm">
+                    <button onClick={(e) => { e.preventDefault(); }} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-pink-500 hover:bg-white z-10 transition-colors shadow-sm">
                       <Heart className="w-4 h-4" />
                     </button>
                     <div className={`w-full bg-slate-50 overflow-hidden relative ${product.image ? "aspect-square" : "h-40"}`}>
@@ -163,7 +199,7 @@ export default function StorefrontClient({ business, products }: { business: any
                       )}
                     </div>
                     <div className="px-3 pt-3">
-                      <div className="text-[9px] font-extrabold tracking-widest text-pink-500 uppercase mb-1">{product.category || "General"}</div>
+                      <div className={`text-[9px] font-extrabold tracking-widest ${primaryText} uppercase mb-1`}>{product.category || "General"}</div>
                       <h3 className="font-extrabold text-sm text-slate-900 leading-tight mb-2 line-clamp-2">{product.name}</h3>
                       <div className="flex items-baseline gap-1.5">
                         <span className="text-base font-extrabold text-slate-900">₹{product.price}</span>
@@ -256,7 +292,7 @@ export default function StorefrontClient({ business, products }: { business: any
                  </div>
                  <h4 className="font-extrabold text-slate-900">No reviews yet.</h4>
                  <p className="text-sm font-medium text-slate-500 mt-1 max-w-[200px]">Be the first to review this store and help other customers.</p>
-                 <button className="mt-6 px-8 py-3 bg-pink-500 hover:bg-pink-600 text-white font-extrabold rounded-2xl shadow-sm transition-colors">
+                 <button className={`mt-6 px-8 py-3 ${primaryColor} text-white font-extrabold rounded-2xl shadow-sm transition-colors`}>
                     Write a Review
                  </button>
               </div>
