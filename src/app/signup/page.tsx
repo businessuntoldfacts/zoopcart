@@ -47,8 +47,7 @@ export default function SignupPage() {
           {
             user_id: authData.user.id,
             business_name: formData.businessName,
-            username: formData.username.toLowerCase(),
-            status: 'active'
+            username: formData.username.toLowerCase()
           }
         ]);
 
@@ -181,3 +180,4 @@ export default function SignupPage() {
     </div>
   );
 }
+

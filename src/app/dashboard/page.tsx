@@ -25,7 +25,7 @@ export default function DashboardOverview() {
       setUserName(user.user_metadata?.full_name?.split(' ')[0] || "Seller");
 
       const { data: business } = await supabase.from('businesses').select('id, username').eq('user_id', user.id).single();
-      if (!business) return;
+      if (!business) { setLoading(false); return; }
       
       setBusinessSlug(business.username);
 
@@ -179,4 +179,5 @@ export default function DashboardOverview() {
     </div>
   );
 }
+
 
