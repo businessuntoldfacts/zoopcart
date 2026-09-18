@@ -42,7 +42,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
       <header className="p-6 flex justify-between items-center max-w-2xl mx-auto w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo.jpg" alt="Zypcart" className="h-10 object-contain rounded" />
+          <img src="/logo.png" alt="Zypcart" className="h-12 object-contain bg-white px-2 py-1 rounded-xl" />
         </Link>
         <div className="text-sm">
           <span className="text-zyp-textMuted">New to Zypcart? </span>
@@ -101,3 +101,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
