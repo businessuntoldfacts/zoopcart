@@ -8,9 +8,11 @@ import { Plus, Search, Eye, Edit2, Share2, Trash2, ArrowLeft, UploadCloud, Box, 
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
+import { useDashboardData, invalidateDashboardCache } from "@/lib/useDashboardData";
+
 export default function ProductsPage() {
+  const { business, products: cachedProducts, loading } = useDashboardData();
   const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [businessUsername, setBusinessUsername] = useState<string | null>(null);
@@ -33,22 +35,14 @@ export default function ProductsPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
-    async function loadProducts() {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-  
-      const { data: business } = await supabase.from('businesses').select('id, username').eq('user_id', user.id).single();
-      if (business) {
-        setBusinessId(business.id);
-        setBusinessUsername(business.username);
-        const { data } = await supabase.from('products').select('*').eq('business_id', business.id).order('created_at', { ascending: false });
-        if (data) setProducts(data);
-      }
-      setLoading(false);
+    if (business) {
+      setBusinessId(business.id);
+      setBusinessUsername(business.username);
     }
-    loadProducts();
-  }, []);
+    if (cachedProducts) {
+      setProducts(cachedProducts);
+    }
+  }, [business, cachedProducts]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -102,7 +96,7 @@ export default function ProductsPage() {
     };
 
     if (editingId) {
-       const { data, error } = await supabase.from('products').update(payload).eq('id', editingId).select();
+       invalidateDashboardCache(); const { data, error } = await supabase.from('products').update(payload).eq('id', editingId).select();
        if (error) {
          alert("Error updating product: " + error.message);
        } else if (data) {
@@ -110,7 +104,7 @@ export default function ProductsPage() {
          setShowAddForm(false);
        }
     } else {
-       const { data, error } = await supabase.from('products').insert([payload]).select();
+       invalidateDashboardCache(); const { data, error } = await supabase.from('products').insert([payload]).select();
        if (error) {
          alert("Error adding product: " + error.message);
        } else if (data) {
@@ -359,7 +353,7 @@ export default function ProductsPage() {
                 <button 
                   onClick={async () => {
                     if (confirm("Are you sure you want to delete this product?")) {
-                       await supabase.from('products').delete().eq('id', p.id);
+                       invalidateDashboardCache(); await supabase.from('products').delete().eq('id', p.id);
                        setProducts(products.filter(prod => prod.id !== p.id));
                     }
                   }}
@@ -375,5 +369,7 @@ export default function ProductsPage() {
     </div>
   );
 }
+
+
 
 

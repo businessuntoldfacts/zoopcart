@@ -4,71 +4,40 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Eye, ShoppingBag, Percent, TrendingUp, Sparkles, ChevronRight } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import { useDashboardData } from "@/lib/useDashboardData";
 
 export default function DashboardOverview() {
-  const [stats, setStats] = useState<any[]>([]);
-  const [totalOrdersCount, setTotalOrdersCount] = useState(0);
-  const [recentOrders, setRecentOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState("John");
-  const [businessSlug, setBusinessSlug] = useState("");
+  const { user, business, orders, loading } = useDashboardData();
   const [insightIndex, setInsightIndex] = useState(0);
 
   useEffect(() => {
     setInsightIndex(Math.floor(Math.random() * 3));
-    async function loadDashboard() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      
-      setUserName(user.user_metadata?.full_name?.split(' ')[0] || "Seller");
-
-      const { data: business } = await supabase.from('businesses').select('id, username').eq('user_id', user.id).single();
-      if (!business) { setLoading(false); return; }
-      
-      setBusinessSlug(business.username);
-
-      const { data: orders } = await supabase
-        .from('orders')
-        .select('*, products(name)')
-        .eq('business_id', business.id)
-        .order('created_at', { ascending: false });
-
-      if (orders) {
-        const storeViews = orders.filter((o: any) => o.status === 'store_view').length;
-        const productViews = orders.filter((o: any) => o.status === 'product_view').length;
-        const realOrders = orders.filter((o: any) => !['store_view', 'product_view', 'review'].includes(o.status));
-        
-        const totalOrders = realOrders.length;
-        setTotalOrdersCount(totalOrders);
-        setRecentOrders(realOrders.slice(0, 4));
-
-        const conversionRate = storeViews > 0 ? ((totalOrders / storeViews) * 100).toFixed(1) : "0";
-
-        setStats([
-          { label: "STORE VISITORS", value: (storeViews || 12).toString(), trend: "+12%", icon: "👥", color: "text-purple-600", bg: "bg-purple-50" },
-          { label: "PRODUCT VIEWS", value: (productViews || 34).toString(), trend: "+18%", icon: "👁️", color: "text-green-600", bg: "bg-green-50" },
-          { label: "ORDERS RECEIVED", value: totalOrders.toString(), trend: "+6%", icon: "🛍️", color: "text-orange-600", bg: "bg-orange-50" },
-          { label: "CONVERSION RATE", value: `${conversionRate}%`, trend: "--", icon: "📈", color: "text-blue-600", bg: "bg-blue-50" }
-        ]);
-      } else {
-        setStats([
-          { label: "STORE VISITORS", value: "12", trend: "+12%", icon: "👥", color: "text-purple-600", bg: "bg-purple-50" },
-          { label: "PRODUCT VIEWS", value: "34", trend: "+18%", icon: "👁️", color: "text-green-600", bg: "bg-green-50" },
-          { label: "ORDERS RECEIVED", value: "0", trend: "+0%", icon: "🛍️", color: "text-orange-600", bg: "bg-orange-50" },
-          { label: "CONVERSION RATE", value: "0%", trend: "--", icon: "📈", color: "text-blue-600", bg: "bg-blue-50" }
-        ]);
-      }
-      setLoading(false);
-    }
-    loadDashboard();
   }, []);
 
   if (loading) return <div className="text-slate-400 p-4 font-medium">Loading dashboard...</div>;
+  if (!business) return <div className="text-slate-400 p-4 font-medium">Please set up your store first.</div>;
+
+  const userName = user?.user_metadata?.full_name?.split(' ')[0] || "Seller";
+  const businessSlug = business.username;
+
+  // Process analytics from cached orders
+  const storeViews = orders.filter((o: any) => o.status === 'store_view').length;
+  const productViews = orders.filter((o: any) => o.status === 'product_view').length;
+  const realOrders = orders.filter((o: any) => !['store_view', 'product_view', 'review'].includes(o.status));
+  
+  const totalOrdersCount = realOrders.length;
+  const conversionRate = storeViews > 0 ? ((totalOrdersCount / storeViews) * 100).toFixed(1) : "0";
+
+  const stats = [
+    { label: "STORE VISITORS", value: (storeViews || 12).toString(), trend: "+12%", icon: "👥", color: "text-purple-600", bg: "bg-purple-50" },
+    { label: "PRODUCT VIEWS", value: (productViews || 34).toString(), trend: "+18%", icon: "👁️", color: "text-green-600", bg: "bg-green-50" },
+    { label: "ORDERS RECEIVED", value: totalOrdersCount.toString(), trend: "+6%", icon: "🛍️", color: "text-orange-600", bg: "bg-orange-50" },
+    { label: "CONVERSION RATE", value: `${conversionRate}%`, trend: "--", icon: "📈", color: "text-blue-600", bg: "bg-blue-50" }
+  ];
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6 pb-20 animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
         <div>
           <h2 className="text-2xl font-extrabold text-[#0F172A] flex items-center gap-2">
@@ -179,5 +148,3 @@ export default function DashboardOverview() {
     </div>
   );
 }
-
-

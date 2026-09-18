@@ -1,3 +1,4 @@
+import { useDashboardData } from "@/lib/useDashboardData";
 "use client";
 
 import Link from "next/link";
@@ -25,6 +26,9 @@ export default function DashboardLayout({
     return () => window.removeEventListener('theme-changed', handleTheme);
   }, []);
 
+
+
+  const { business } = useDashboardData();
   const [businessData, setBusinessData] = useState<{name: string, username: string, image: string | null}>({
     name: "Store Owner",
     username: "",
@@ -32,21 +36,14 @@ export default function DashboardLayout({
   });
 
   useEffect(() => {
-    async function loadUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: business } = await supabase.from('businesses').select('business_name, username, profile_image').eq('user_id', user.id).single();
-        if (business) {
-          setBusinessData({
-            name: business.business_name || "Store Owner",
-            username: business.username || "",
-            image: business.profile_image || null
-          });
-        }
-      }
+    if (business) {
+      setBusinessData({
+        name: business.business_name || "Store Owner",
+        username: business.username || "",
+        image: business.profile_image || null
+      });
     }
-    loadUser();
-  }, []);
+  }, [business]);
 
   const navigation = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -186,6 +183,8 @@ export default function DashboardLayout({
     </div>
   );
 }
+
+
 
 
 

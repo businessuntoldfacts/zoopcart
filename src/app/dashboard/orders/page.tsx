@@ -5,33 +5,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import { Search, MapPin, Calendar, Clock, CheckCircle, Smartphone } from "lucide-react";
 
+import { useDashboardData, invalidateDashboardCache } from "@/lib/useDashboardData";
+
 export default function OrdersPage() {
+  const { orders: cachedOrders, loading } = useDashboardData();
   const [orders, setOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   useEffect(() => {
-    async function loadOrders() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: business } = await supabase.from('businesses').select('id').eq('user_id', user.id).single();
-      if (!business) return;
-
-      const { data } = await supabase
-        .from('orders')
-        .select('*, products(*)')
-        .eq('business_id', business.id).neq('status', 'store_view').neq('status', 'product_view').neq('status', 'review')
-        .order('created_at', { ascending: false });
-
-      if (data) setOrders(data);
-      setLoading(false);
+    if (cachedOrders) {
+      setOrders(cachedOrders.filter((o: any) => !['store_view', 'product_view', 'review'].includes(o.status)));
     }
-    loadOrders();
-  }, []);
+  }, [cachedOrders]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
-    await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+    await supabase.from('orders').update({ status: newStatus }).eq('id', orderId); invalidateDashboardCache();
     setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
     if (selectedOrder?.id === orderId) {
       setSelectedOrder({ ...selectedOrder, status: newStatus });
@@ -207,6 +195,7 @@ export default function OrdersPage() {
     </div>
   );
 }
+
 
 
 

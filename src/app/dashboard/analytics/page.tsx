@@ -6,33 +6,17 @@ import { Users, Eye, TrendingUp, Percent, Share2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 
+import { useDashboardData } from "@/lib/useDashboardData";
+
 export default function AnalyticsPage() {
+  const { business, orders: cachedOrders, loading } = useDashboardData();
   const [stats, setStats] = useState({ total: 0 });
-  const [loading, setLoading] = useState(true);
   const [businessSlug, setBusinessSlug] = useState("");
 
   useEffect(() => {
-    async function loadStats() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      
-      const { data: business } = await supabase.from('businesses').select('id, username').eq('user_id', user.id).single();
-      if (!business) return;
-      
-      setBusinessSlug(business.username);
-
-      const { data: orders } = await supabase
-        .from('orders')
-        .select('id')
-        .eq('business_id', business.id);
-
-      if (orders) {
-        setStats({ total: orders.length });
-      }
-      setLoading(false);
-    }
-    loadStats();
-  }, []);
+    if (business) setBusinessSlug(business.username);
+    if (cachedOrders) setStats({ total: cachedOrders.length });
+  }, [business, cachedOrders]);
 
   if (loading) return <div className="p-4 text-slate-400 font-medium">Loading analytics...</div>;
 
@@ -100,3 +84,4 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+
