@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { Heart, ShoppingCart, ArrowLeft, ShoppingBag, Truck } from "lucide-react";
 import Link from "next/link";
+import StoreBottomNav from "@/components/StoreBottomNav";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 0;
@@ -73,35 +74,7 @@ export default async function CartPage({ params }: { params: { username: string 
 
       </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
-        <div className="max-w-md mx-auto flex items-center justify-around h-16 px-2">
-          
-          <Link href={`/${business.username}`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
-            <ShoppingBag className="w-5 h-5" />
-            <span className="text-[10px] font-extrabold">Shop</span>
-          </Link>
-
-          <Link href={`/${business.username}/cart`} className="flex flex-col items-center justify-center w-16 h-full gap-1 group relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-pink-600 rounded-b-full"></div>
-            <div className="w-12 h-8 rounded-full bg-pink-50 flex flex-col items-center justify-center mb-0.5">
-               <ShoppingCart className="w-5 h-5 text-pink-600 fill-pink-600" />
-            </div>
-            <span className="text-[10px] font-extrabold text-slate-900">Cart</span>
-          </Link>
-
-          <Link href={`/${business.username}/saved`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
-            <Heart className="w-5 h-5" />
-            <span className="text-[10px] font-extrabold">Saved</span>
-          </Link>
-
-          <Link href={`/${business.username}/track`} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-slate-400 hover:text-slate-900 transition-colors">
-            <Truck className="w-5 h-5" />
-            <span className="text-[10px] font-extrabold">Track</span>
-          </Link>
-
-        </div>
-      </nav>
+      <StoreBottomNav username={business.username} />
 
     </div>
   );
