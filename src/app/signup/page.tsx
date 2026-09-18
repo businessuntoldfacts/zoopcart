@@ -75,7 +75,7 @@ export default function SignupPage() {
     <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
       <header className="p-6 flex justify-center items-center w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo.png?v=2" alt="Zoopcart" className="h-12 object-contain" />
+          <img src="/logo.png?v=2" alt="Zoopcart" className="h-12 object-contain" style={{ mixBlendMode: "screen" }} />
         </Link>
       </header>
 

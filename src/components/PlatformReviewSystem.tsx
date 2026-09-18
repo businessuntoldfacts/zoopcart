@@ -84,12 +84,14 @@ export default function PlatformReviewSystem() {
 
   return (
     <div className="w-full max-w-4xl mx-auto py-12">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-extrabold text-[#0F172A]">Real Stories & Reviews</h2>
-        <Button onClick={() => setShowForm(!showForm)} variant="secondary" className="font-bold border-blue-200 text-blue-600 hover:bg-blue-50">
-          Write a Review
-        </Button>
-      </div>
+      <div className="flex flex-col md:flex-row items-center justify-between text-center md:text-left mb-10 gap-4">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] w-full text-center">Real Stories & Reviews</h2>
+          <div className="w-full flex justify-center mt-2">
+            <Button onClick={() => setShowForm(!showForm)} variant="secondary" className="font-bold border-blue-200 text-blue-600 hover:bg-blue-50">
+              Write a Review
+            </Button>
+          </div>
+        </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 animate-in slide-in-from-top-4">
