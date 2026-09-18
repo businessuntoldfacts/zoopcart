@@ -67,7 +67,7 @@ export default async function StorefrontPage({ params }: { params: { username: s
         </div>
 
         {/* Products List */}
-        <div className="px-4 space-y-6 mt-6 pb-10">
+        <div className="px-4 mt-6 pb-24">
           <h3 className="font-extrabold text-sm text-slate-900 mb-4 px-2 uppercase tracking-wider">All Products</h3>
           
           {products.length === 0 ? (
@@ -76,7 +76,8 @@ export default async function StorefrontPage({ params }: { params: { username: s
               <p className="text-sm text-slate-500 mt-1">Check back soon!</p>
             </div>
           ) : (
-            products.map((product: any) => (
+            <div className="grid grid-cols-2 gap-3">
+{products.map((product: any) => (
               <Link href={`/${business.username}/${product.slug}`} key={product.id} className="block group bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden hover:border-pink-200 transition-colors">
                 <div className={`w-full bg-slate-50 overflow-hidden relative ${product.image ? "aspect-square" : "h-48"}`}>
                   {product.image ? (
@@ -103,9 +104,10 @@ export default async function StorefrontPage({ params }: { params: { username: s
                   </div>
                 </div>
               </Link>
-            ))
-          )}
-        </div>
+))}
+</div>
+)}
+</div>
 
         {/* Bottom Navigation */}
         <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
