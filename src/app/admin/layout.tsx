@@ -35,9 +35,9 @@ export default function AdminLayout({
       <aside className="w-[260px] flex-col bg-[#0F172A] text-slate-300 hidden md:flex shrink-0">
         <div className="p-6">
           <Link href="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-bold text-white text-xl tracking-tighter italic">e</div>
+            <img src="/logo.png" alt="Zoopcart" className="h-8 object-contain bg-white px-1.5 py-0.5 rounded-lg" />
             <div>
-              <div className="font-bold text-lg text-white tracking-tight leading-none">Zypcart</div>
+              <div className="font-bold text-lg text-white tracking-tight leading-none">Zoopcart</div>
               <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-1">Super Admin</div>
             </div>
           </Link>

@@ -66,7 +66,7 @@ export default function AdminSettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Sender Email</label>
-              <input type="email" defaultValue="hello@zypcart.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-blue-500" />
+              <input type="email" defaultValue="hello@zoopcart.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-blue-500" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">API Key (Resend)</label>
@@ -87,7 +87,7 @@ export default function AdminSettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Admin Access Email</label>
-              <input type="email" defaultValue="admin@zypcart.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-blue-500" />
+              <input type="email" defaultValue="admin@zoopcart.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-blue-500" />
             </div>
             <div className="pt-2">
               <button className="text-red-500 text-sm font-bold hover:text-red-600 underline">Reset Admin Password</button>

@@ -7,7 +7,7 @@ import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { loginAdmin } from "./actions";
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState("admin@zypcart.com");
+  const [email, setEmail] = useState("admin@zoopcart.com");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,8 +31,8 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-slate-900 flex flex-col font-sans selection:bg-zyp-primary/20 text-white">
       <main className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="mb-8 flex items-center gap-2">
-          <div className="w-10 h-10 bg-zyp-primary rounded-xl flex items-center justify-center font-bold text-white text-2xl tracking-tighter italic">e</div>
-          <span className="font-bold text-3xl tracking-tight">Zypcart Admin</span>
+          <img src="/logo.png" alt="Zoopcart" className="h-10 object-contain bg-white px-2 py-1 rounded-xl" />
+          <span className="font-bold text-3xl tracking-tight ml-2">Admin</span>
         </div>
 
         <div className="bg-[#1E293B] p-8 md:p-10 rounded-3xl shadow-2xl shadow-black/50 w-full max-w-md border border-slate-700 relative overflow-hidden">

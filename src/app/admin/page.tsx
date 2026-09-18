@@ -55,7 +55,7 @@ export default function AdminDashboard() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-extrabold text-[#0F172A]">Platform Overview</h2>
-          <p className="text-sm text-slate-500 mt-1">Real-time metrics for the Zypcart ecosystem.</p>
+          <p className="text-sm text-slate-500 mt-1">Real-time metrics for the Zoopcart ecosystem.</p>
         </div>
         <div className="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-xl text-sm font-bold border border-green-100">
           <Activity className="w-4 h-4" /> Live Data

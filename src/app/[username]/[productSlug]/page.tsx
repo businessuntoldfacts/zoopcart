@@ -47,7 +47,7 @@ export default async function ProductDetailPage({ params }: { params: { username
           {product.image ? (
             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
           ) : (
-             <div className="w-full h-full flex items-center justify-center text-slate-300 font-extrabold text-2xl">Zypcart</div>
+             <div className="w-full h-full flex items-center justify-center text-slate-300 font-extrabold text-2xl">Zoopcart</div>
           )}
           {/* Mock Slider Dots */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/20 px-3 py-1.5 rounded-full backdrop-blur-sm">

@@ -121,7 +121,7 @@ export default function AdminSellersPage() {
                         </div>
                         <div>
                           <div className="font-extrabold text-[#0F172A] text-base">{seller.business_name || "Unnamed Store"}</div>
-                          <a href={`/${seller.username}`} target="_blank" className="text-xs font-bold text-blue-600 hover:underline">zypcart.com/{seller.username}</a>
+                          <a href={`/${seller.username}`} target="_blank" className="text-xs font-bold text-blue-600 hover:underline">zoopcart.com/{seller.username}</a>
                         </div>
                       </div>
                     </td>
@@ -180,7 +180,7 @@ export default function AdminSellersPage() {
                   <div>
                     <h2 className="text-3xl font-extrabold text-[#0F172A] leading-tight">{selectedSeller.business_name || "Unnamed Store"}</h2>
                     <a href={`/${selectedSeller.username}`} target="_blank" className="text-blue-600 font-bold hover:underline flex items-center gap-1 mt-1">
-                      zypcart.com/{selectedSeller.username} <ExternalLink className="w-3 h-3" />
+                      zoopcart.com/{selectedSeller.username} <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
 

@@ -75,14 +75,14 @@ export default function SignupPage() {
     <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
       <header className="p-6 flex justify-center items-center w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo.png" alt="Zypcart" className="h-12 object-contain bg-white px-2 py-1 rounded-xl" />
+          <img src="/logo.png" alt="Zoopcart" className="h-12 object-contain bg-white px-2 py-1 rounded-xl" />
         </Link>
       </header>
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-lg border border-zyp-border mb-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold mb-2 tracking-tight">Create your Zypcart</h1>
+            <h1 className="text-3xl font-extrabold mb-2 tracking-tight">Create your Zoopcart</h1>
             <p className="text-zyp-textMuted font-medium">Join thousands of social sellers</p>
           </div>
 
@@ -139,7 +139,7 @@ export default function SignupPage() {
             <div className="pt-2">
               <div className="flex rounded-lg overflow-hidden border border-gray-200 focus-within:ring-2 focus-within:ring-zyp-primary/20 focus-within:border-zyp-primary transition-colors">
                 <span className="flex items-center justify-center bg-gray-50 px-4 text-gray-500 font-medium text-sm border-r border-gray-200">
-                  zypcart.com/
+                  zoopcart.com/
                 </span>
                 <input 
                   required
@@ -155,7 +155,7 @@ export default function SignupPage() {
                 )}
               </div>
               {formData.username && (
-                <p className="text-xs text-zyp-success mt-2 font-medium">Your store URL will be: zypcart.com/{formData.username}</p>
+                <p className="text-xs text-zyp-success mt-2 font-medium">Your store URL will be: zoopcart.com/{formData.username}</p>
               )}
             </div>
 
@@ -167,7 +167,7 @@ export default function SignupPage() {
             </div>
 
             <Button type="submit" variant="primary" className="w-full text-base py-6 rounded-xl font-bold shadow-md hover:shadow-lg transition-all">
-              {loading ? "Creating..." : "Create My Zypcart →"}
+              {loading ? "Creating..." : "Create My Zoopcart →"}
             </Button>
             
             <div className="text-center mt-6 pt-6 border-t border-slate-100">

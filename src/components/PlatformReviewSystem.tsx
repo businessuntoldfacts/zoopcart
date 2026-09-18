@@ -36,9 +36,9 @@ export default function PlatformReviewSystem() {
           .limit(10);
         
                 const defaultReviews = [
-          {id: 'def1', customer_name: "Priya Sharma", quantity: 5, notes: "Zypcart completely changed how I take orders. No more messy DMs, just a clean catalog link on my Instagram bio!"},
+          {id: 'def1', customer_name: "Priya Sharma", quantity: 5, notes: "Zoopcart completely changed how I take orders. No more messy DMs, just a clean catalog link on my Instagram bio!"},
           {id: 'def2', customer_name: "Rahul Gupta", quantity: 5, notes: "The checkout process is so smooth. My conversion rate doubled because customers can order in 3 clicks without downloading any app."},
-          {id: 'def3', customer_name: "Sneha Reddy", quantity: 5, notes: "I share my products on WhatsApp groups. Now I just share my Zypcart link and all requests come perfectly organized to my dashboard."}
+          {id: 'def3', customer_name: "Sneha Reddy", quantity: 5, notes: "I share my products on WhatsApp groups. Now I just share my Zoopcart link and all requests come perfectly organized to my dashboard."}
         ];
         
         if (data && data.length > 0) {
@@ -93,7 +93,7 @@ export default function PlatformReviewSystem() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 animate-in slide-in-from-top-4">
-          <h3 className="font-bold text-[#0F172A] mb-4">How is Zypcart helping your business?</h3>
+          <h3 className="font-bold text-[#0F172A] mb-4">How is Zoopcart helping your business?</h3>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-bold text-slate-700 mb-1 block">Your Name / Brand Name</label>
@@ -123,7 +123,7 @@ export default function PlatformReviewSystem() {
                 value={comment} 
                 onChange={(e) => setComment(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 h-24 resize-none"
-                placeholder="Tell us how Zypcart has changed the way you take orders..."
+                placeholder="Tell us how Zoopcart has changed the way you take orders..."
               />
             </div>
             <div className="flex justify-end gap-3 pt-2">
@@ -164,7 +164,7 @@ export default function PlatformReviewSystem() {
         <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
           <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <h3 className="font-bold text-slate-900">No reviews yet</h3>
-          <p className="text-slate-500 text-sm mt-1">Be the first to share your experience with Zypcart!</p>
+          <p className="text-slate-500 text-sm mt-1">Be the first to share your experience with Zoopcart!</p>
         </div>
       )}
     </div>

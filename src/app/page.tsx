@@ -13,15 +13,15 @@ export default async function LandingPage() {
     .limit(3);
 
   const defaultReviews = [
-    {name: "Priya Sharma", role: "Home Baker", text: "Zypcart completely changed how I take orders. No more messy DMs, just a clean catalog link on my Instagram bio!"},
+    {name: "Priya Sharma", role: "Home Baker", text: "Zoopcart completely changed how I take orders. No more messy DMs, just a clean catalog link on my Instagram bio!"},
     {name: "Rahul Gupta", role: "Clothing Brand", text: "The checkout process is so smooth. My conversion rate doubled because customers can order in 3 clicks without downloading any app."},
-    {name: "Sneha Reddy", role: "Reseller", text: "I share my products on WhatsApp groups. Now I just share my Zypcart link and all requests come perfectly organized to my dashboard."}
+    {name: "Sneha Reddy", role: "Reseller", text: "I share my products on WhatsApp groups. Now I just share my Zoopcart link and all requests come perfectly organized to my dashboard."}
   ];
 
   const displayReviews = realBusinesses && realBusinesses.length > 0 
     ? realBusinesses.map((b, i) => ({
         name: b.business_name || `Store ${b.username}`,
-        role: `zypcart.com/${b.username}`,
+        role: `zoopcart.com/${b.username}`,
         text: defaultReviews[i % 3].text
       }))
     : defaultReviews;
@@ -39,13 +39,13 @@ export default async function LandingPage() {
           </h1>
           
           <p className="text-xl md:text-2xl text-slate-600 mb-8 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
-            Create your free Zypcart store in minutes.
+            Create your free Zoopcart store in minutes.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
             <Link href="/signup" className="w-full sm:w-auto">
               <Button variant="primary" size="lg" className="rounded-full w-full text-base font-extrabold px-8 py-7 shadow-lg shadow-blue-600/30">
-                Create My Free Zypcart Store
+                Create My Free Zoopcart Store
               </Button>
             </Link>
             <Link href="#how-it-works">
@@ -161,7 +161,7 @@ export default async function LandingPage() {
       <section id="how-it-works" className="py-24 bg-zyp-bg">
         <div className="container mx-auto px-6 max-w-5xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">How Zypcart Works</h2>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">How Zoopcart Works</h2>
             <p className="text-zyp-textMuted text-lg">From a social link to a completed order.</p>
           </div>
           
@@ -193,7 +193,7 @@ export default async function LandingPage() {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">Meet Our Real Sellers</h2>
-            <p className="text-slate-500 text-lg">Thousands of businesses use Zypcart to power their online sales.</p>
+            <p className="text-slate-500 text-lg">Thousands of businesses use Zoopcart to power their online sales.</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -203,7 +203,7 @@ export default async function LandingPage() {
                   {b.business_name ? b.business_name.charAt(0).toUpperCase() : 'S'}
                 </div>
                 <h4 className="font-extrabold text-[#0F172A] line-clamp-1">{b.business_name || `Store ${b.username}`}</h4>
-                <p className="text-xs font-medium text-pink-500 mt-1">zypcart.com/{b.username}</p>
+                <p className="text-xs font-medium text-pink-500 mt-1">zoopcart.com/{b.username}</p>
               </Link>
             ))}
           </div>
@@ -253,7 +253,7 @@ export default async function LandingPage() {
                 <CheckCircle2 className="w-6 h-6 text-yellow-600" />
               </div>
               <h3 className="text-xl font-bold text-[#0F172A] mb-3">No Coding Required</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">You don't need any technical skills to launch. Zypcart is built for creators, not developers.</p>
+              <p className="text-slate-600 leading-relaxed font-medium">You don't need any technical skills to launch. Zoopcart is built for creators, not developers.</p>
             </div>
             <div className="bg-slate-50 border border-slate-100 rounded-3xl p-8 hover:shadow-md transition-shadow">
               <div className="w-12 h-12 bg-pink-100 rounded-2xl flex items-center justify-center mb-6">
@@ -272,10 +272,10 @@ export default async function LandingPage() {
       <section className="py-20 px-6 bg-slate-50">
         <div className="max-w-5xl mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-12 text-center shadow-xl shadow-blue-900/20">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Ready to grow your business?</h2>
-          <p className="text-blue-100 text-lg mb-8 max-w-xl mx-auto">Join thousands of social sellers on Zypcart. Add products, share your link, and get more orders today.</p>
+          <p className="text-blue-100 text-lg mb-8 max-w-xl mx-auto">Join thousands of social sellers on Zoopcart. Add products, share your link, and get more orders today.</p>
           <div className="flex justify-center"><Link href="/signup">
             <Button className="bg-white text-zyp-primary hover:bg-gray-50 text-lg px-8 py-6 rounded-full font-bold shadow-lg">
-              Create My Free Zypcart Store
+              Create My Free Zoopcart Store
             </Button>
           </Link></div>
         </div>
@@ -287,7 +287,7 @@ export default async function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2 lg:col-span-2">
               <Link href="/" className="flex items-center mb-6">
-                <img src="/logo.png" alt="Zypcart" className="h-12 object-contain bg-white px-2 py-1 rounded-xl" />
+                <img src="/logo.png" alt="Zoopcart" className="h-12 object-contain bg-white px-2 py-1 rounded-xl" />
               </Link>
               <p className="text-slate-400 text-sm leading-relaxed max-w-sm mb-6">
                 The easiest way to turn your social media followers into paying customers. Create your digital storefront in minutes, completely free.
@@ -335,7 +335,7 @@ export default async function LandingPage() {
           
           <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-slate-500 text-sm">
-              &copy; {new Date().getFullYear()} Zypcart. All rights reserved.
+              &copy; {new Date().getFullYear()} Zoopcart. All rights reserved.
             </p>
             <div className="flex gap-4 text-sm text-slate-500">
               <span>Made with ❤️ for Creators</span>

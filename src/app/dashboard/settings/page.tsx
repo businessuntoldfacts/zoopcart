@@ -17,8 +17,8 @@ export default function SettingsHubPage() {
   };
 
   const [appearance, setAppearance] = useState("light");
-  useEffect(() => { setAppearance(localStorage.getItem("zypcart-theme") || "light") }, []);
-  const changeTheme = (t: string) => { setAppearance(t); localStorage.setItem("zypcart-theme", t); window.dispatchEvent(new Event("theme-changed")); };
+  useEffect(() => { setAppearance(localStorage.getItem("zoopcart-theme") || "light") }, []);
+  const changeTheme = (t: string) => { setAppearance(t); localStorage.setItem("zoopcart-theme", t); window.dispatchEvent(new Event("theme-changed")); };
 
   const menuSections: any[] = [
     {
@@ -51,8 +51,8 @@ export default function SettingsHubPage() {
             
           </div>
         ) },
-        { icon: HelpCircle, label: "Contact Us", description: "Questions, problems or suggestions", href: "mailto:support@zypcart.com" },
-        { icon: Bell, label: "What's New", description: "Updates, and suggest a feature", action: () => alert("Welcome to Zypcart v1.0!\n- Redesigned Dashboard\n- New Website Themes\n- Advanced UPI Payment Integration\n- Improved Storefront UI") },
+        { icon: HelpCircle, label: "Contact Us", description: "Questions, problems or suggestions", href: "mailto:support@zoopcart.com" },
+        { icon: Bell, label: "What's New", description: "Updates, and suggest a feature", action: () => alert("Welcome to Zoopcart v1.0!\n- Redesigned Dashboard\n- New Website Themes\n- Advanced UPI Payment Integration\n- Improved Storefront UI") },
         { icon: LogOut, label: "Logout", description: "Sign out of your account", action: handleLogout, isDanger: true }
       ]
     }

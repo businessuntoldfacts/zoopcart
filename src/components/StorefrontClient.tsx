@@ -44,13 +44,13 @@ export default function StorefrontClient({ business, products }: { business: any
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-1">
-          <span className="font-extrabold text-white text-lg tracking-tight shadow-sm">Zypcart</span>
+          <img src="/logo.png" alt="Zoopcart" className="h-6 object-contain bg-white px-1.5 py-0.5 rounded-md" />
         </div>
         <button onClick={() => {
             if (navigator.share) {
               navigator.share({
                 title: business.business_name,
-                text: business.business_description || 'Check out this store on Zypcart!',
+                text: business.business_description || 'Check out this store on Zoopcart!',
                 url: window.location.href,
               }).catch(console.error);
             } else {

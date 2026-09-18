@@ -49,7 +49,7 @@ export default function AdminOrdersPage() {
 
   const parseNotes = (notes: string) => {
     if (!notes) return { text: "No additional notes", breakdown: "" };
-    // Zypcart format usually is "Total: ₹XXX (Product: ₹XXX + Delivery: ₹XXX) | user notes"
+    // Zoopcart format usually is "Total: ₹XXX (Product: ₹XXX + Delivery: ₹XXX) | user notes"
     // Let's just return the raw string nicely formatted
     return notes;
   };
@@ -59,7 +59,7 @@ export default function AdminOrdersPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-extrabold text-[#0F172A]">All Platform Orders</h2>
-          <p className="text-sm text-slate-500 mt-1">View every order flowing through Zypcart with full details.</p>
+          <p className="text-sm text-slate-500 mt-1">View every order flowing through Zoopcart with full details.</p>
         </div>
       </div>
 
@@ -163,7 +163,7 @@ export default function AdminOrdersPage() {
                 <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Store Details</h4>
                   <div className="font-extrabold text-[#0F172A] text-lg">{selectedOrder.businesses?.business_name}</div>
-                  <a href={`/${selectedOrder.businesses?.username}`} target="_blank" className="text-sm font-bold text-blue-600 hover:underline">zypcart.com/{selectedOrder.businesses?.username}</a>
+                  <a href={`/${selectedOrder.businesses?.username}`} target="_blank" className="text-sm font-bold text-blue-600 hover:underline">zoopcart.com/{selectedOrder.businesses?.username}</a>
                 </div>
                 
                 <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
