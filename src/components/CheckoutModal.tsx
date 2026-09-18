@@ -37,6 +37,7 @@ export default function CheckoutModal({
         customer_phone: phone,
         delivery_location: address,
         quantity: quantity,
+        tracking_token: Math.random().toString(36).substring(2, 10).toUpperCase(),
         notes: "Total Amount: ₹" + totalAmount,
         status: 'pending'
       })

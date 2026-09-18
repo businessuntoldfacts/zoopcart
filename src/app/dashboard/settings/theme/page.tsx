@@ -7,39 +7,28 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { useDashboardData, invalidateDashboardCache } from "@/lib/useDashboardData";
+
 export default function ThemeSettingsPage() {
   const router = useRouter();
+  const { business: cachedBusiness, loading } = useDashboardData();
   const [business, setBusiness] = useState<any>({ id: null, theme: "light" });
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    async function loadBusiness() {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      
-      const { data } = await supabase.from('businesses').select('id, instagram_profile_url').eq('user_id', user.id).single();
-      if (data) {
-        let currentTheme = 'light';
-        try {
-          if (data.instagram_profile_url && data.instagram_profile_url.startsWith('{')) {
-            const parsed = JSON.parse(data.instagram_profile_url);
-            if (parsed.theme) currentTheme = parsed.theme;
-          } else if (data.instagram_profile_url) {
-            currentTheme = data.instagram_profile_url;
-          }
-        } catch(e) {}
-
-        setBusiness({
-          id: data.id,
-          theme: currentTheme
-        });
-      }
-      setLoading(false);
+    if (cachedBusiness) {
+      let t = "light";
+      try {
+        if (cachedBusiness.instagram_profile_url && cachedBusiness.instagram_profile_url.startsWith('{')) {
+          const parsed = JSON.parse(cachedBusiness.instagram_profile_url);
+          if (parsed.theme) t = parsed.theme;
+        } else if (cachedBusiness.instagram_profile_url) {
+          t = cachedBusiness.instagram_profile_url; // fallback for old data
+        }
+      } catch (e) {}
+      setBusiness({ id: cachedBusiness.id, theme: t });
     }
-    loadBusiness();
-  }, []);
+  }, [cachedBusiness]);
 
   const handleSave = async () => {
     if (!business.id) return;
@@ -67,8 +56,6 @@ export default function ThemeSettingsPage() {
     }
     setSaving(false);
   };
-
-  if (loading) return <div className="p-4 text-slate-500 font-medium">Loading settings...</div>;
 
   const themes = [
     { id: 'light', name: 'Minimal Light', desc: 'Clean, white backgrounds with soft borders.' },
@@ -126,3 +113,4 @@ export default function ThemeSettingsPage() {
     </div>
   );
 }
+

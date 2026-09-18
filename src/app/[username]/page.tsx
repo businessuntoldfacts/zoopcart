@@ -48,7 +48,7 @@ export default async function StorefrontPage({ params }: { params: { username: s
                 </div>
               )}
            </div>
-           <h2 className="text-xl font-extrabold text-slate-900">{business.business_name}</h2>
+           <h2 className="text-base sm:text-lg font-extrabold text-slate-900">{business.business_name}</h2>
            {business.business_description && (
              <p className="text-sm font-medium text-slate-500 mt-2 max-w-[280px] leading-relaxed">
                {business.business_description}
@@ -89,13 +89,13 @@ export default async function StorefrontPage({ params }: { params: { username: s
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
-                <div className="p-5">
+                <div className="p-3">
                   <div className="text-[10px] font-extrabold tracking-widest text-pink-500 uppercase mb-2">General</div>
-                  <h3 className="font-extrabold text-lg text-slate-900 leading-tight mb-2 line-clamp-2 group-hover:text-pink-600 transition-colors">{product.name}</h3>
+                  <h3 className="font-extrabold text-sm sm:text-base text-slate-900 leading-tight mb-2 line-clamp-2 group-hover:text-pink-600 transition-colors">{product.name}</h3>
                   <div className="flex items-baseline gap-2 mt-3">
-                    <span className="text-xl font-extrabold text-slate-900">₹{product.price}</span>
+                    <span className="text-base sm:text-lg font-extrabold text-slate-900">₹{product.price}</span>
                     {product.original_price && (
-                      <span className="text-sm font-bold text-slate-400 line-through">₹{product.original_price}</span>
+                      <span className="text-xs font-bold text-slate-400 line-through">₹{product.original_price}</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-[10px] font-bold text-green-600 mt-3 bg-green-50 self-start inline-flex px-2 py-1 rounded-md">

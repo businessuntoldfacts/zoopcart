@@ -7,46 +7,36 @@ import { ArrowLeft, CheckCircle2, Lock, QrCode } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
+import { useDashboardData } from "@/lib/useDashboardData";
+
 export default function PaymentSettingsPage() {
+  const { business: cachedBusiness, loading } = useDashboardData();
   const [method, setMethod] = useState("upi");
-  const [upiData, setUpiData] = useState({
-    id: "",
-    name: "",
-    qr: ""
-  });
-  const [businessId, setBusinessId] = useState<number | null>(null);
+  const [upiData, setUpiData] = useState({ id: "", name: "", qr: "" });
+  const [codEnabled, setCodEnabled] = useState(true);
+  const [businessId, setBusinessId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploadingQr, setUploadingQr] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
-       setLoading(true);
-       const { data: { user } } = await supabase.auth.getUser();
-       if (user) {
-         const { data } = await supabase.from('businesses').select('*').eq('user_id', user.id).single();
-         if (data) {
-           setBusinessId(data.id);
-           
-           let extraSettings: any = {};
-           try {
-             if (data.instagram_profile_url && data.instagram_profile_url.startsWith('{')) {
-               extraSettings = JSON.parse(data.instagram_profile_url);
-             }
-           } catch (e) {}
-           
-           setMethod(extraSettings.paymentMethod || "upi");
-           setUpiData({
-             id: extraSettings.upiId || "",
-             name: extraSettings.upiName || data.business_name || "",
-             qr: extraSettings.upiQr || ""
-           });
-         }
-       }
-       setLoading(false);
+    if (cachedBusiness) {
+      setBusinessId(cachedBusiness.id);
+      
+      let upi = { id: "", name: "", qr: "" };
+      let cod = true;
+      
+      try {
+        if (cachedBusiness.payment_methods) {
+          const pm = typeof cachedBusiness.payment_methods === 'string' ? JSON.parse(cachedBusiness.payment_methods) : cachedBusiness.payment_methods;
+          if (pm.upi) upi = pm.upi;
+          if (pm.cod !== undefined) cod = pm.cod;
+        }
+      } catch (e) {}
+      
+      setUpiData(upi);
+      setCodEnabled(cod);
     }
-    fetchData();
-  }, []);
+  }, [cachedBusiness]);
 
   const handleQrUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -111,8 +101,6 @@ export default function PaymentSettingsPage() {
     }
     setSaving(false);
   };
-
-  if (loading) return <div className="p-4 text-slate-500 font-medium">Loading settings...</div>;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-12 pt-4">
@@ -205,3 +193,5 @@ export default function PaymentSettingsPage() {
     </div>
   );
 }
+
+

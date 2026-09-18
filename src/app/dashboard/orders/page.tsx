@@ -26,8 +26,6 @@ export default function OrdersPage() {
     }
   };
 
-  if (loading) return <div className="text-zyp-textMuted font-medium p-4">Loading orders...</div>;
-
   return (
     <div className="flex h-[calc(100vh-140px)] gap-6">
       {/* Orders List */}

@@ -10,7 +10,7 @@ export default function HeaderMenu() {
 
   return (
     <>
-      <header className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-40 border-b border-slate-200">
+      <header className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-slate-200">
         <div className="container mx-auto px-6 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center z-50">
             <img src="/logo.png" alt="Zypcart" className="h-10 object-contain bg-white px-2 py-1 rounded-xl" />
@@ -43,7 +43,7 @@ export default function HeaderMenu() {
       </header>
 
       {/* Mobile Nav Overlay (Moved outside header to avoid backdrop-filter constraining it) */}
-      <div className={`fixed inset-0 bg-white z-[45] flex flex-col pt-20 px-6 transition-all duration-300 md:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+      <div className={`fixed inset-0 bg-white z-40 flex flex-col pt-20 px-6 transition-all duration-300 md:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
         <nav className="flex flex-col items-center w-full">
           <Link href="/" onClick={() => setIsOpen(false)} className="hover:text-blue-600 font-bold text-lg text-slate-900 transition-colors w-full py-4 border-b border-slate-100">Home</Link>
           <Link href="/#how-it-works" onClick={() => setIsOpen(false)} className="hover:text-blue-600 font-bold text-lg text-slate-900 transition-colors w-full py-4 border-b border-slate-100">How it works</Link>

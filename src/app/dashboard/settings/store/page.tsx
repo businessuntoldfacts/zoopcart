@@ -134,8 +134,6 @@ export default function StoreSettingsPage() {
     setSaving(false);
   };
 
-  if (loading) return <div className="p-4 text-slate-500 font-medium">Loading settings...</div>;
-
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-12 pt-4">
       <div className="flex items-center justify-between">

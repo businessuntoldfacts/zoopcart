@@ -15,11 +15,8 @@ export default function DashboardOverview() {
     setInsightIndex(Math.floor(Math.random() * 3));
   }, []);
 
-  if (loading) return <div className="text-slate-400 p-4 font-medium">Loading dashboard...</div>;
-  if (!business) return <div className="text-slate-400 p-4 font-medium">Please set up your store first.</div>;
-
   const userName = user?.user_metadata?.full_name?.split(' ')[0] || "Seller";
-  const businessSlug = business.username;
+  const businessSlug = business?.username || "";
 
   // Process analytics from cached orders
   const storeViews = orders.filter((o: any) => o.status === 'store_view').length;

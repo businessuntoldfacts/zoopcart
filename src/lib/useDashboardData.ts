@@ -4,8 +4,8 @@ import { supabase } from '@/lib/supabase';
 let cache = {
   user: null as any,
   business: null as any,
-  orders: null as any,
-  products: null as any,
+  orders: [] as any[],
+  products: [] as any[],
   timestamp: 0
 };
 
@@ -49,3 +49,4 @@ export function useDashboardData() {
 export function invalidateDashboardCache() {
   cache.timestamp = 0; // Force full load next time if needed
 }
+
