@@ -75,7 +75,7 @@ export default function DashboardLayout({
       <aside className="hidden md:flex w-[260px] flex-col bg-[#0F172A] text-slate-300 shrink-0">
         <div className="p-6">
           <Link href="/dashboard" className="flex items-center">
-            <img src="/logo.png" alt="Zoopcart" className="h-10 object-contain" />
+            <img src="/logo.png?v=2" alt="Zoopcart" className="h-10 object-contain" />
           </Link>
         </div>
 
@@ -124,7 +124,7 @@ export default function DashboardLayout({
         <header className="h-[72px] border-b border-zyp-border flex items-center justify-between px-6 md:px-8 bg-white shrink-0 relative z-50">
           <div className="flex items-center md:hidden">
             <Link href="/dashboard" className="flex items-center">
-              <img src="/logo.png" alt="Zoopcart" className="h-10 object-contain" />
+              <img src="/logo.png?v=2" alt="Zoopcart" className="h-10 object-contain" />
             </Link>
           </div>
           
