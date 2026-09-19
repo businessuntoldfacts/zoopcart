@@ -143,9 +143,7 @@ export default function SignupPage() {
           {error && <div className="p-4 mb-6 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100 flex items-start gap-2 animate-in shake"><XCircle className="w-5 h-5 shrink-0" /> {error}</div>}
           {success && <div className="p-4 mb-6 bg-green-50 text-green-600 rounded-2xl text-sm font-bold border border-green-100 flex items-start gap-2"><CheckCircle2 className="w-5 h-5 shrink-0" /> {success}</div>}
 
-          <form onSubmit={handleSignup} className="space-y-4"><span className="flex-shrink-0 mx-4 text-slate-400 text-sm font-medium">Or continue with email</span>
-              <div className="flex-grow border-t border-slate-200"></div>
-            </div>
+          <form onSubmit={handleSignup} className="space-y-4">
 
             <div className="grid grid-cols-2 gap-4">
               <Input 

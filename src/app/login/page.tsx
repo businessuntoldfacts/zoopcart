@@ -68,9 +68,7 @@ export default function LoginPage() {
 
           {error && <div className="p-3 mb-6 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">{error}</div>}
 
-          <form onSubmit={handleLogin} className="space-y-4"><span className="flex-shrink-0 mx-4 text-slate-400 text-sm font-medium">Or continue with email</span>
-              <div className="flex-grow border-t border-slate-200"></div>
-            </div>
+          <form onSubmit={handleLogin} className="space-y-4">
 
             <div>
               <Input 
