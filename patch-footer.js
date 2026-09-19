@@ -2,16 +2,34 @@ const fs = require('fs');
 
 let code = fs.readFileSync('src/app/page.tsx', 'utf8');
 
-// Change Footer Background
-code = code.replace(/<footer className="bg-black text-slate-400 py-16">/, '<footer className="bg-slate-50 border-t border-slate-200 text-slate-600 py-16">');
-// Change headings in footer
-code = code.replace(/text-white mb-6/g, 'text-slate-900 mb-6');
-// Change text colors in footer links
-code = code.replace(/hover:text-white transition-colors/g, 'hover:text-blue-600 transition-colors');
-// Change social icons
-code = code.replace(/bg-slate-800 text-white/g, 'bg-slate-200 text-slate-700 hover:bg-blue-100 hover:text-blue-600');
-// Change copyright text
-code = code.replace(/border-slate-800 pt-8 text-center text-sm/g, 'border-slate-200 pt-8 text-center text-sm font-medium');
+// Replace Product section
+code = code.replace(/<h4 className="text-slate-900 font-bold mb-4">Product<\/h4>\s*<ul className="space-y-3">[\s\S]*?<\/ul>/, 
+`<h4 className="text-slate-900 font-bold mb-4">Product</h4>
+                <ul className="space-y-3">
+                  <li><Link href="/features" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Features</Link></li>
+                  <li><Link href="/integrations" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Integrations</Link></li>
+                  <li><Link href="/#faq" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">FAQ</Link></li>
+                </ul>`);
+
+// Replace Resources section
+code = code.replace(/<h4 className="text-slate-900 font-bold mb-4">Resources<\/h4>\s*<ul className="space-y-3">[\s\S]*?<\/ul>/, 
+`<h4 className="text-slate-900 font-bold mb-4">Resources</h4>
+                <ul className="space-y-3">
+                  <li><Link href="/help" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Help Center</Link></li>
+                  <li><Link href="/blog" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Blog</Link></li>
+                  <li><Link href="/community" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Seller Community</Link></li>
+                  <li><Link href="/success-stories" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Success Stories</Link></li>
+                </ul>`);
+
+// Replace Company section
+code = code.replace(/<h4 className="text-slate-900 font-bold mb-4">Company<\/h4>\s*<ul className="space-y-3">[\s\S]*?<\/ul>/, 
+`<h4 className="text-slate-900 font-bold mb-4">Company</h4>
+                <ul className="space-y-3">
+                  <li><Link href="/about" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">About Us</Link></li>
+                  <li><Link href="/careers" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Careers</Link></li>
+                  <li><Link href="/privacy" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Privacy Policy</Link></li>
+                  <li><Link href="/terms" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Terms of Service</Link></li>
+                </ul>`);
 
 fs.writeFileSync('src/app/page.tsx', code);
-console.log("Updated Footer");
+console.log("Updated footer links in page.tsx");

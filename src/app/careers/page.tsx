@@ -10,22 +10,20 @@ export default function Page() {
       <main className="pt-32 pb-24 flex-grow">
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">Terms of Service</h1>
-            <p className="text-xl text-slate-500 font-medium">The rules of the road for using Zoopcart.</p>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">Careers at Zoopcart</h1>
+            <p className="text-xl text-slate-500 font-medium">Help us build the future of social commerce.</p>
           </div>
           
-          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `Last updated: January 2026
+          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `We are a small, fast-moving team dedicated to empowering independent creators and small businesses.
 <br/><br/>
-By using Zoopcart, you agree to the following terms and conditions.
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Open Positions</h3>
+<ul class="list-disc pl-5 space-y-4 text-slate-600 text-lg">
+  <li><b>Senior Full-Stack Engineer (Next.js/Node)</b> - Remote (India)</li>
+  <li><b>Product Designer (UI/UX)</b> - Remote (India)</li>
+  <li><b>Customer Success Specialist</b> - Remote (India)</li>
+</ul>
 <br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Acceptable Use</h3>
-You agree not to use Zoopcart to sell illegal goods, restricted substances, or engage in fraudulent activities. We reserve the right to suspend or terminate accounts that violate our policies.
-<br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Account Responsibilities</h3>
-You are responsible for maintaining the security of your account credentials. You are also responsible for fulfilling the orders placed by customers through your store. Zoopcart acts purely as an enabler and is not liable for disputes between you and your buyers.
-<br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Service Availability</h3>
-While we strive for 99.9% uptime, Zoopcart is provided "as is". We are not liable for any lost revenue due to temporary service interruptions or bugs.` }} />
+<p class="text-slate-600 text-lg">Don't see a role that fits? We are always looking for talented individuals. Send your resume to <b>careers@zoopcart.com</b> and tell us how you can help.</p>` }} />
         </div>
       </main>
       

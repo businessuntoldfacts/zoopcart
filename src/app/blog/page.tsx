@@ -10,22 +10,26 @@ export default function Page() {
       <main className="pt-32 pb-24 flex-grow">
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">Terms of Service</h1>
-            <p className="text-xl text-slate-500 font-medium">The rules of the road for using Zoopcart.</p>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">The Zoopcart Blog</h1>
+            <p className="text-xl text-slate-500 font-medium">Tips, tricks, and strategies to grow your social commerce business.</p>
           </div>
           
-          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `Last updated: January 2026
+          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `Read the latest articles from our team of e-commerce experts.
 <br/><br/>
-By using Zoopcart, you agree to the following terms and conditions.
-<br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Acceptable Use</h3>
-You agree not to use Zoopcart to sell illegal goods, restricted substances, or engage in fraudulent activities. We reserve the right to suspend or terminate accounts that violate our policies.
-<br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Account Responsibilities</h3>
-You are responsible for maintaining the security of your account credentials. You are also responsible for fulfilling the orders placed by customers through your store. Zoopcart acts purely as an enabler and is not liable for disputes between you and your buyers.
-<br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Service Availability</h3>
-While we strive for 99.9% uptime, Zoopcart is provided "as is". We are not liable for any lost revenue due to temporary service interruptions or bugs.` }} />
+<div class="grid md:grid-cols-2 gap-8 mt-8">
+  <div class="p-6 border border-slate-200 rounded-3xl hover:shadow-md transition-shadow">
+    <span class="text-sm font-bold text-blue-600 mb-2 block">Growth</span>
+    <h3 class="text-xl font-bold mb-3 text-[#111111]">How to optimize your Instagram Bio for Sales</h3>
+    <p class="text-slate-600 mb-4">Learn the exact formula to turn your Instagram profile visitors into paying customers using a clean bio structure and a Zoopcart link.</p>
+    <a href="#" class="font-semibold text-[#111111] hover:underline">Read article →</a>
+  </div>
+  <div class="p-6 border border-slate-200 rounded-3xl hover:shadow-md transition-shadow">
+    <span class="text-sm font-bold text-blue-600 mb-2 block">Case Study</span>
+    <h3 class="text-xl font-bold mb-3 text-[#111111]">How Sneha scaled her bakery to 100 orders/day</h3>
+    <p class="text-slate-600 mb-4">Discover how moving from manual DMs to an automated Zoopcart catalog helped a local home baker scale operations seamlessly.</p>
+    <a href="#" class="font-semibold text-[#111111] hover:underline">Read article →</a>
+  </div>
+</div>` }} />
         </div>
       </main>
       

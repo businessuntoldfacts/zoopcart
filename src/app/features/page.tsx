@@ -10,22 +10,23 @@ export default function Page() {
       <main className="pt-32 pb-24 flex-grow">
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">Terms of Service</h1>
-            <p className="text-xl text-slate-500 font-medium">The rules of the road for using Zoopcart.</p>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">Powerful Features for Social Sellers</h1>
+            <p className="text-xl text-slate-500 font-medium">Everything you need to run your WhatsApp, Instagram, or TikTok store effortlessly.</p>
           </div>
           
-          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `Last updated: January 2026
+          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `We built Zoopcart specifically for modern social media sellers. 
 <br/><br/>
-By using Zoopcart, you agree to the following terms and conditions.
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">1. Instant WhatsApp Ordering</h3>
+Your customers can browse your beautiful catalog and send their structured order directly to your WhatsApp. No more back-and-forth messaging trying to understand what they want.
 <br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Acceptable Use</h3>
-You agree not to use Zoopcart to sell illegal goods, restricted substances, or engage in fraudulent activities. We reserve the right to suspend or terminate accounts that violate our policies.
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">2. Zero Transaction Fees</h3>
+We don't take a cut of your hard-earned money. Connect your UPI, bank account, or accept Cash on Delivery with absolutely zero commission.
 <br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Account Responsibilities</h3>
-You are responsible for maintaining the security of your account credentials. You are also responsible for fulfilling the orders placed by customers through your store. Zoopcart acts purely as an enabler and is not liable for disputes between you and your buyers.
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">3. Inventory Management</h3>
+Never sell what you don't have. Track your stock levels in real-time, get low-stock alerts, and automatically mark products as 'Out of Stock' when they sell out.
 <br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Service Availability</h3>
-While we strive for 99.9% uptime, Zoopcart is provided "as is". We are not liable for any lost revenue due to temporary service interruptions or bugs.` }} />
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">4. Custom Domain</h3>
+Build your brand identity. Link your own custom domain (e.g., yourbrand.com) to your Zoopcart store and give your customers a premium shopping experience.` }} />
         </div>
       </main>
       

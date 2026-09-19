@@ -308,32 +308,31 @@ export default async function LandingPage() {
             
             <div>
               <h4 className="text-slate-900 font-bold mb-4">Product</h4>
-              <ul className="space-y-3">
-                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Features</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Pricing</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Integrations</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">FAQ</a></li>
-              </ul>
+                <ul className="space-y-3">
+                  <li><Link href="/features" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Features</Link></li>
+                  <li><Link href="/integrations" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Integrations</Link></li>
+                  <li><Link href="/#faq" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">FAQ</Link></li>
+                </ul>
             </div>
             
             <div>
               <h4 className="text-slate-900 font-bold mb-4">Resources</h4>
-              <ul className="space-y-3">
-                <li><Link href="/help" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Help Center</Link></li>
-                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Blog</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Seller Community</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Success Stories</a></li>
-              </ul>
+                <ul className="space-y-3">
+                  <li><Link href="/help" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Help Center</Link></li>
+                  <li><Link href="/blog" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Blog</Link></li>
+                  <li><Link href="/community" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Seller Community</Link></li>
+                  <li><Link href="/success-stories" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Success Stories</Link></li>
+                </ul>
             </div>
             
             <div>
               <h4 className="text-slate-900 font-bold mb-4">Company</h4>
-              <ul className="space-y-3">
-                <li><Link href="/about" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">About Us</Link></li>
-                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Careers</a></li>
-                <li><Link href="/privacy" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Terms of Service</Link></li>
-              </ul>
+                <ul className="space-y-3">
+                  <li><Link href="/about" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">About Us</Link></li>
+                  <li><Link href="/careers" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Careers</Link></li>
+                  <li><Link href="/privacy" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Privacy Policy</Link></li>
+                  <li><Link href="/terms" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Terms of Service</Link></li>
+                </ul>
             </div>
           </div>
           

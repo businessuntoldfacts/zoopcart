@@ -10,22 +10,20 @@ export default function Page() {
       <main className="pt-32 pb-24 flex-grow">
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">Terms of Service</h1>
-            <p className="text-xl text-slate-500 font-medium">The rules of the road for using Zoopcart.</p>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">Seller Community</h1>
+            <p className="text-xl text-slate-500 font-medium">Join thousands of ambitious sellers growing together.</p>
           </div>
           
-          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `Last updated: January 2026
+          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `Building a business is hard, but you don't have to do it alone. The Zoopcart Seller Community is a private space for verified merchants to share strategies, ask questions, and network.
 <br/><br/>
-By using Zoopcart, you agree to the following terms and conditions.
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Weekly Masterclasses</h3>
+Join our live Zoom sessions every Friday where top sellers share their exact blueprints for running successful WhatsApp ad campaigns.
 <br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Acceptable Use</h3>
-You agree not to use Zoopcart to sell illegal goods, restricted substances, or engage in fraudulent activities. We reserve the right to suspend or terminate accounts that violate our policies.
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Exclusive Resources</h3>
+Get access to high-converting product photography templates, WhatsApp broadcast message scripts, and pricing calculators.
 <br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Account Responsibilities</h3>
-You are responsible for maintaining the security of your account credentials. You are also responsible for fulfilling the orders placed by customers through your store. Zoopcart acts purely as an enabler and is not liable for disputes between you and your buyers.
-<br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Service Availability</h3>
-While we strive for 99.9% uptime, Zoopcart is provided "as is". We are not liable for any lost revenue due to temporary service interruptions or bugs.` }} />
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">How to join</h3>
+The community is currently invite-only for merchants with at least 10 processed orders on Zoopcart. Check your dashboard for an invite link once you hit the milestone!` }} />
         </div>
       </main>
       

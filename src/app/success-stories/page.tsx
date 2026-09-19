@@ -10,22 +10,17 @@ export default function Page() {
       <main className="pt-32 pb-24 flex-grow">
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">Terms of Service</h1>
-            <p className="text-xl text-slate-500 font-medium">The rules of the road for using Zoopcart.</p>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-[#111111] mb-6 tracking-tight">Customer Success Stories</h1>
+            <p className="text-xl text-slate-500 font-medium">Real businesses. Real growth. See how they did it.</p>
           </div>
           
-          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `Last updated: January 2026
+          <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed bg-slate-50 p-8 md:p-12 rounded-[32px] border border-slate-100 shadow-sm" dangerouslySetInnerHTML={{ __html: `Nothing makes us happier than seeing our merchants succeed. 
 <br/><br/>
-By using Zoopcart, you agree to the following terms and conditions.
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">From 10 to 500 orders a month</h3>
+"Before Zoopcart, I was spending 6 hours a day just replying to WhatsApp messages asking 'price plz'. Now, customers see the catalog, build their cart, and send me a neat order summary. It literally gave me my life back." <br/><b>- Rahul, Clothing Brand Owner</b>
 <br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Acceptable Use</h3>
-You agree not to use Zoopcart to sell illegal goods, restricted substances, or engage in fraudulent activities. We reserve the right to suspend or terminate accounts that violate our policies.
-<br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Account Responsibilities</h3>
-You are responsible for maintaining the security of your account credentials. You are also responsible for fulfilling the orders placed by customers through your store. Zoopcart acts purely as an enabler and is not liable for disputes between you and your buyers.
-<br/><br/>
-<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Service Availability</h3>
-While we strive for 99.9% uptime, Zoopcart is provided "as is". We are not liable for any lost revenue due to temporary service interruptions or bugs.` }} />
+<h3 class="text-2xl font-bold mb-4 mt-8 text-[#111111]">Organizing chaos into a system</h3>
+"I used to write down orders in a notebook and frequently missed shipments. The Zoopcart dashboard lets me change order statuses from 'Pending' to 'Shipped', and I never miss an order anymore." <br/><b>- Priya, Home Baker</b>` }} />
         </div>
       </main>
       
