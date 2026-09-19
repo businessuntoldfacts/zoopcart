@@ -35,7 +35,7 @@ export default async function LandingPage() {
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
-        <div className="flex-1 text-center lg:text-left z-10">
+        <div className="flex-1 text-center lg:text-left z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0F172A] mb-6 leading-tight">
             Already selling through <span className="text-[#111111]">Instagram</span>, <span className="text-slate-800">YouTube</span> or <span className="text-black">TikTok?</span>
           </h1>
