@@ -135,21 +135,21 @@ export default function DashboardLayout({
              </h1>
           </div>
 
-          <div className="flex items-center gap-6">
-            <button className="relative text-slate-500 hover:text-slate-600 transition-colors hidden sm:block">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <button className="relative text-slate-500 hover:text-blue-600 transition-colors">
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
             </button>
-            <div className="flex items-center gap-3 border-l border-zyp-border pl-6 relative" ref={profileRef}>
+            <div className="flex items-center gap-3 border-l border-zyp-border pl-4 sm:pl-6 relative" ref={profileRef}>
               <div className="hidden sm:block text-right">
                 <div className="text-sm font-bold text-slate-900 leading-tight">{businessData.name}</div>
                 <div className="text-xs text-slate-500 font-medium">Seller</div>
               </div>
               <button 
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="relative w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700 border border-slate-200 hover:ring-2 hover:ring-blue-500 transition-all shadow-sm group cursor-pointer"
+                className="relative w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-sm font-extrabold text-white shadow-md hover:shadow-lg transition-all ring-2 ring-white hover:ring-blue-100 group cursor-pointer"
               >
-                <div className="w-full h-full rounded-full overflow-hidden">
+                <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
                   {businessData.image ? (
                     <img src={businessData.image} alt={businessData.name} className="w-full h-full object-cover" />
                   ) : (
