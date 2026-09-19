@@ -8,7 +8,7 @@ export default function Logo({ className = "", darkText = false }: { className?:
   return (
     <div className={`flex items-center hover:opacity-90 transition-opacity ${className}`}>
       <img 
-        src="/logo-final.jpg?v=3" 
+        src="/logo-final.jpg?v=4" 
         alt="Zoopcart" 
         className="h-10 md:h-12 w-auto object-contain" 
         style={{ mixBlendMode: 'multiply' }}
