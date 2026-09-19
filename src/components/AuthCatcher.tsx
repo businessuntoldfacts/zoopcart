@@ -19,7 +19,7 @@ export default function AuthCatcher() {
       const { data } = await supabase.auth.getSession();
       if (data?.session) {
         // Uncomment below to strictly redirect all logged-in users from homepage to dashboard
-        // router.push('/dashboard');
+        router.push('/dashboard');
       }
     };
     checkSession();
