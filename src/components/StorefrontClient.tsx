@@ -39,8 +39,8 @@ export default function StorefrontClient({ business, products }: { business: any
       
 
       {/* Top Header - Floating over purple gradient */}
-      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 h-14 bg-white/10 backdrop-blur-md">
-        <button onClick={() => { if (window.history.length > 1) router.back(); }} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30">
+      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 h-16 bg-white border-b border-slate-100 shadow-sm">
+        <button onClick={() => { if (window.history.length > 1) router.back(); }} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-600 transition-colors hover:bg-slate-100">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-1">
@@ -57,7 +57,7 @@ export default function StorefrontClient({ business, products }: { business: any
               navigator.clipboard.writeText(window.location.href);
               alert("Store link copied to clipboard!");
             }
-        }} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30">
+        }} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-600 transition-colors hover:bg-slate-100">
           <Share2 className="w-5 h-5" />
         </button>
       </header>

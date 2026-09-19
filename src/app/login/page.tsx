@@ -53,6 +53,9 @@ export default function LoginPage() {
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-md border border-zyp-border">
           <div className="text-center mb-8">
+            <div className="flex justify-center mb-6">
+              <Logo darkText={true} />
+            </div>
             <h1 className="text-3xl font-extrabold mb-2 tracking-tight">Welcome back</h1>
             <p className="text-zyp-textMuted">Log in to manage your store</p>
           </div>
