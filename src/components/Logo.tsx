@@ -1,17 +1,30 @@
 import React from 'react';
 
 export default function Logo({ className = "", darkText = false }: { className?: string, darkText?: boolean }) {
-  // We now have two native images provided by the user: one with a pure white background, one with a pure black background.
-  // No CSS hacks required! Just render the correct image.
+  // This is a White-Background JPEG with Dark Navy text and a Blue Cart.
   
-  const imgSrc = darkText ? "/logo-light.jpg?v=1" : "/logo-dark.jpg?v=1";
+  // For Light Theme (White Headers):
+  // We use multiply to drop the white background seamlessly into any off-white or white header.
+  const lightBgStyle = {
+    mixBlendMode: "multiply" as const
+  };
+  
+  // For Dark Theme (Black/Navy Headers & Footers):
+  // 1. invert(1) turns White BG to Black, and Navy text to Light Grey/White.
+  // 2. hue-rotate(180deg) keeps the inverted orange cart back to its original bright Blue!
+  // 3. screen blend mode drops the new Black background seamlessly.
+  const darkBgStyle = {
+    filter: "invert(1) hue-rotate(180deg) brightness(1.2)",
+    mixBlendMode: "screen" as const
+  };
 
   return (
     <div className={`flex items-center hover:opacity-90 transition-opacity ${className}`}>
       <img 
-        src={imgSrc} 
+        src="/logo-final.jpg?v=1" 
         alt="Zoopcart" 
-        className="h-10 md:h-12 w-auto object-contain mix-blend-normal" 
+        className="h-10 md:h-12 w-auto object-contain" 
+        style={darkText ? lightBgStyle : darkBgStyle}
       />
     </div>
   );
