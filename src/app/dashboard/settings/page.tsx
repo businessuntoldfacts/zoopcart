@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { ChevronRight, BarChart2, Store, Palette, Wallet, Sun, HelpCircle, Bell, LogOut } from "lucide-react";

@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { usePathname } from "next/navigation";

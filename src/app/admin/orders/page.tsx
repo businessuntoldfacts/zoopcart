@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Search, Eye, MapPin, Calendar, CreditCard, ShoppingBag, Truck } from "lucide-react";

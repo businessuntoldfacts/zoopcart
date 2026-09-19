@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { ArrowLeft, Search, CheckCircle2, MessageCircle, MapPin, FileText, Package } from "lucide-react";

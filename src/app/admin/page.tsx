@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Users, ShoppingBag, Store, TrendingUp, Activity, IndianRupee } from "lucide-react";

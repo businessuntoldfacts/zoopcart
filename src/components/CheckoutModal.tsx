@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { ArrowRight, ShoppingBag, X, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

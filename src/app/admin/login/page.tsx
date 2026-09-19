@@ -1,6 +1,5 @@
-import Logo from "@/components/Logo";
 "use client";
-
+import Logo from "@/components/Logo";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

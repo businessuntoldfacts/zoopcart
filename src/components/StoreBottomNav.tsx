@@ -1,5 +1,4 @@
 "use client";
-
 import Link from 'next/link';
 import { Heart, Home, Truck } from 'lucide-react';
 import { usePathname } from 'next/navigation';

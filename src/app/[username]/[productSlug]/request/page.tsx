@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { ArrowLeft, CheckCircle2, Copy, MessageCircle, User, Phone, Mail, FileText, MapPin, Calendar, CreditCard, ChevronDown } from "lucide-react";
