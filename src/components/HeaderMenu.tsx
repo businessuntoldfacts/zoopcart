@@ -13,7 +13,7 @@ export default function HeaderMenu() {
       <header className="fixed top-0 w-full bg-[#0F172A]/95 backdrop-blur-md z-50 border-b border-slate-800">
         <div className="container mx-auto px-6 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center z-50">
-            <img src="/logo.png?v=2" alt="Zoopcart" className="h-10 object-contain" style={{ mixBlendMode: "screen" }} />
+            <img src="/logo.png?v=3" alt="Zoopcart" className="h-10 object-contain" style={{ mixBlendMode: "screen" }} />
           </Link>
           
           {/* Desktop Nav */}

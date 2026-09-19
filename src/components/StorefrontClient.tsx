@@ -44,7 +44,7 @@ export default function StorefrontClient({ business, products }: { business: any
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-1">
-          <img src="/logo.png?v=2" alt="Zoopcart" className="h-6 object-contain" style={{ mixBlendMode: "screen" }} />
+          <img src="/logo.png?v=3" alt="Zoopcart" className="h-6 object-contain" style={{ mixBlendMode: "screen" }} />
         </div>
         <button onClick={() => {
             if (navigator.share) {

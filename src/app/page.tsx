@@ -287,7 +287,7 @@ export default async function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2 lg:col-span-2">
               <Link href="/" className="flex items-center mb-6">
-                <img src="/logo.png?v=2" alt="Zoopcart" className="h-12 object-contain" style={{ mixBlendMode: "screen" }} />
+                <img src="/logo.png?v=3" alt="Zoopcart" className="h-12 object-contain" style={{ mixBlendMode: "screen" }} />
               </Link>
               <p className="text-slate-400 text-sm leading-relaxed max-w-sm mb-6">
                 The easiest way to turn your social media followers into paying customers. Create your digital storefront in minutes, completely free.
