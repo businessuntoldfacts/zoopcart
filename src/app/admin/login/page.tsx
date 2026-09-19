@@ -35,7 +35,7 @@ export default function AdminLogin() {
           <span className="font-bold text-3xl tracking-tight ml-2">Admin</span>
         </div>
 
-        <div className="bg-black p-8 md:p-10 rounded-3xl shadow-2xl shadow-black/50 w-full max-w-md border border-slate-700 relative overflow-hidden">
+        <div className="bg-slate-50 p-8 md:p-10 rounded-3xl shadow-2xl shadow-black/50 w-full max-w-md border border-slate-700 relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
           
           <div className="text-center mb-8">

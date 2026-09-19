@@ -91,14 +91,14 @@ export default function DashboardLayout({
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
                   isActive
-                    ? "bg-pink-500 text-white shadow-md shadow-pink-500/20"
-                    : "hover:bg-white/10 hover:text-white"
+                    ? "bg-pink-500 text-slate-900 shadow-md shadow-pink-500/20"
+                    : "hover:bg-white/10 hover:text-slate-900"
                 )}
               >
-                <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-400 group-hover:text-white")} />
+                <Icon className={cn("w-5 h-5", isActive ? "text-slate-900" : "text-slate-500 group-hover:text-slate-900")} />
                 {item.name}
                 {item.badge && (
-                  <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  <span className="ml-auto bg-red-500 text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                     {item.badge}
                   </span>
                 )}
@@ -108,11 +108,11 @@ export default function DashboardLayout({
         </nav>
 
         <div className="p-4 mt-auto">
-          <button className="flex w-full items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-white transition-colors mb-2">
+          <button className="flex w-full items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-white/10 hover:text-slate-900 transition-colors mb-2">
             <HelpCircle className="w-5 h-5" />
             Help
           </button>
-          <button onClick={handleLogout} className="flex w-full items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-red-400 transition-colors">
+          <button onClick={handleLogout} className="flex w-full items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-white/10 hover:text-red-400 transition-colors">
             <LogOut className="w-5 h-5" />
             Logout
           </button>
@@ -136,7 +136,7 @@ export default function DashboardLayout({
           </div>
 
           <div className="flex items-center gap-6">
-            <button className="relative text-slate-400 hover:text-slate-600 transition-colors hidden sm:block">
+            <button className="relative text-slate-500 hover:text-slate-600 transition-colors hidden sm:block">
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
             </button>
@@ -204,7 +204,7 @@ export default function DashboardLayout({
                 <div className="relative">
                   <Icon className={cn("w-5 h-5", isActive && "fill-current/10")} />
                   {item.badge && (
-                    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-bold px-1 rounded-full border border-white">
+                    <span className="absolute -top-1 -right-2 bg-red-500 text-slate-900 text-[9px] font-bold px-1 rounded-full border border-white">
                       {item.badge}
                     </span>
                   )}

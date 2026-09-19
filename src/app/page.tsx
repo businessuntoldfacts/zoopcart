@@ -306,30 +306,30 @@ export default async function LandingPage() {
             <div>
               <h4 className="text-white font-bold mb-4">Product</h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Features</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Pricing</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Integrations</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">FAQ</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Features</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Pricing</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Integrations</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">FAQ</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="text-white font-bold mb-4">Resources</h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Help Center</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Blog</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Seller Community</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Success Stories</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Help Center</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Blog</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Seller Community</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Success Stories</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="text-white font-bold mb-4">Company</h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">About Us</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Careers</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Privacy Policy</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Terms of Service</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">About Us</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Careers</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Privacy Policy</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-blue-600 transition-colors text-sm">Terms of Service</a></li>
               </ul>
             </div>
           </div>

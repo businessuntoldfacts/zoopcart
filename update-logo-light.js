@@ -1,4 +1,6 @@
-import React from 'react';
+const fs = require('fs');
+
+const logoCode = `import React from 'react';
 
 export default function Logo({ className = "", darkText = false }: { className?: string, darkText?: boolean }) {
   // Universally use multiply blend mode. Since we are moving to a 100% Light Theme UI, 
@@ -6,13 +8,17 @@ export default function Logo({ className = "", darkText = false }: { className?:
   // leaving the logo crisp and untouched!
   
   return (
-    <div className={`flex items-center hover:opacity-90 transition-opacity ${className}`}>
+    <div className={\`flex items-center hover:opacity-90 transition-opacity \${className}\`}>
       <img 
         src="/logo-final.jpg?v=2" 
         alt="Zoopcart" 
-        className="h-12 md:h-16 w-auto scale-110 origin-left object-contain" 
+        className="h-10 md:h-12 w-auto object-contain" 
         style={{ mixBlendMode: 'multiply' }}
       />
     </div>
   );
 }
+`;
+
+fs.writeFileSync('src/components/Logo.tsx', logoCode);
+console.log("Updated Logo.tsx");
