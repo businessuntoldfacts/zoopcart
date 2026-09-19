@@ -23,8 +23,8 @@ export default function HeaderMenu() {
   return (
     <>
       <header className="fixed top-0 w-full bg-white z-40 border-b border-slate-100">
-        <div className="container mx-auto px-6 h-16 flex justify-between items-center">
-          <Link href="/" className="flex items-center z-50">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-6 h-16 flex justify-between items-center">
+          <Link href="/" className="flex items-center z-50 -ml-1">
             <Logo darkText={true} />
           </Link>
           
@@ -45,13 +45,18 @@ export default function HeaderMenu() {
             </Link>
           </div>
 
-          {/* Mobile Toggle */}
-          <button 
-            className="md:hidden text-slate-800 z-50 p-2 relative" 
-            onClick={() => setIsOpen(true)}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
+          {/* Mobile Right Side */}
+          <div className="flex items-center gap-1 md:hidden z-50">
+            <Link href="/signup">
+              <Button variant="primary" className="h-8 rounded-full px-4 text-sm shadow-sm font-bold">Start free</Button>
+            </Link>
+            <button 
+              className="text-slate-800 p-2 relative -mr-2" 
+              onClick={() => setIsOpen(true)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -64,7 +69,7 @@ export default function HeaderMenu() {
       {/* Mobile Nav Popup */}
       <div className={`fixed top-4 left-4 right-4 bg-white rounded-[24px] z-[70] flex flex-col p-6 transition-all duration-300 ease-out transform origin-top md:hidden shadow-2xl ${isOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible -translate-y-4'}`}>
         <div className="flex justify-between items-center border-b border-slate-100 pb-4 mb-2">
-          <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center">
+          <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center -ml-1">
             <Logo darkText={true} />
           </Link>
           <button className="text-slate-800 p-2 -mr-2 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors" onClick={() => setIsOpen(false)}>
@@ -73,12 +78,10 @@ export default function HeaderMenu() {
         </div>
         
         <nav className="flex flex-col items-start w-full gap-0 overflow-y-auto max-h-[60vh]">
-          <Link href="/" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Products</Link>
-          <Link href="/#how-it-works" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Business types</Link>
-          <Link href="/#reviews" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Pricing</Link>
-          <Link href="/help" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Help center</Link>
-          <Link href="/#faq" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Compare alternatives</Link>
-          <Link href="/about" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4">Download app</Link>
+          <Link href="/" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Home</Link>
+          <Link href="/#how-it-works" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">How it works</Link>
+          <Link href="/#reviews" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Reviews</Link>
+          <Link href="/#faq" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4">FAQ</Link>
         </nav>
         
         <div className="flex flex-col w-full gap-3 mt-4 pt-4 border-t border-slate-100 bg-white">
