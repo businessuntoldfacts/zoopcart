@@ -23,7 +23,7 @@ export default function HeaderMenu() {
   return (
     <>
       <header className="fixed top-0 w-full bg-white z-40 border-b border-slate-100">
-        <div className="w-full max-w-7xl mx-auto px-4 md:px-6 h-16 flex justify-between items-center">
+        <div className="w-full max-w-7xl mx-auto px-3 md:px-6 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center z-50 -ml-1">
             <Logo darkText={true} />
           </Link>
@@ -46,15 +46,15 @@ export default function HeaderMenu() {
           </div>
 
           {/* Mobile Right Side */}
-          <div className="flex items-center gap-1 md:hidden z-50">
+          <div className="flex items-center gap-1.5 md:hidden z-50">
             <Link href="/signup">
-              <Button variant="primary" className="h-8 rounded-full px-4 text-sm shadow-sm font-bold">Start free</Button>
+              <Button variant="primary" className="h-[32px] rounded-full px-4 text-[13px] font-semibold tracking-wide shadow-none border border-transparent flex items-center justify-center">Start free</Button>
             </Link>
             <button 
-              className="text-slate-800 p-2 relative -mr-2" 
+              className="text-slate-800 p-1.5 relative -mr-1" 
               onClick={() => setIsOpen(true)}
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-6 h-6" strokeWidth={2.5} />
             </button>
           </div>
         </div>
