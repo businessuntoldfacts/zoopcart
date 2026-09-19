@@ -32,7 +32,7 @@ export default function AdminLayout({
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-sans">
       {/* Admin Sidebar */}
-      <aside className="w-[260px] flex-col bg-[#0F172A] text-slate-300 hidden md:flex shrink-0">
+      <aside className="w-[260px] flex-col bg-black text-slate-300 hidden md:flex shrink-0">
         <div className="p-6">
           <Link href="/admin" className="flex items-center gap-2">
             <Logo />

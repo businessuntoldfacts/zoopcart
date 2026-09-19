@@ -10,7 +10,7 @@ export default function HeaderMenu() {
 
   return (
     <>
-      <header className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-slate-200">
+      <header className="fixed top-0 w-full bg-white z-50 border-b border-slate-100">
         <div className="container mx-auto px-6 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center z-50">
             <Logo darkText={true} />
