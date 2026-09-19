@@ -56,14 +56,14 @@ export default function OrderTracker({ businessId }: { businessId: string }) {
               placeholder="Order ID or Phone" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-pink-500 font-bold bg-white" 
+              className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 font-bold bg-white" 
             />
          </div>
 
          <Button 
             onClick={handleTrack}
             disabled={loading}
-            className="w-full h-12 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-extrabold shadow-md shadow-pink-600/20 border-none"
+            className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold shadow-md shadow-blue-600/20 border-none"
          >
            {loading ? "Tracking..." : "Track Package"}
          </Button>

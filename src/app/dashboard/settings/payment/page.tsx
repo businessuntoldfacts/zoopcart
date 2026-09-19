@@ -107,7 +107,7 @@ export default function PaymentSettingsPage() {
         <Link href="/dashboard/settings" className="flex items-center text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-1" /> Settings
         </Link>
-        <Button onClick={handleSave} disabled={saving} variant="primary" className="rounded-xl px-6 bg-pink-500 hover:bg-pink-600 border-none shadow-md font-bold text-white">
+        <Button onClick={handleSave} disabled={saving} variant="primary" className="rounded-xl px-6 bg-blue-500 hover:bg-blue-600 border-none shadow-md font-bold text-white">
           {saving ? "Saving..." : "Save"}
         </Button>
       </div>
@@ -164,7 +164,7 @@ export default function PaymentSettingsPage() {
             <Input type="file" accept="image/*" onChange={handleQrUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
             {uploadingQr && (
               <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-20">
-                <span className="text-sm font-bold text-pink-500 animate-pulse">Uploading...</span>
+                <span className="text-sm font-bold text-blue-500 animate-pulse">Uploading...</span>
               </div>
             )}
           </div>
@@ -173,12 +173,12 @@ export default function PaymentSettingsPage() {
           </p>
           
           <div>
-            <label className="text-sm font-bold text-slate-900 mb-1.5 block">UPI ID <span className="text-pink-500">*</span></label>
+            <label className="text-sm font-bold text-slate-900 mb-1.5 block">UPI ID <span className="text-blue-500">*</span></label>
             <Input value={upiData.id} onChange={(e: any) => setUpiData({...upiData, id: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
           </div>
           
           <div>
-            <label className="text-sm font-bold text-slate-900 mb-1.5 block">Payee name <span className="text-pink-500">*</span></label>
+            <label className="text-sm font-bold text-slate-900 mb-1.5 block">Payee name <span className="text-blue-500">*</span></label>
             <Input value={upiData.name} onChange={(e: any) => setUpiData({...upiData, name: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
             <p className="text-xs text-slate-500 mt-2">Shown in the customer's UPI app. Match your bank account name.</p>
           </div>

@@ -36,7 +36,7 @@ export default async function LandingPage() {
       <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
         <div className="flex-1 text-center lg:text-left z-10">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0F172A] mb-6 leading-tight">
-            Already selling through <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500">Instagram</span>, <span className="text-red-600">YouTube</span> or <span className="text-black">TikTok?</span>
+            Already selling through <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-red-500 to-yellow-500">Instagram</span>, <span className="text-red-600">YouTube</span> or <span className="text-black">TikTok?</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-slate-600 mb-8 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
@@ -110,7 +110,7 @@ export default async function LandingPage() {
                 </div>
 
                 <div className="bg-white p-3 rounded-2xl shadow-sm flex gap-3">
-                  <div className="w-16 h-16 bg-pink-50 rounded-xl flex items-center justify-center text-2xl shrink-0">🧁</div>
+                  <div className="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center text-2xl shrink-0">🧁</div>
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-[#0F172A]">Cupcakes</h4>
                     <p className="text-xs text-zyp-textMuted mt-0.5 mb-1">Soft & fluffy...</p>
@@ -199,12 +199,12 @@ export default async function LandingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {realBusinesses && realBusinesses.map((b, i) => (
-              <Link key={i} href={`/${b.username}`} className="bg-white rounded-3xl p-6 flex flex-col items-center text-center border border-slate-100 shadow-sm hover:shadow-md hover:border-pink-200 transition-all group">
+              <Link key={i} href={`/${b.username}`} className="bg-white rounded-3xl p-6 flex flex-col items-center text-center border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all group">
                 <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-extrabold text-2xl mb-4 group-hover:scale-110 transition-transform">
                   {b.business_name ? b.business_name.charAt(0).toUpperCase() : 'S'}
                 </div>
                 <h4 className="font-extrabold text-[#0F172A] line-clamp-1">{b.business_name || `Store ${b.username}`}</h4>
-                <p className="text-xs font-medium text-pink-500 mt-1">zoopcart.com/{b.username}</p>
+                <p className="text-xs font-medium text-blue-500 mt-1">zoopcart.com/{b.username}</p>
               </Link>
             ))}
           </div>
@@ -257,8 +257,8 @@ export default async function LandingPage() {
               <p className="text-slate-600 leading-relaxed font-medium">You don't need any technical skills to launch. Zoopcart is built for creators, not developers.</p>
             </div>
             <div className="bg-slate-50 border border-slate-100 rounded-3xl p-8 hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-pink-100 rounded-2xl flex items-center justify-center mb-6">
-                <Heart className="w-6 h-6 text-pink-600" />
+              <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+                <Heart className="w-6 h-6 text-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-[#0F172A] mb-3">Built for Mobile</h3>
               <p className="text-slate-600 leading-relaxed font-medium">Your store is perfectly optimized for mobile devices, which is where 90% of your Instagram and TikTok buyers are.</p>

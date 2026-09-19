@@ -28,7 +28,7 @@ export default function DashboardOverview() {
   const stats = [
     { label: "STORE VISITORS", value: storeViews.toString(), trend: "", icon: Users, color: "text-blue-500", bg: "bg-blue-50" },
     { label: "PRODUCT VIEWS", value: productViews.toString(), trend: "", icon: Eye, color: "text-indigo-500", bg: "bg-indigo-50" },
-    { label: "ORDERS RECEIVED", value: totalOrdersCount.toString(), trend: "", icon: ShoppingBag, color: "text-pink-500", bg: "bg-pink-50" },
+    { label: "ORDERS RECEIVED", value: totalOrdersCount.toString(), trend: "", icon: ShoppingBag, color: "text-purple-500", bg: "bg-purple-50" },
     { label: "CONVERSION RATE", value: `${conversionRate}%`, trend: "--", icon: Percent, color: "text-emerald-500", bg: "bg-emerald-50" }
   ];
 

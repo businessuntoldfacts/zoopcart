@@ -69,7 +69,7 @@ export default function CheckoutModal({
     <>
       <Button 
         onClick={() => setIsOpen(true)}
-        className="flex-1 h-14 rounded-2xl bg-pink-600 hover:bg-pink-700 text-white text-base font-extrabold shadow-md w-full"
+        className="flex-1 h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-base font-extrabold shadow-md w-full"
       >
         Request Product <ArrowRight className="w-5 h-5 ml-2" />
       </Button>
@@ -94,8 +94,8 @@ export default function CheckoutModal({
               <div className="flex flex-col max-h-[90vh]">
                 <div className="px-6 py-5 flex items-center justify-between border-b border-slate-100 bg-white sticky top-0 z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-pink-50 rounded-full flex items-center justify-center">
-                      <ShoppingBag className="w-5 h-5 text-pink-600" />
+                    <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                      <ShoppingBag className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
                       <h3 className="font-extrabold text-slate-900">Complete Request</h3>
@@ -118,7 +118,7 @@ export default function CheckoutModal({
                     </div>
                     <div>
                       <h4 className="font-extrabold text-sm text-slate-900 line-clamp-2 mb-1">{product.name}</h4>
-                      <div className="font-extrabold text-pink-600">₹{product.price}</div>
+                      <div className="font-extrabold text-blue-600">₹{product.price}</div>
                     </div>
                   </div>
 
@@ -139,7 +139,7 @@ export default function CheckoutModal({
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="John Doe" 
-                        className="w-full h-12 px-4 rounded-xl border border-slate-200 outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 font-medium transition-all"
+                        className="w-full h-12 px-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium transition-all"
                       />
                     </div>
                     <div>
@@ -150,7 +150,7 @@ export default function CheckoutModal({
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="10-digit mobile number" 
-                        className="w-full h-12 px-4 rounded-xl border border-slate-200 outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 font-medium transition-all"
+                        className="w-full h-12 px-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium transition-all"
                       />
                     </div>
                     <div>
@@ -160,7 +160,7 @@ export default function CheckoutModal({
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                         placeholder="House/Flat No, Street, City, Pincode" 
-                        className="w-full h-24 p-4 rounded-xl border border-slate-200 outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 font-medium resize-none transition-all"
+                        className="w-full h-24 p-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium resize-none transition-all"
                       />
                     </div>
                   </form>
@@ -171,7 +171,7 @@ export default function CheckoutModal({
                     type="submit"
                     form="checkout-form"
                     disabled={loading}
-                    className="w-full h-14 rounded-2xl bg-pink-600 hover:bg-pink-700 text-white font-extrabold text-base shadow-xl shadow-pink-600/20"
+                    className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-base shadow-xl shadow-blue-600/20"
                   >
                     {loading ? "Placing Order..." : "Confirm & Send"}
                   </Button>

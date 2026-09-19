@@ -80,7 +80,7 @@ export default function AdminDashboard() {
               <div className="text-2xl font-extrabold text-[#0F172A]">{stats.orders}</div>
               <div className="text-[11px] font-bold text-slate-400 uppercase mt-1">Total Orders</div>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <ShoppingBag className="w-5 h-5" />
             </div>
           </div>
