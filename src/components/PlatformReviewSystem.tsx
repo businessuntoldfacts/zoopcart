@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Star, MessageCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function PlatformReviewSystem() {
   const [reviews, setReviews] = useState<any[]>([]);
@@ -35,9 +36,9 @@ export default function PlatformReviewSystem() {
           .limit(10);
         
                 const defaultReviews = [
-          {id: 'def1', customer_name: "Priya Sharma", quantity: 5, notes: "Zoopcart completely changed how I take orders. No more messy DMs, just a clean catalog link on my Instagram bio!"},
-          {id: 'def2', customer_name: "Rahul Gupta", quantity: 5, notes: "The checkout process is so smooth. My conversion rate doubled because customers can order in 3 clicks without downloading any app."},
-          {id: 'def3', customer_name: "Sneha Reddy", quantity: 5, notes: "I share my products on WhatsApp groups. Now I just share my Zoopcart link and all requests come perfectly organized to my dashboard."}
+          {id: 'def1', customer_name: "Priya Sharma", quantity: 5, notes: "Zoopcart's workflows let us automate repetitive tasks, saving valuable time and resources.", avatar: "https://i.pravatar.cc/150?img=5", role: "Marketer", country: "🇮🇳 India"},
+          {id: 'def2', customer_name: "Rahul Gupta", quantity: 5, notes: "Zoopcart is a great tool for any export business looking to manage sales efficiently and grow.", avatar: "https://i.pravatar.cc/150?img=11", role: "CEO", country: "🇮🇳 India"},
+          {id: 'def3', customer_name: "Sneha Reddy", quantity: 5, notes: "With Zoopcart, I receive everything directly on my WhatsApp number. It's very user-friendly.", avatar: "https://i.pravatar.cc/150?img=43", role: "Proprietor", country: "🇮🇳 India"}
         ];
         
         if (data && data.length > 0) {
@@ -144,23 +145,36 @@ export default function PlatformReviewSystem() {
       {loading ? (
         <div className="text-center py-12 text-slate-400 font-bold">Loading reviews...</div>
       ) : reviews.length > 0 ? (
-        <div className="grid md:grid-cols-3 gap-6">
+        <>
+          <div className="grid md:grid-cols-3 gap-6">
           {reviews.map((review) => (
             <div key={review.id} className="bg-white p-8 rounded-[32px] border border-slate-100 flex flex-col h-full shadow-sm hover:shadow-md transition-shadow">
               <p className="text-[#111111] leading-relaxed font-bold text-lg mb-8 flex-1">"{review.notes}"</p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#111111] flex items-center justify-center text-white font-extrabold text-lg">
-                  {review.customer_name.charAt(0).toUpperCase()}
-                </div>
+                {review.avatar ? (
+                    <img src={review.avatar} alt={review.customer_name} className="w-12 h-12 rounded-full object-cover border border-slate-200 shadow-sm" />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-[#111111] flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
+                      {review.customer_name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                 <div>
                   <h4 className="font-extrabold text-[#111111] text-base">{review.customer_name}</h4>
-                  <p className="text-sm text-slate-500 font-medium">Verified Seller</p>
+                  <p className="text-sm text-slate-500 font-medium">
+                      {review.role || 'Verified Seller'} <span className="mx-1">·</span> {review.country || '🇮🇳 India'}
+                    </p>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      ) : (
+          <div className="flex justify-center mt-10">
+            <Link href="#reviews" className="text-blue-600 font-semibold hover:underline flex items-center gap-1">
+              More reviews <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </Link>
+          </div>
+          </>
+        ) : (
         <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
           <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <h3 className="font-bold text-slate-900">No reviews yet</h3>
