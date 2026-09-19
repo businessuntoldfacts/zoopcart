@@ -60,7 +60,7 @@ export default function DashboardLayout({
 
   const navigation = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag, badge: 0 },
+    { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag, badge: undefined },
     { name: "Products", href: "/dashboard/products", icon: Store },
     { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },
     { name: "More", href: "/dashboard/settings", icon: Settings },

@@ -316,7 +316,7 @@ export default async function LandingPage() {
             <div>
               <h4 className="text-slate-900 font-bold mb-4">Resources</h4>
               <ul className="space-y-3">
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Help Center</a></li>
+                <li><Link href="/help" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Help Center</Link></li>
                 <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Blog</a></li>
                 <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Seller Community</a></li>
                 <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Success Stories</a></li>
@@ -326,10 +326,10 @@ export default async function LandingPage() {
             <div>
               <h4 className="text-slate-900 font-bold mb-4">Company</h4>
               <ul className="space-y-3">
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">About Us</a></li>
+                <li><Link href="/about" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">About Us</Link></li>
                 <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Careers</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Privacy Policy</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Terms of Service</a></li>
+                <li><Link href="/privacy" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Terms of Service</Link></li>
               </ul>
             </div>
           </div>
