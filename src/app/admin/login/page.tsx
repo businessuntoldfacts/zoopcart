@@ -1,3 +1,4 @@
+import Logo from "@/components/Logo";
 "use client";
 
 import { useState } from "react";
@@ -31,7 +32,7 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-slate-900 flex flex-col font-sans selection:bg-zyp-primary/20 text-white">
       <main className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="mb-8 flex items-center gap-2">
-          <img src="/logo.png?v=3" alt="Zoopcart" className="h-10 object-contain" style={{ mixBlendMode: "screen" }} />
+          <Logo />
           <span className="font-bold text-3xl tracking-tight ml-2">Admin</span>
         </div>
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
@@ -10,10 +11,10 @@ export default function HeaderMenu() {
 
   return (
     <>
-      <header className="fixed top-0 w-full bg-[#0F172A]/95 backdrop-blur-md z-50 border-b border-slate-800">
+      <header className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-slate-200">
         <div className="container mx-auto px-6 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center z-50">
-            <img src="/logo.png?v=3" alt="Zoopcart" className="h-10 object-contain" style={{ mixBlendMode: "screen" }} />
+            <Logo darkText={true} />
           </Link>
           
           {/* Desktop Nav */}
@@ -28,7 +29,7 @@ export default function HeaderMenu() {
               Log in
             </Link>
             <Link href="/signup">
-              <Button className="rounded-full px-6 bg-blue-600 hover:bg-blue-700 text-white shadow-sm font-bold">Get Started</Button>
+              <Button className="rounded-full px-6 bg-blue-600 hover:bg-blue-700 text-slate-900 shadow-sm font-bold">Get Started</Button>
             </Link>
           </div>
 

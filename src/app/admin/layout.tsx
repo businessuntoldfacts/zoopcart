@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Users, ShoppingBag, Settings, LogOut, Bell, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -35,7 +36,7 @@ export default function AdminLayout({
       <aside className="w-[260px] flex-col bg-[#0F172A] text-slate-300 hidden md:flex shrink-0">
         <div className="p-6">
           <Link href="/admin" className="flex items-center gap-2">
-            <img src="/logo.png?v=3" alt="Zoopcart" className="h-8 object-contain" style={{ mixBlendMode: "screen" }} />
+            <Logo />
             <div>
               <div className="font-bold text-lg text-white tracking-tight leading-none">Zoopcart</div>
               <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-1">Super Admin</div>
