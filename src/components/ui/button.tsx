@@ -12,7 +12,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     let variantClasses = ""
     switch (variant) {
       case "primary":
-        variantClasses = "bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20"
+        variantClasses = "bg-[#111111] text-white hover:bg-black shadow-sm"
         break
       case "secondary":
         variantClasses = "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 shadow-sm"
@@ -34,10 +34,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         sizeClasses = "h-10 px-4 py-2"
         break
       case "sm":
-        sizeClasses = "h-8 rounded-md px-3 text-xs"
+        sizeClasses = "h-8 rounded-full px-3 text-xs"
         break
       case "lg":
-        sizeClasses = "h-12 rounded-xl px-8 text-base"
+        sizeClasses = "h-12 rounded-full px-8 text-base"
         break
       case "icon":
         sizeClasses = "h-10 w-10"
@@ -47,7 +47,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 disabled:pointer-events-none disabled:opacity-50",
           variantClasses,
           sizeClasses,
           className

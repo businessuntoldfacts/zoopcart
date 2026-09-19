@@ -1,22 +1,10 @@
 const fs = require('fs');
-
 let code = fs.readFileSync('src/components/HeaderMenu.tsx', 'utf8');
 
-// Add import if not exists
-if (!code.includes('import Logo')) {
-  code = code.replace('import Link from "next/link";', 'import Link from "next/link";\nimport Logo from "@/components/Logo";');
-}
-
-// Revert header to light theme
-code = code.replace('bg-[#0F172A]/95 backdrop-blur-md z-50 border-b border-slate-800', 'bg-white/90 backdrop-blur-md z-50 border-b border-slate-200');
-code = code.replace('text-slate-300 hover:text-white', 'text-slate-600 hover:text-slate-900');
-code = code.replace('text-white', 'text-slate-900'); // Menu icon
-code = code.replace('bg-[#0F172A] shadow-xl border-b border-slate-800', 'bg-white shadow-xl'); 
-code = code.replace('text-slate-300 hover:bg-slate-800', 'text-slate-600 hover:bg-slate-50');
-
-// Replace image with Logo component
-const imgRegex = /<img src="\/logo\.png\?v=3"([^>]*?)>/g;
-code = code.replace(imgRegex, '<Logo darkText={true} />');
+// Fix HeaderMenu
+code = code.replace(/<Button className="rounded-full px-6 bg-blue-600 hover:bg-blue-700 text-slate-900 shadow-sm font-bold">Get Started<\/Button>/, '<Button variant="primary" className="rounded-full px-6 shadow-sm font-bold">Start free</Button>');
+code = code.replace(/<Button className="w-full py-6 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700">Get Started Free<\/Button>/, '<Button variant="primary" className="w-full py-6 rounded-full font-bold">Start free</Button>');
+code = code.replace(/<Button variant="secondary" className="w-full py-6 rounded-xl font-bold border-slate-200 text-slate-800">Log in<\/Button>/, '<Button variant="secondary" className="w-full py-6 rounded-full font-bold border-slate-200 text-slate-800">Log in</Button>');
 
 fs.writeFileSync('src/components/HeaderMenu.tsx', code);
-console.log("Patched HeaderMenu");
+console.log("Updated HeaderMenu buttons");

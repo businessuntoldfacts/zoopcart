@@ -28,7 +28,7 @@ export default function HeaderMenu() {
               Log in
             </Link>
             <Link href="/signup">
-              <Button className="rounded-full px-6 bg-blue-600 hover:bg-blue-700 text-slate-900 shadow-sm font-bold">Get Started</Button>
+              <Button variant="primary" className="rounded-full px-6 shadow-sm font-bold">Start free</Button>
             </Link>
           </div>
 
@@ -51,10 +51,10 @@ export default function HeaderMenu() {
           
           <div className="flex flex-col w-full gap-3 mt-8">
             <Link href="/login" onClick={() => setIsOpen(false)} className="w-full">
-              <Button variant="secondary" className="w-full py-6 rounded-xl font-bold border-slate-200 text-slate-800">Log in</Button>
+              <Button variant="secondary" className="w-full py-6 rounded-full font-bold border-slate-200 text-slate-800">Log in</Button>
             </Link>
             <Link href="/signup" onClick={() => setIsOpen(false)} className="w-full">
-              <Button className="w-full py-6 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700">Get Started Free</Button>
+              <Button variant="primary" className="w-full py-6 rounded-full font-bold">Start free</Button>
             </Link>
           </div>
         </nav>

@@ -28,7 +28,7 @@ export default async function LandingPage() {
     : defaultReviews;
 
   return (
-    <div className="min-h-screen bg-zyp-bg font-sans overflow-x-hidden selection:bg-zyp-primary/20">
+    <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-zyp-primary/20">
       {/* Header */}
       <HeaderMenu />
 
@@ -36,7 +36,7 @@ export default async function LandingPage() {
       <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
         <div className="flex-1 text-center lg:text-left z-10">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0F172A] mb-6 leading-tight">
-            Already selling through <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-red-500 to-yellow-500">Instagram</span>, <span className="text-red-600">YouTube</span> or <span className="text-black">TikTok?</span>
+            Already selling through <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-700 via-slate-900 to-black">Instagram</span>, <span className="text-slate-800">YouTube</span> or <span className="text-black">TikTok?</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-slate-600 mb-8 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
@@ -45,7 +45,7 @@ export default async function LandingPage() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
             <Link href="/signup" className="w-full sm:w-auto">
-              <Button variant="primary" size="lg" className="rounded-full w-full text-base font-extrabold px-8 py-7 shadow-lg shadow-blue-600/30">
+              <Button variant="primary" size="lg" className="rounded-full w-full text-base font-extrabold px-8 py-7 shadow-lg shadow-xl shadow-slate-900/10">
                 Create My Free Zoopcart Store
               </Button>
             </Link>
@@ -61,21 +61,21 @@ export default async function LandingPage() {
               {[1,2,3,4].map(i => <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${i}&backgroundColor=e2e8f0`} alt="Avatar" /></div>)}
             </div>
             <div className="text-sm font-bold text-[#0F172A]">
-              Join <span className="text-blue-600">1,000+</span> social sellers
+              Join <span className="text-slate-900">1,000+</span> social sellers
             </div>
           </div>
         </div>
 
         {/* Right side Phone Mockup */}
         <div className="flex-1 relative w-full flex justify-center lg:justify-end">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-blue-100 via-blue-50 to-purple-50 rounded-full blur-3xl -z-10" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-slate-100 via-white to-slate-50 rounded-full blur-3xl -z-10" />
           
-          <div className="relative w-[300px] h-[600px] bg-black rounded-[40px] p-3 shadow-2xl shadow-blue-900/20 rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+          <div className="relative w-[300px] h-[600px] bg-black rounded-[40px] p-3 shadow-2xl shadow-2xl shadow-slate-900/20 rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
             <div className="w-full h-full bg-[#F8FAFC] rounded-[32px] overflow-hidden flex flex-col relative border border-white/10">
               <div className="absolute top-0 inset-x-0 h-6 bg-black rounded-b-3xl w-1/2 mx-auto z-20"></div>
               
               <div className="bg-white pt-10 pb-4 px-4 shadow-sm z-10 flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 text-lg">M</div>
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-slate-900 text-lg">M</div>
                 <div>
                   <h3 className="font-bold text-[#0F172A] text-sm">My Bakery</h3>
                   <p className="text-[10px] text-zyp-textMuted font-medium">@my_bakery_official</p>
@@ -159,7 +159,7 @@ export default async function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-24 bg-zyp-bg">
+      <section id="how-it-works" className="py-24 bg-white">
         <div className="container mx-auto px-6 max-w-5xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">How Zoopcart Works</h2>
@@ -223,7 +223,7 @@ export default async function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-slate-50 border border-slate-100 rounded-3xl p-8 hover:shadow-md transition-shadow">
               <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
-                <Store className="w-6 h-6 text-blue-600" />
+                <Store className="w-6 h-6 text-slate-900" />
               </div>
               <h3 className="text-xl font-bold text-[#0F172A] mb-3">Custom Storefront</h3>
               <p className="text-slate-600 leading-relaxed font-medium">Personalize your store with beautiful themes, your logo, and branding. Create a professional catalog in minutes.</p>
@@ -258,7 +258,7 @@ export default async function LandingPage() {
             </div>
             <div className="bg-slate-50 border border-slate-100 rounded-3xl p-8 hover:shadow-md transition-shadow">
               <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
-                <Heart className="w-6 h-6 text-blue-600" />
+                <Heart className="w-6 h-6 text-slate-900" />
               </div>
               <h3 className="text-xl font-bold text-[#0F172A] mb-3">Built for Mobile</h3>
               <p className="text-slate-600 leading-relaxed font-medium">Your store is perfectly optimized for mobile devices, which is where 90% of your Instagram and TikTok buyers are.</p>
@@ -270,15 +270,15 @@ export default async function LandingPage() {
       <PlatformReviewSystem />
 
       {/* Bottom CTA */}
-      <section className="py-20 px-6 bg-slate-50">
-        <div className="max-w-5xl mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-12 text-center shadow-xl shadow-blue-900/20">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Ready to grow your business?</h2>
-          <p className="text-blue-100 text-lg mb-8 max-w-xl mx-auto">Join thousands of social sellers on Zoopcart. Add products, share your link, and get more orders today.</p>
-          <div className="flex justify-center"><Link href="/signup">
-            <Button className="bg-white text-zyp-primary hover:bg-gray-50 text-lg px-8 py-6 rounded-full font-bold shadow-lg">
-              Create My Free Zoopcart Store
-            </Button>
-          </Link></div>
+      <section className="py-24 px-6 max-w-5xl mx-auto">
+        <div className="bg-[#111111] rounded-[40px] p-12 md:p-20 text-center text-white shadow-2xl flex flex-col items-center">
+            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">Clean Orders. Fast Payments. No Mistakes.</h2>
+            <p className="text-xl md:text-2xl text-slate-300 font-medium mb-10 max-w-2xl mx-auto">Start taking WhatsApp orders in minutes.</p>
+            <Link href="/signup">
+                <Button variant="secondary" size="lg" className="rounded-full text-lg font-bold px-10 py-8 bg-white text-black hover:bg-slate-100 border-0">
+                    Start for free
+                </Button>
+            </Link>
         </div>
       </section>
 
@@ -306,30 +306,30 @@ export default async function LandingPage() {
             <div>
               <h4 className="text-slate-900 font-bold mb-4">Product</h4>
               <ul className="space-y-3">
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Features</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Pricing</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Integrations</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">FAQ</a></li>
+                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Features</a></li>
+                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Pricing</a></li>
+                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Integrations</a></li>
+                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">FAQ</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="text-slate-900 font-bold mb-4">Resources</h4>
               <ul className="space-y-3">
-                <li><Link href="/help" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Help Center</Link></li>
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Blog</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Seller Community</a></li>
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Success Stories</a></li>
+                <li><Link href="/help" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Help Center</Link></li>
+                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Blog</a></li>
+                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Seller Community</a></li>
+                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Success Stories</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="text-slate-900 font-bold mb-4">Company</h4>
               <ul className="space-y-3">
-                <li><Link href="/about" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">About Us</Link></li>
-                <li><a href="/" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Careers</a></li>
-                <li><Link href="/privacy" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="text-slate-600 hover:text-blue-600 transition-colors text-sm">Terms of Service</Link></li>
+                <li><Link href="/about" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">About Us</Link></li>
+                <li><a href="/" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Careers</a></li>
+                <li><Link href="/privacy" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-slate-600 hover:text-slate-900 transition-colors text-sm">Terms of Service</Link></li>
               </ul>
             </div>
           </div>
