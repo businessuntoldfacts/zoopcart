@@ -26,19 +26,17 @@ export default function DashboardOverview() {
   const conversionRate = storeViews > 0 ? ((totalOrdersCount / storeViews) * 100).toFixed(1) : "0";
 
   const stats = [
-    { label: "STORE VISITORS", value: storeViews.toString(), trend: "", icon: "👥", color: "text-purple-600", bg: "bg-purple-50" },
-    { label: "PRODUCT VIEWS", value: productViews.toString(), trend: "", icon: "👁️", color: "text-green-600", bg: "bg-green-50" },
-    { label: "ORDERS RECEIVED", value: totalOrdersCount.toString(), trend: "", icon: "🛍️", color: "text-orange-600", bg: "bg-orange-50" },
-    { label: "CONVERSION RATE", value: `${conversionRate}%`, trend: "--", icon: "📈", color: "text-blue-600", bg: "bg-blue-50" }
+    { label: "STORE VISITORS", value: storeViews.toString(), trend: "", icon: Users, color: "text-blue-500", bg: "bg-blue-50" },
+    { label: "PRODUCT VIEWS", value: productViews.toString(), trend: "", icon: Eye, color: "text-indigo-500", bg: "bg-indigo-50" },
+    { label: "ORDERS RECEIVED", value: totalOrdersCount.toString(), trend: "", icon: ShoppingBag, color: "text-pink-500", bg: "bg-pink-50" },
+    { label: "CONVERSION RATE", value: `${conversionRate}%`, trend: "--", icon: Percent, color: "text-emerald-500", bg: "bg-emerald-50" }
   ];
 
   return (
     <div className="space-y-6 pb-20 animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
         <div>
-          <h2 className="text-2xl font-extrabold text-[#0F172A] flex items-center gap-2">
-            Good morning, {userName}! <span className="text-2xl">👋</span>
-          </h2>
+          <h2 className="text-2xl font-extrabold text-[#0F172A]">Welcome back, {userName}</h2>
           <p className="text-sm text-slate-500 mt-1">Here's your store performance overview.</p>
         </div>
         <select className="bg-white border border-slate-200 text-sm font-semibold text-[#0F172A] rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer shadow-sm">
@@ -57,7 +55,7 @@ export default function DashboardOverview() {
                 <div className="text-[11px] font-bold text-slate-400 uppercase mt-1">{stat.label}</div>
               </div>
               <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
-                <span className="text-xl">{stat.icon}</span>
+                <stat.icon className={`w-5 h-5 ${stat.color}`} />
               </div>
             </div>
             <div className={`flex items-center text-xs font-bold ${stat.trend.startsWith('+') ? 'text-green-500' : 'text-slate-400'}`}>
