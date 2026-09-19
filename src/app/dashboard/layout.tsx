@@ -150,11 +150,7 @@ export default function DashboardLayout({
                 className="relative w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-sm font-extrabold text-white shadow-md hover:shadow-lg transition-all ring-2 ring-white hover:ring-blue-100 group cursor-pointer"
               >
                 <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
-                  {businessData.image ? (
-                    <img src={businessData.image} alt={businessData.name} className="w-full h-full object-cover" />
-                  ) : (
-                    businessData.name.charAt(0).toUpperCase()
-                  )}
+                  {businessData.name ? businessData.name.charAt(0).toUpperCase() : "S"}
                 </div>
               </button>
 
