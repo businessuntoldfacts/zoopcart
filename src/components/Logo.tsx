@@ -10,7 +10,7 @@ export default function Logo({ className = "", darkText = false }: { className?:
       <img 
         src="/logo-black.jpg?v=1" 
         alt="Zoopcart" 
-        className="h-10 md:h-12 w-auto object-contain" 
+        className="h-14 md:h-16 w-auto object-contain" 
         style={{ mixBlendMode: 'multiply' }}
       />
     </div>

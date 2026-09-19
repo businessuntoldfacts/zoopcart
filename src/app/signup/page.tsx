@@ -72,12 +72,8 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
-      <header className="p-6 flex justify-center items-center w-full">
-        <Link href="/" className="flex items-center">
-          <Logo darkText={true} />
-        </Link>
-      </header>
+    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
+      
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-lg border border-zyp-border mb-8">

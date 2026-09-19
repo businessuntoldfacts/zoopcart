@@ -39,16 +39,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zyp-bg flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
-      <header className="p-6 flex justify-between items-center max-w-2xl mx-auto w-full">
-        <Link href="/" className="flex items-center">
-          <Logo darkText={true} />
-        </Link>
-        <div className="text-sm">
-          <span className="text-zyp-textMuted">New to Zoopcart? </span>
-          <Link href="/signup" className="font-bold text-zyp-primary hover:underline">Sign up</Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
+      
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-md border border-zyp-border">
@@ -99,6 +91,9 @@ export default function LoginPage() {
               {loading ? "Logging in..." : "Log in"}
             </Button>
           </form>
+            <div className="mt-6 text-center text-sm text-zyp-textMuted">
+              New to Zoopcart? <Link href="/signup" className="font-bold text-[#111111] hover:underline">Sign up</Link>
+            </div>
         </div>
       </main>
     </div>

@@ -35,23 +35,32 @@ export default function HeaderMenu() {
           {/* Mobile Toggle */}
           <button 
             className="md:hidden text-slate-800 z-50 p-2 relative" 
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsOpen(true)}
           >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            <Menu className="w-6 h-6" />
           </button>
         </div>
       </header>
 
-      {/* Mobile Nav Overlay (Moved outside header to avoid backdrop-filter constraining it) */}
-      <div className={`fixed inset-0 bg-white z-40 flex flex-col pt-20 px-6 transition-all duration-300 md:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-        <nav className="flex flex-col items-center w-full">
-          <Link href="/" onClick={() => setIsOpen(false)} className="hover:text-blue-600 font-bold text-lg text-white transition-colors w-full py-4 border-b border-slate-100">Home</Link>
-          <Link href="/#how-it-works" onClick={() => setIsOpen(false)} className="hover:text-blue-600 font-bold text-lg text-slate-900 transition-colors w-full py-4 border-b border-slate-100">How it works</Link>
-          <Link href="/#reviews" onClick={() => setIsOpen(false)} className="hover:text-blue-600 font-bold text-lg text-slate-900 transition-colors w-full py-4 border-b border-slate-100">Reviews</Link>
+      {/* Mobile Nav Overlay */}
+      <div className={`fixed inset-0 bg-black/40 z-40 transition-all duration-300 md:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} onClick={() => setIsOpen(false)}></div>
+      <div className={`fixed top-4 left-4 right-4 bg-white rounded-3xl z-50 flex flex-col p-6 transition-all duration-300 transform md:hidden shadow-2xl ${isOpen ? 'translate-y-0 opacity-100 visible' : '-translate-y-10 opacity-0 invisible'}`}>
+        <div className="flex justify-between items-center border-b border-slate-100 pb-4 mb-4">
+          <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center">
+            <Logo darkText={true} />
+          </Link>
+          <button className="text-slate-800 p-2" onClick={() => setIsOpen(false)}>
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <nav className="flex flex-col items-start w-full gap-1">
+          <Link href="/" onClick={() => setIsOpen(false)} className="hover:text-slate-500 font-medium text-slate-900 w-full py-4 border-b border-slate-100">Home</Link>
+          <Link href="/#how-it-works" onClick={() => setIsOpen(false)} className="hover:text-slate-500 font-medium text-slate-900 w-full py-4 border-b border-slate-100">How it works</Link>
+          <Link href="/#reviews" onClick={() => setIsOpen(false)} className="hover:text-slate-500 font-medium text-slate-900 w-full py-4 border-b border-slate-100">Reviews</Link>
           
-          <div className="flex flex-col w-full gap-3 mt-8">
+          <div className="flex flex-col w-full gap-3 mt-6">
             <Link href="/login" onClick={() => setIsOpen(false)} className="w-full">
-              <Button variant="secondary" className="w-full py-6 rounded-full font-bold border-slate-200 text-slate-800">Log in</Button>
+              <Button variant="secondary" className="w-full py-6 rounded-full font-bold border-slate-200 text-slate-900">Log in</Button>
             </Link>
             <Link href="/signup" onClick={() => setIsOpen(false)} className="w-full">
               <Button variant="primary" className="w-full py-6 rounded-full font-bold">Start free</Button>
@@ -62,4 +71,3 @@ export default function HeaderMenu() {
     </>
   );
 }
-
