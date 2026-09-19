@@ -38,7 +38,7 @@ export default function OrdersPage() {
           <div className="p-4 border-b border-zyp-border flex gap-3 bg-slate-50">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input placeholder="Search orders..." className="w-full pl-9 h-10 rounded-lg border border-zyp-border bg-white text-sm outline-none focus:ring-2 focus:ring-zyp-primary/20" />
+              <input placeholder="Search orders..." className="w-full pl-9 h-10 rounded-lg border border-zyp-border bg-white text-sm outline-none focus:ring-2 focus:ring-[#111111]/20" />
             </div>
             <select className="h-10 rounded-lg border border-zyp-border bg-white text-sm font-semibold px-3 outline-none">
               <option>All Status</option>
@@ -54,14 +54,14 @@ export default function OrdersPage() {
                   <div 
                     key={order.id} 
                     onClick={() => setSelectedOrder(order)}
-                    className={`p-4 cursor-pointer transition-colors hover:bg-blue-50 ${selectedOrder?.id === order.id ? 'bg-blue-50/50' : ''}`}
+                    className={`p-4 cursor-pointer transition-colors hover:bg-slate-100 ${selectedOrder?.id === order.id ? 'bg-blue-50/50' : ''}`}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-[11px] font-bold text-zyp-textMuted font-mono uppercase">ORD-{order.tracking_token.substring(0,4)}</span>
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                         order.status === 'new' ? 'bg-yellow-100 text-yellow-700' : 
                         order.status === 'completed' ? 'bg-green-100 text-green-700' : 
-                        order.status === 'accepted' ? 'bg-blue-100 text-blue-700' :
+                        order.status === 'accepted' ? 'bg-slate-200 text-black' :
                         'bg-purple-100 text-purple-700'
                       }`}>
                         {order.status.replace('_', ' ')}
@@ -114,7 +114,7 @@ export default function OrdersPage() {
                 </div>
                 <div>
                   <div className="font-bold text-[#0F172A]">{selectedOrder.products?.name}</div>
-                  <div className="text-sm font-extrabold text-zyp-primary mt-1">₹{selectedOrder.products?.price}</div>
+                  <div className="text-sm font-extrabold text-[#111111] mt-1">₹{selectedOrder.products?.price}</div>
                 </div>
               </div>
             </div>
@@ -168,7 +168,7 @@ export default function OrdersPage() {
               <div className="grid grid-cols-2 gap-2">
                 <button 
                   onClick={() => updateOrderStatus(selectedOrder.id, 'accepted')}
-                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'accepted' ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50'}`}
+                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'accepted' ? 'bg-[#111111] text-white border-black shadow-md' : 'bg-white text-[#111111] border-slate-300 hover:bg-slate-100'}`}
                 >
                   Accept Order
                 </button>

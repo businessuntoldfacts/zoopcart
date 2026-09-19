@@ -28,7 +28,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col font-sans selection:bg-zyp-primary/20 text-white">
+    <div className="min-h-screen bg-slate-900 flex flex-col font-sans selection:bg-[#111111]/20 text-white">
       <main className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="mb-8 flex items-center gap-2">
           <Logo />
@@ -81,7 +81,7 @@ export default function AdminLogin() {
               </div>
             </div>
             
-            <Button type="submit" variant="primary" disabled={loading} className="w-full text-base py-6 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 mt-4 shadow-lg shadow-blue-900/50">
+            <Button type="submit" variant="primary" disabled={loading} className="w-full text-base py-6 rounded-xl font-bold bg-[#111111] hover:bg-black mt-4 shadow-lg shadow-black/20">
               {loading ? "Authenticating..." : "Login to Dashboard"}
             </Button>
           </form>

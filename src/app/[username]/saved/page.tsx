@@ -26,9 +26,9 @@ export default async function SavedPage({ params }: { params: { username: string
       </header>
 
       <div className="max-w-md mx-auto px-6 pt-24 pb-12 flex flex-col items-center text-center">
-         <div className="w-32 h-32 rounded-full bg-blue-50 flex items-center justify-center mb-8 relative">
-           <div className="absolute inset-0 bg-blue-100 rounded-full blur-2xl opacity-50"></div>
-           <Heart className="w-12 h-12 text-blue-500 relative z-10" strokeWidth={2.5} />
+         <div className="w-32 h-32 rounded-full bg-slate-100 flex items-center justify-center mb-8 relative">
+           <div className="absolute inset-0 bg-slate-200 rounded-full blur-2xl opacity-50"></div>
+           <Heart className="w-12 h-12 text-[#111111] relative z-10" strokeWidth={2.5} />
          </div>
          
          <h2 className="text-2xl font-extrabold text-slate-900 mb-3">No saved products yet.</h2>
@@ -37,7 +37,7 @@ export default async function SavedPage({ params }: { params: { username: string
          </p>
          
          <Link href={`/${business.username}`}>
-           <button className="px-8 py-3.5 bg-blue-500 hover:bg-blue-600 text-white font-extrabold rounded-2xl shadow-sm transition-colors text-sm">
+           <button className="px-8 py-3.5 bg-[#111111] hover:bg-[#111111] text-white font-extrabold rounded-2xl shadow-sm transition-colors text-sm">
              Explore Products
            </button>
          </Link>

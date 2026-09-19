@@ -25,14 +25,14 @@ export default function StorefrontClient({ business, products }: { business: any
 
   
   const getHeroGradient = () => {
-    if (theme === 'dark') return 'bg-gradient-to-br from-slate-900 via-indigo-900 to-blue-900';
+    if (theme === 'dark') return 'bg-gradient-to-br from-slate-900 via-slate-900 to-black';
     if (theme === 'playful') return 'bg-gradient-to-br from-orange-400 via-amber-500 to-yellow-400';
-    return 'bg-gradient-to-br from-indigo-700 via-purple-600 to-blue-500';
+    return 'bg-[#111111]';
   };
 
-  const primaryColor = theme === 'playful' ? 'bg-orange-500 shadow-orange-500/20' : 'bg-blue-500 shadow-blue-500/20';
-  const primaryText = theme === 'playful' ? 'text-orange-500' : 'text-blue-500';
-  const activeTabColor = theme === 'playful' ? 'bg-orange-500' : 'bg-blue-500';
+  const primaryColor = theme === 'playful' ? 'bg-orange-500 shadow-orange-500/20' : 'bg-[#111111] shadow-black/20';
+  const primaryText = theme === 'playful' ? 'text-orange-500' : 'text-[#111111]';
+  const activeTabColor = theme === 'playful' ? 'bg-orange-500' : 'bg-[#111111]';
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-24 relative">
@@ -76,7 +76,7 @@ export default function StorefrontClient({ business, products }: { business: any
               {business.profile_image ? (
                 <img src={business.profile_image} alt={business.business_name} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-indigo-50 text-indigo-600 font-extrabold text-3xl">
+                <div className="w-full h-full flex items-center justify-center bg-slate-100 text-[#111111] font-extrabold text-3xl">
                   {business.business_name?.charAt(0)}
                 </div>
               )}
@@ -151,7 +151,7 @@ export default function StorefrontClient({ business, products }: { business: any
                 <input 
                   type="text" 
                   placeholder="Search products..." 
-                  className={`w-full h-12 pl-10 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20`}
+                  className={`w-full h-12 pl-10 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111]/20`}
                 />
               </div>
               <button className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-600 hover:bg-slate-50">
@@ -187,8 +187,8 @@ export default function StorefrontClient({ business, products }: { business: any
                 </div>
               ) : (
                 (selectedCategory === "All" ? products : products.filter(p => p.category === selectedCategory)).map((product) => (
-                  <Link href={`/${business.username}/${product.slug}`} key={product.id} className="block group bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden hover:border-blue-200 transition-colors relative pb-3">
-                    <button onClick={(e) => { e.preventDefault(); }} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-blue-500 hover:bg-white z-10 transition-colors shadow-sm">
+                  <Link href={`/${business.username}/${product.slug}`} key={product.id} className="block group bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden hover:border-slate-300 transition-colors relative pb-3">
+                    <button onClick={(e) => { e.preventDefault(); }} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-[#111111] hover:bg-white z-10 transition-colors shadow-sm">
                       <Heart className="w-4 h-4" />
                     </button>
                     <div className={`w-full bg-slate-50 overflow-hidden relative ${product.image ? "aspect-square" : "h-40"}`}>
@@ -255,7 +255,7 @@ export default function StorefrontClient({ business, products }: { business: any
               <h3 className="font-extrabold text-lg text-slate-900 mb-4 mt-8">Our Commitment</h3>
               <div className="space-y-4">
                  <div className="flex gap-3">
-                    <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 shrink-0">
+                    <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-[#111111] shrink-0">
                        <BadgeCheck className="w-5 h-5" />
                     </div>
                     <div>

@@ -83,7 +83,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
   };
 
   if (!product || !business) {
-    return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div></div>;
+    return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-300 border-t-blue-500 rounded-full animate-spin"></div></div>;
   }
 
   if (isSubmitted && orderData) {
@@ -118,7 +118,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
               </div>
             </div>
             <div className="p-4 border-b border-slate-50 flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-indigo-50 overflow-hidden shrink-0">
+              <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden shrink-0">
                 {product.image ? <img src={product.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-indigo-200 text-[10px] font-bold">N/A</div>}
               </div>
               <div className="flex-1">
@@ -148,7 +148,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
 
           <div className="mt-8 space-y-3 pb-8">
             <Link href={`/${business.username}/track`} className="flex">
-              <button className="w-full h-14 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 transition-all">
+              <button className="w-full h-14 rounded-2xl bg-[#111111] hover:bg-[#111111] text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-black/20 transition-all">
                 Track Request
               </button>
             </Link>
@@ -182,7 +182,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
           </div>
           <div>
              <h2 className="font-extrabold text-sm text-slate-900 line-clamp-1">{product.name}</h2>
-             <div className="font-extrabold text-indigo-600 text-base mt-0.5">₹{product.price}</div>
+             <div className="font-extrabold text-[#111111] text-base mt-0.5">₹{product.price}</div>
           </div>
         </div>
 
@@ -191,21 +191,21 @@ export default function RequestForm({ params }: { params: { username: string, pr
           
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Full Name <span className="text-blue-500">*</span></label>
+              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Full Name <span className="text-[#111111]">*</span></label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Enter your full name" className="w-full h-14 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm font-medium transition-all" />
+                <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Enter your full name" className="w-full h-14 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-medium transition-all" />
               </div>
             </div>
             
             <div>
-              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Phone Number <span className="text-blue-500">*</span></label>
+              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Phone Number <span className="text-[#111111]">*</span></label>
               <div className="relative flex">
                 <div className="h-14 px-4 bg-slate-50 border border-r-0 border-slate-200 rounded-l-xl flex items-center gap-2 shrink-0">
                   <Phone className="w-4 h-4 text-slate-400" />
                   <span className="text-sm font-bold text-slate-600">+91</span>
                 </div>
-                <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="Enter mobile number" className="w-full h-14 pl-4 pr-4 rounded-r-xl border border-slate-200 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm font-medium transition-all" />
+                <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="Enter mobile number" className="w-full h-14 pl-4 pr-4 rounded-r-xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-medium transition-all" />
               </div>
             </div>
 
@@ -213,7 +213,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Email (Optional)</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="Enter your email" className="w-full h-14 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm font-medium transition-all" />
+                <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="Enter your email" className="w-full h-14 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-medium transition-all" />
               </div>
             </div>
           </div>
@@ -223,9 +223,9 @@ export default function RequestForm({ params }: { params: { username: string, pr
           
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Quantity <span className="text-blue-500">*</span></label>
+              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Quantity <span className="text-[#111111]">*</span></label>
               <div className="relative">
-                <select value={formData.quantity} onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value)})} className="w-full h-14 pl-4 pr-10 rounded-xl border border-slate-200 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm font-extrabold appearance-none transition-all">
+                <select value={formData.quantity} onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value)})} className="w-full h-14 pl-4 pr-10 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-extrabold appearance-none transition-all">
                   {[1, 2, 3, 4, 5, 10, 20, 50].map(num => <option key={num} value={num}>{num}</option>)}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -236,15 +236,15 @@ export default function RequestForm({ params }: { params: { username: string, pr
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Required Date (Optional)</label>
               <div className="relative">
                 <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input type="date" value={formData.requiredDate} onChange={(e) => setFormData({...formData, requiredDate: e.target.value})} className="w-full h-14 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm font-medium transition-all" />
+                <input type="date" value={formData.requiredDate} onChange={(e) => setFormData({...formData, requiredDate: e.target.value})} className="w-full h-14 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-medium transition-all" />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Delivery Location <span className="text-blue-500">*</span></label>
+              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Delivery Location <span className="text-[#111111]">*</span></label>
               <div className="relative">
                 <MapPin className="absolute left-4 top-4 w-4 h-4 text-slate-400" />
-                <textarea required value={formData.delivery_location} onChange={(e) => setFormData({...formData, delivery_location: e.target.value})} placeholder="Enter full address" className="w-full h-24 pt-4 pb-4 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm font-medium transition-all resize-none"></textarea>
+                <textarea required value={formData.delivery_location} onChange={(e) => setFormData({...formData, delivery_location: e.target.value})} placeholder="Enter full address" className="w-full h-24 pt-4 pb-4 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-medium transition-all resize-none"></textarea>
               </div>
             </div>
           </div>
@@ -268,7 +268,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
 
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50 p-4 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.06)]">
             <div className="max-w-md mx-auto">
-              <button disabled={loading} type="submit" className="w-full h-14 rounded-2xl bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 transition-all active:scale-[0.98]">
+              <button disabled={loading} type="submit" className="w-full h-14 rounded-2xl bg-[#111111] hover:bg-[#111111] disabled:opacity-50 text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-black/20 transition-all active:scale-[0.98]">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 {loading ? "Submitting..." : "Submit Request"}
               </button>

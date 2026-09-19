@@ -16,7 +16,7 @@
 @layer components {
   /* Gradient CTA buttons */
   .btn-primary {
-    @apply bg-gradient-to-br from-zyp-accent to-zyp-accentSecondary text-white font-medium rounded-[16px] px-6 py-3 transition-transform hover:-translate-y-0.5 active:translate-y-0 shadow-sm shadow-zyp-accent/20;
+    @apply bg-[#111111] hover:bg-black text-white font-medium rounded-[16px] px-6 py-3 transition-transform hover:-translate-y-0.5 active:translate-y-0 shadow-sm shadow-black/20;
   }
 
   /* Secondary Button */

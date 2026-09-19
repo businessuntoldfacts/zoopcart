@@ -75,9 +75,9 @@ export default function TrackOrderPage({ params }: { params: { username: string 
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Enter Order ID or Phone Number" 
-            className="w-full h-14 pl-5 pr-14 rounded-2xl border border-slate-200 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm font-medium transition-all shadow-sm"
+            className="w-full h-14 pl-5 pr-14 rounded-2xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-medium transition-all shadow-sm"
           />
-          <button type="submit" disabled={loading} className="absolute right-2 top-2 w-10 h-10 bg-blue-500 hover:bg-blue-600 rounded-xl flex items-center justify-center text-white transition-colors">
+          <button type="submit" disabled={loading} className="absolute right-2 top-2 w-10 h-10 bg-[#111111] hover:bg-[#111111] rounded-xl flex items-center justify-center text-white transition-colors">
             {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Search className="w-4 h-4" />}
           </button>
         </form>
@@ -112,7 +112,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
                   </div>
                   <div>
                      <h3 className="font-extrabold text-sm text-slate-900 line-clamp-1">{product.name}</h3>
-                     <div className="text-xs font-bold text-indigo-600">₹{product.price}</div>
+                     <div className="text-xs font-bold text-[#111111]">₹{product.price}</div>
                   </div>
                 </div>
               )}
@@ -127,7 +127,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               <div className="absolute left-9 top-8 bottom-12 w-0.5 bg-slate-100"></div>
               
               <div className="flex gap-4 mb-8 relative z-10">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 1 ? 'bg-blue-500 shadow-sm shadow-blue-500/30' : 'bg-slate-100 border-2 border-white'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 1 ? 'bg-[#111111] shadow-sm shadow-black/20' : 'bg-slate-100 border-2 border-white'}`}>
                    {currentStep >= 1 && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
                 </div>
                 <div>
@@ -137,7 +137,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               </div>
 
               <div className="flex gap-4 mb-8 relative z-10">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 2 ? 'bg-blue-500 shadow-sm shadow-blue-500/30' : 'bg-slate-100 border-2 border-white'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 2 ? 'bg-[#111111] shadow-sm shadow-black/20' : 'bg-slate-100 border-2 border-white'}`}>
                    {currentStep >= 2 && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
                 </div>
                 <div>
@@ -147,7 +147,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               </div>
 
               <div className="flex gap-4 mb-8 relative z-10">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 3 ? 'bg-blue-500 shadow-sm shadow-blue-500/30' : 'bg-slate-100 border-2 border-white'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 3 ? 'bg-[#111111] shadow-sm shadow-black/20' : 'bg-slate-100 border-2 border-white'}`}>
                    {currentStep >= 3 && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
                 </div>
                 <div>
@@ -157,7 +157,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               </div>
 
               <div className="flex gap-4 relative z-10">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 4 ? 'bg-blue-500 shadow-sm shadow-blue-500/30' : 'bg-slate-100 border-2 border-white'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 4 ? 'bg-[#111111] shadow-sm shadow-black/20' : 'bg-slate-100 border-2 border-white'}`}>
                    {currentStep >= 4 && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
                 </div>
                 <div>
@@ -176,7 +176,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
                  <h4 className="font-extrabold text-slate-900 text-sm">Need Help?</h4>
                  <p className="text-[11px] font-medium text-slate-500 leading-tight mt-0.5">Contact the seller on WhatsApp for faster support.</p>
               </div>
-              <button onClick={() => window.open(`https://wa.me/${business?.whatsapp_country_code || '91'}${business?.whatsapp_number}`, '_blank')} className="px-4 py-2.5 bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-sm whitespace-nowrap hover:bg-blue-600 transition-colors">
+              <button onClick={() => window.open(`https://wa.me/${business?.whatsapp_country_code || '91'}${business?.whatsapp_number}`, '_blank')} className="px-4 py-2.5 bg-[#111111] text-white font-extrabold text-xs rounded-xl shadow-sm whitespace-nowrap hover:bg-[#111111] transition-colors">
                 Chat
               </button>
             </div>

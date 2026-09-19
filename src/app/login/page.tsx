@@ -39,11 +39,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
+    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-[#111111]/20 text-[#0F172A]">
       
 
       <main className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-md border border-zyp-border">
+        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-black/20 w-full max-w-md border border-zyp-border">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-6">
               <Logo darkText={true} />
@@ -84,7 +84,7 @@ export default function LoginPage() {
             </div>
             
             <div className="flex justify-end pt-1 pb-4">
-              <a href="#" className="text-sm font-bold text-zyp-primary hover:underline">Forgot password?</a>
+              <a href="#" className="text-sm font-bold text-[#111111] hover:underline">Forgot password?</a>
             </div>
 
             <Button type="submit" variant="primary" className="w-full text-base py-6 rounded-xl font-bold">

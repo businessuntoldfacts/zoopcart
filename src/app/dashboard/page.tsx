@@ -26,8 +26,8 @@ export default function DashboardOverview() {
   const conversionRate = storeViews > 0 ? ((totalOrdersCount / storeViews) * 100).toFixed(1) : "0";
 
   const stats = [
-    { label: "STORE VISITORS", value: storeViews.toString(), trend: "", icon: Users, color: "text-blue-500", bg: "bg-blue-50" },
-    { label: "PRODUCT VIEWS", value: productViews.toString(), trend: "", icon: Eye, color: "text-indigo-500", bg: "bg-indigo-50" },
+    { label: "STORE VISITORS", value: storeViews.toString(), trend: "", icon: Users, color: "text-[#111111]", bg: "bg-slate-100" },
+    { label: "PRODUCT VIEWS", value: productViews.toString(), trend: "", icon: Eye, color: "text-indigo-500", bg: "bg-slate-100" },
     { label: "ORDERS RECEIVED", value: totalOrdersCount.toString(), trend: "", icon: ShoppingBag, color: "text-purple-500", bg: "bg-purple-50" },
     { label: "CONVERSION RATE", value: `${conversionRate}%`, trend: "--", icon: Percent, color: "text-emerald-500", bg: "bg-emerald-50" }
   ];
@@ -39,7 +39,7 @@ export default function DashboardOverview() {
           <h2 className="text-2xl font-extrabold text-[#0F172A]">Welcome back, {userName}</h2>
           <p className="text-sm text-slate-500 mt-1">Here's your store performance overview.</p>
         </div>
-        <select className="bg-white border border-slate-200 text-sm font-semibold text-[#0F172A] rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer shadow-sm">
+        <select className="bg-white border border-slate-200 text-sm font-semibold text-[#0F172A] rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-[#111111]/20 cursor-pointer shadow-sm">
           <option>Last 30 Days</option>
           <option>Last 7 Days</option>
           <option>All Time</option>
@@ -71,7 +71,7 @@ export default function DashboardOverview() {
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-[#0F172A]">Recent Activity</h3>
               <Link href="/dashboard/orders">
-                <Button variant="ghost" className="text-sm font-bold text-blue-600 hover:bg-blue-50">View All</Button>
+                <Button variant="ghost" className="text-sm font-bold text-[#111111] hover:bg-slate-100">View All</Button>
               </Link>
             </div>
             <div className="flex-1 relative flex items-end opacity-80">

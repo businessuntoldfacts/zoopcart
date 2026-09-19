@@ -68,7 +68,7 @@ export default function AdminDashboard() {
               <div className="text-2xl font-extrabold text-[#0F172A]">{stats.stores}</div>
               <div className="text-[11px] font-bold text-slate-400 uppercase mt-1">Total Stores</div>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 text-[#111111] flex items-center justify-center">
               <Store className="w-5 h-5" />
             </div>
           </div>
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
               <div className="text-2xl font-extrabold text-[#0F172A]">{stats.orders}</div>
               <div className="text-[11px] font-bold text-slate-400 uppercase mt-1">Total Orders</div>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 text-[#111111] flex items-center justify-center">
               <ShoppingBag className="w-5 h-5" />
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
             <div className="flex-1 relative flex items-end">
               <svg className="w-full h-full text-blue-100" preserveAspectRatio="none" viewBox="0 0 100 100">
                 <path d="M0,100 L0,80 C20,80 30,90 50,70 C70,50 80,60 100,20 L100,100 Z" fill="currentColor"></path>
-                <path d="M0,80 C20,80 30,90 50,70 C70,50 80,60 100,20" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-500"></path>
+                <path d="M0,80 C20,80 30,90 50,70 C70,50 80,60 100,20" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#111111]"></path>
               </svg>
             </div>
           </Card>

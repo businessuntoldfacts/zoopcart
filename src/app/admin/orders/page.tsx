@@ -69,7 +69,7 @@ export default function AdminOrdersPage() {
             placeholder="Search by ID, Customer Name, Phone, Store..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 h-12 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500" 
+            className="w-full pl-9 h-12 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-[#111111]" 
           />
         </div>
         <select 
@@ -110,7 +110,7 @@ export default function AdminOrdersPage() {
                       <div className="text-[10px] text-slate-400 font-medium mt-1">{new Date(order.created_at).toLocaleString()}</div>
                     </td>
                     <td className="p-4">
-                      <Link href={`/${order.businesses?.username}`} target="_blank" className="font-bold text-blue-600 hover:underline">
+                      <Link href={`/${order.businesses?.username}`} target="_blank" className="font-bold text-[#111111] hover:underline">
                         {order.businesses?.business_name || "Unknown"}
                       </Link>
                     </td>
@@ -125,14 +125,14 @@ export default function AdminOrdersPage() {
                       <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider inline-block ${
                         order.status === 'new' ? 'bg-yellow-100 text-yellow-700' : 
                         order.status === 'completed' ? 'bg-green-100 text-green-700' : 
-                        order.status === 'accepted' ? 'bg-blue-100 text-blue-700' :
+                        order.status === 'accepted' ? 'bg-slate-200 text-black' :
                         'bg-slate-100 text-slate-700'
                       }`}>
                         {order.status.replace('_', ' ')}
                       </span>
                     </td>
                     <td className="p-4 pr-6 text-right">
-                      <button onClick={() => setSelectedOrder(order)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                      <button onClick={() => setSelectedOrder(order)} className="p-2 text-slate-400 hover:text-[#111111] hover:bg-slate-100 rounded-lg transition-colors">
                         <Eye className="w-5 h-5" />
                       </button>
                     </td>
@@ -150,7 +150,7 @@ export default function AdminOrdersPage() {
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden border border-slate-200">
             <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-100 p-6 flex justify-between items-center z-10">
               <h3 className="font-extrabold text-xl text-[#0F172A] flex items-center gap-2">
-                Order <span className="text-blue-600 font-mono">#{selectedOrder.tracking_token?.substring(0,6).toUpperCase()}</span>
+                Order <span className="text-[#111111] font-mono">#{selectedOrder.tracking_token?.substring(0,6).toUpperCase()}</span>
               </h3>
               <button onClick={() => setSelectedOrder(null)} className="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full font-bold">✕</button>
             </div>
@@ -162,7 +162,7 @@ export default function AdminOrdersPage() {
                 <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Store Details</h4>
                   <div className="font-extrabold text-[#0F172A] text-lg">{selectedOrder.businesses?.business_name}</div>
-                  <a href={`/${selectedOrder.businesses?.username}`} target="_blank" className="text-sm font-bold text-blue-600 hover:underline">zoopcart.com/{selectedOrder.businesses?.username}</a>
+                  <a href={`/${selectedOrder.businesses?.username}`} target="_blank" className="text-sm font-bold text-[#111111] hover:underline">zoopcart.com/{selectedOrder.businesses?.username}</a>
                 </div>
                 
                 <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
@@ -175,7 +175,7 @@ export default function AdminOrdersPage() {
               {/* Order Content */}
               <div className="border border-slate-200 rounded-2xl overflow-hidden">
                 <div className="bg-slate-50 border-b border-slate-200 p-4 flex items-center gap-2 text-[#0F172A] font-bold">
-                  <ShoppingBag className="w-5 h-5 text-blue-500" /> Items Ordered
+                  <ShoppingBag className="w-5 h-5 text-[#111111]" /> Items Ordered
                 </div>
                 <div className="p-5 flex justify-between items-center">
                   <div>
@@ -218,7 +218,7 @@ export default function AdminOrdersPage() {
               {/* Financials / Notes */}
               <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-3 text-blue-900 font-bold">
-                  <CreditCard className="w-5 h-5 text-blue-500" /> Order Financials & Notes
+                  <CreditCard className="w-5 h-5 text-[#111111]" /> Order Financials & Notes
                 </div>
                 <p className="text-sm font-bold text-blue-800 whitespace-pre-wrap leading-relaxed">
                   {selectedOrder.notes || "No additional financial details."}

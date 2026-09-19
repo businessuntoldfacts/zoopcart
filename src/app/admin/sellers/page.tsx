@@ -77,7 +77,7 @@ export default function AdminSellersPage() {
             placeholder="Search by name, username, phone..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 h-12 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500" 
+            className="w-full pl-9 h-12 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-[#111111]" 
           />
         </div>
         <select 
@@ -120,7 +120,7 @@ export default function AdminSellersPage() {
                         </div>
                         <div>
                           <div className="font-extrabold text-[#0F172A] text-base">{seller.business_name || "Unnamed Store"}</div>
-                          <a href={`/${seller.username}`} target="_blank" className="text-xs font-bold text-blue-600 hover:underline">zoopcart.com/{seller.username}</a>
+                          <a href={`/${seller.username}`} target="_blank" className="text-xs font-bold text-[#111111] hover:underline">zoopcart.com/{seller.username}</a>
                         </div>
                       </div>
                     </td>
@@ -142,7 +142,7 @@ export default function AdminSellersPage() {
                     </td>
                     <td className="p-4 pr-6 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => openDetails(seller)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Full Profile">
+                        <button onClick={() => openDetails(seller)} className="p-2 text-slate-400 hover:text-[#111111] hover:bg-slate-100 rounded-lg transition-colors" title="View Full Profile">
                           <Eye className="w-5 h-5" />
                         </button>
                         <button onClick={() => handleSuspend(seller.id, seller.status)} className={`p-2 rounded-lg transition-colors ${seller.status === 'suspended' ? 'text-green-600 hover:bg-green-50' : 'text-slate-400 hover:text-red-600 hover:bg-red-50'}`} title={seller.status === 'suspended' ? 'Activate' : 'Suspend'}>
@@ -178,7 +178,7 @@ export default function AdminSellersPage() {
                 <div className="flex-1 space-y-4 w-full">
                   <div>
                     <h2 className="text-3xl font-extrabold text-[#0F172A] leading-tight">{selectedSeller.business_name || "Unnamed Store"}</h2>
-                    <a href={`/${selectedSeller.username}`} target="_blank" className="text-blue-600 font-bold hover:underline flex items-center gap-1 mt-1">
+                    <a href={`/${selectedSeller.username}`} target="_blank" className="text-[#111111] font-bold hover:underline flex items-center gap-1 mt-1">
                       zoopcart.com/{selectedSeller.username} <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
@@ -222,7 +222,7 @@ export default function AdminSellersPage() {
 
                 <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
                   <div className="flex items-center gap-3 mb-4">
-                    <ShoppingBag className="w-5 h-5 text-blue-500" />
+                    <ShoppingBag className="w-5 h-5 text-[#111111]" />
                     <h4 className="font-extrabold text-slate-900">Store Activity</h4>
                   </div>
                   <div className="space-y-3 text-sm">

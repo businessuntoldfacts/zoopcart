@@ -139,7 +139,7 @@ export default function StoreSettingsPage() {
         <Link href="/dashboard/settings" className="flex items-center text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-1" /> Settings
         </Link>
-        <Button onClick={handleSave} disabled={saving} variant="primary" className="rounded-xl px-6 bg-blue-500 hover:bg-blue-600 border-none shadow-md font-bold text-white">
+        <Button onClick={handleSave} disabled={saving} variant="primary" className="rounded-xl px-6 bg-[#111111] hover:bg-[#111111] border-none shadow-md font-bold text-white">
           {saving ? "Saving..." : "Save"}
         </Button>
       </div>
@@ -160,7 +160,7 @@ export default function StoreSettingsPage() {
                 {business.profile_image ? (
                   <img src={business.profile_image} alt="Logo" className="w-full h-full object-cover absolute inset-0" />
                 ) : (
-                  <div className="w-full h-full bg-blue-50 text-blue-500 flex items-center justify-center text-sm font-bold">
+                  <div className="w-full h-full bg-slate-100 text-[#111111] flex items-center justify-center text-sm font-bold">
                     {business.business_name?.charAt(0).toUpperCase() || "S"}
                   </div>
                 )}
@@ -175,13 +175,13 @@ export default function StoreSettingsPage() {
                   <Input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
                 </div>
                 <p className="text-xs text-slate-500 font-medium">JPG, PNG or WebP • up to 5 MB</p>
-                {uploadingImage && <p className="text-xs text-blue-500 font-bold animate-pulse">Uploading...</p>}
+                {uploadingImage && <p className="text-xs text-[#111111] font-bold animate-pulse">Uploading...</p>}
               </div>
             </div>
 
             <div className="space-y-5">
               <div>
-                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Store name <span className="text-blue-500">*</span></label>
+                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Store name <span className="text-[#111111]">*</span></label>
                 <Input value={business.business_name} onChange={(e: any) => setBusiness({...business, business_name: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
               </div>
               <div>
@@ -198,7 +198,7 @@ export default function StoreSettingsPage() {
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Description</label>
-                <textarea value={business.description} onChange={(e: any) => setBusiness({...business, description: e.target.value})} className="w-full bg-slate-50 border border-slate-200 p-3 h-24 rounded-xl text-slate-900 resize-none text-sm outline-none focus:border-blue-500" placeholder="Shown on your storefront. What you make, and for whom." />
+                <textarea value={business.description} onChange={(e: any) => setBusiness({...business, description: e.target.value})} className="w-full bg-slate-50 border border-slate-200 p-3 h-24 rounded-xl text-slate-900 resize-none text-sm outline-none focus:border-[#111111]" placeholder="Shown on your storefront. What you make, and for whom." />
                 <p className="text-xs text-slate-500 mt-2">Shown on your storefront. What you make, and for whom.</p>
               </div>
               <div className="pt-2">
@@ -228,7 +228,7 @@ export default function StoreSettingsPage() {
                 <h4 className="text-slate-900 font-bold text-sm">Free shipping</h4>
                 <p className="text-xs text-slate-500">Customers pay the charge below.</p>
               </div>
-              <button type="button" onClick={() => setBusiness({...business, freeShipping: !business.freeShipping})} className={`w-12 h-6 rounded-full transition-colors relative ${business.freeShipping ? 'bg-blue-500' : 'bg-slate-200'}`}>
+              <button type="button" onClick={() => setBusiness({...business, freeShipping: !business.freeShipping})} className={`w-12 h-6 rounded-full transition-colors relative ${business.freeShipping ? 'bg-[#111111]' : 'bg-slate-200'}`}>
                 <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-sm transition-transform ${business.freeShipping ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
               </button>
             </div>
@@ -255,7 +255,7 @@ export default function StoreSettingsPage() {
                 <h4 className="text-slate-900 font-bold text-sm">Deliver to one city only</h4>
                 <p className="text-xs text-slate-500">Your storefront says you ship across India.</p>
               </div>
-              <button type="button" onClick={() => setBusiness({...business, oneCityOnly: !business.oneCityOnly})} className={`w-12 h-6 rounded-full transition-colors relative ${business.oneCityOnly ? 'bg-blue-500' : 'bg-slate-200'}`}>
+              <button type="button" onClick={() => setBusiness({...business, oneCityOnly: !business.oneCityOnly})} className={`w-12 h-6 rounded-full transition-colors relative ${business.oneCityOnly ? 'bg-[#111111]' : 'bg-slate-200'}`}>
                 <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-sm transition-transform ${business.oneCityOnly ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
               </button>
             </div>

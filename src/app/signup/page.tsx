@@ -72,11 +72,11 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-zyp-primary/20 text-[#0F172A]">
+    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-[#111111]/20 text-[#0F172A]">
       
 
       <main className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-blue-900/5 w-full max-w-lg border border-zyp-border mb-8">
+        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-black/20 w-full max-w-lg border border-zyp-border mb-8">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-6">
               <Logo darkText={true} />
@@ -136,7 +136,7 @@ export default function SignupPage() {
             </div>
             
             <div className="pt-2">
-              <div className="flex rounded-lg overflow-hidden border border-gray-200 focus-within:ring-2 focus-within:ring-zyp-primary/20 focus-within:border-zyp-primary transition-colors">
+              <div className="flex rounded-lg overflow-hidden border border-gray-200 focus-within:ring-2 focus-within:ring-[#111111]/20 focus-within:border-[#111111] transition-colors">
                 <span className="flex items-center justify-center bg-gray-50 px-4 text-gray-500 font-medium text-sm border-r border-gray-200">
                   zoopcart.com/
                 </span>
@@ -159,9 +159,9 @@ export default function SignupPage() {
             </div>
 
             <div className="flex items-center gap-2 pt-2 pb-4">
-              <input type="checkbox" required id="terms" className="rounded text-zyp-primary focus:ring-zyp-primary border-gray-300 w-4 h-4 cursor-pointer" />
+              <input type="checkbox" required id="terms" className="rounded text-[#111111] focus:ring-[#111111] border-gray-300 w-4 h-4 cursor-pointer" />
               <label htmlFor="terms" className="text-xs font-medium text-zyp-textMuted cursor-pointer">
-                I agree to the <a href="#" className="font-bold text-zyp-primary hover:underline">Terms & Privacy Policy</a>
+                I agree to the <a href="#" className="font-bold text-[#111111] hover:underline">Terms & Privacy Policy</a>
               </label>
             </div>
 
@@ -171,7 +171,7 @@ export default function SignupPage() {
             
             <div className="text-center mt-6 pt-6 border-t border-slate-100">
               <span className="text-slate-500 font-medium text-sm">Already have an account? </span>
-              <Link href="/login" className="font-bold text-zyp-primary hover:underline text-sm">Login here</Link>
+              <Link href="/login" className="font-bold text-[#111111] hover:underline text-sm">Login here</Link>
             </div>
           </form>
         </div>

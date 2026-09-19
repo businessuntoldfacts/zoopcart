@@ -68,7 +68,7 @@ export default function ThemeSettingsPage() {
         <Link href="/dashboard/settings" className="flex items-center text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-1" /> Settings
         </Link>
-        <Button onClick={handleSave} disabled={saving} variant="primary" className="rounded-xl px-6 bg-blue-500 hover:bg-blue-600 border-none shadow-md font-bold text-white">
+        <Button onClick={handleSave} disabled={saving} variant="primary" className="rounded-xl px-6 bg-[#111111] hover:bg-[#111111] border-none shadow-md font-bold text-white">
           {saving ? "Saving..." : "Save"}
         </Button>
       </div>
@@ -85,10 +85,10 @@ export default function ThemeSettingsPage() {
               <div 
                 key={t.id}
                 onClick={() => setBusiness({...business, theme: t.id})}
-                className={`border-2 rounded-2xl p-4 cursor-pointer transition-all relative ${business.theme === t.id ? 'border-blue-500 bg-blue-50' : 'border-slate-100 hover:border-slate-300'}`}
+                className={`border-2 rounded-2xl p-4 cursor-pointer transition-all relative ${business.theme === t.id ? 'border-[#111111] bg-slate-100' : 'border-slate-100 hover:border-slate-300'}`}
               >
                 {business.theme === t.id && (
-                  <div className="absolute -top-3 -right-3 bg-blue-500 text-white rounded-full p-1 border-2 border-white shadow-sm">
+                  <div className="absolute -top-3 -right-3 bg-[#111111] text-white rounded-full p-1 border-2 border-white shadow-sm">
                      <CheckCircle2 className="w-4 h-4" />
                   </div>
                 )}

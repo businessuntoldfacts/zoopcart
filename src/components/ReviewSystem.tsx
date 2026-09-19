@@ -75,7 +75,7 @@ export default function ReviewSystem({ businessId, productId }: { businessId: st
             <span className="text-sm font-bold text-slate-600">{averageRating} ({reviews.length} reviews)</span>
           </div>
         </div>
-        <Button onClick={() => setShowForm(!showForm)} className="bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold rounded-xl h-10 px-4 border-none shadow-none">
+        <Button onClick={() => setShowForm(!showForm)} className="bg-slate-100 text-[#111111] hover:bg-slate-200 font-bold rounded-xl h-10 px-4 border-none shadow-none">
           {showForm ? "Cancel" : "Write Review"}
         </Button>
       </div>
@@ -94,13 +94,13 @@ export default function ReviewSystem({ businessId, productId }: { businessId: st
           </div>
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Your Name</label>
-            <input required value={name} onChange={e => setName(e.target.value)} className="w-full h-12 px-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 font-medium" placeholder="John Doe" />
+            <input required value={name} onChange={e => setName(e.target.value)} className="w-full h-12 px-4 rounded-xl border border-slate-200 outline-none focus:border-[#111111] font-medium" placeholder="John Doe" />
           </div>
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Review</label>
-            <textarea required value={comment} onChange={e => setComment(e.target.value)} className="w-full p-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 font-medium min-h-[100px] resize-y" placeholder="Tell others what you think..." />
+            <textarea required value={comment} onChange={e => setComment(e.target.value)} className="w-full p-4 rounded-xl border border-slate-200 outline-none focus:border-[#111111] font-medium min-h-[100px] resize-y" placeholder="Tell others what you think..." />
           </div>
-          <Button type="submit" disabled={submitting} className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow-md border-none">
+          <Button type="submit" disabled={submitting} className="w-full h-12 bg-[#111111] hover:bg-black text-white font-extrabold rounded-xl shadow-md border-none">
             {submitting ? "Submitting..." : "Submit Review"}
           </Button>
         </form>
@@ -116,7 +116,7 @@ export default function ReviewSystem({ businessId, productId }: { businessId: st
         {reviews.map((r, idx) => (
           <div key={idx} className="p-5 rounded-[24px] border border-slate-100 shadow-sm bg-white">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold uppercase shrink-0">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-[#111111] font-bold uppercase shrink-0">
                 {r.customer_name?.charAt(0) || 'U'}
               </div>
               <div>

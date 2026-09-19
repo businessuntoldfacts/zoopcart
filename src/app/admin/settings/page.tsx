@@ -14,7 +14,7 @@ export default function AdminSettingsPage() {
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="p-6 rounded-3xl border-slate-100 shadow-sm bg-white">
           <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 text-[#111111] flex items-center justify-center">
               <Percent className="w-5 h-5" />
             </div>
             <h3 className="font-extrabold text-lg text-[#0F172A]">Fees & Commission</h3>
@@ -23,11 +23,11 @@ export default function AdminSettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Platform Fee (%)</label>
-              <input type="number" defaultValue="2" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-blue-500" />
+              <input type="number" defaultValue="2" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-[#111111]" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Fixed Transaction Fee (₹)</label>
-              <input type="number" defaultValue="0" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-blue-500" />
+              <input type="number" defaultValue="0" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-[#111111]" />
             </div>
             <Button className="w-full bg-slate-900 text-white font-bold rounded-xl mt-2 h-10">Save Financials</Button>
           </div>
@@ -44,10 +44,10 @@ export default function AdminSettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Banner Message</label>
-              <textarea placeholder="Show a message on all seller dashboards..." className="w-full p-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-blue-500 h-24 resize-none"></textarea>
+              <textarea placeholder="Show a message on all seller dashboards..." className="w-full p-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-[#111111] h-24 resize-none"></textarea>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="enable_banner" className="rounded text-blue-600 w-4 h-4" />
+              <input type="checkbox" id="enable_banner" className="rounded text-[#111111] w-4 h-4" />
               <label htmlFor="enable_banner" className="text-sm font-bold text-slate-700">Enable Banner Globally</label>
             </div>
             <Button className="w-full bg-slate-900 text-white font-bold rounded-xl h-10">Publish Announcement</Button>
@@ -65,11 +65,11 @@ export default function AdminSettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Sender Email</label>
-              <input type="email" defaultValue="hello@zoopcart.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-blue-500" />
+              <input type="email" defaultValue="hello@zoopcart.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-[#111111]" />
             </div>
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">API Key (Resend)</label>
-              <input type="password" placeholder="re_****************" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-blue-500" />
+              <input type="password" placeholder="re_****************" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-[#111111]" />
             </div>
             <Button className="w-full bg-slate-900 text-white font-bold rounded-xl mt-2 h-10">Verify Configuration</Button>
           </div>
@@ -86,7 +86,7 @@ export default function AdminSettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Admin Access Email</label>
-              <input type="email" defaultValue="admin@zoopcart.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-blue-500" />
+              <input type="email" defaultValue="admin@zoopcart.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-[#111111]" />
             </div>
             <div className="pt-2">
               <button className="text-red-500 text-sm font-bold hover:text-red-600 underline">Reset Admin Password</button>

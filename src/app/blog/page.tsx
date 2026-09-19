@@ -18,13 +18,13 @@ export default function Page() {
 <br/><br/>
 <div class="grid md:grid-cols-2 gap-8 mt-8">
   <div class="p-6 border border-slate-200 rounded-3xl hover:shadow-md transition-shadow">
-    <span class="text-sm font-bold text-blue-600 mb-2 block">Growth</span>
+    <span class="text-sm font-bold text-[#111111] mb-2 block">Growth</span>
     <h3 class="text-xl font-bold mb-3 text-[#111111]">How to optimize your Instagram Bio for Sales</h3>
     <p class="text-slate-600 mb-4">Learn the exact formula to turn your Instagram profile visitors into paying customers using a clean bio structure and a Zoopcart link.</p>
     <a href="#" class="font-semibold text-[#111111] hover:underline">Read article →</a>
   </div>
   <div class="p-6 border border-slate-200 rounded-3xl hover:shadow-md transition-shadow">
-    <span class="text-sm font-bold text-blue-600 mb-2 block">Case Study</span>
+    <span class="text-sm font-bold text-[#111111] mb-2 block">Case Study</span>
     <h3 class="text-xl font-bold mb-3 text-[#111111]">How Sneha scaled her bakery to 100 orders/day</h3>
     <p class="text-slate-600 mb-4">Discover how moving from manual DMs to an automated Zoopcart catalog helped a local home baker scale operations seamlessly.</p>
     <a href="#" class="font-semibold text-[#111111] hover:underline">Read article →</a>

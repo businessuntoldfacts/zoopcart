@@ -86,7 +86,7 @@ export default function PlatformReviewSystem() {
     <div className="w-full max-w-4xl mx-auto py-12">
       <div className="flex flex-col md:flex-row items-center justify-between text-center md:text-left mb-10 gap-4">
           <div className="text-center w-full mb-8">
-     <span className="text-blue-500 font-bold text-sm tracking-wide bg-blue-50 px-4 py-1 rounded-full mb-4 inline-block">Customers</span>
+     <span className="text-[#111111] font-bold text-sm tracking-wide bg-slate-100 px-4 py-1 rounded-full mb-4 inline-block">Customers</span>
      <h2 className="text-4xl md:text-5xl font-extrabold text-[#111111] w-full text-center mb-4">What Customers Are Saying</h2>
      <p className="text-slate-500 text-lg md:text-xl font-medium max-w-xl mx-auto">Small businesses across the world run on Zoopcart.</p>
    </div>
@@ -108,7 +108,7 @@ export default function PlatformReviewSystem() {
                 type="text" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#111111]/20"
                 placeholder="E.g. Sneha's Bakery"
               />
             </div>
@@ -128,7 +128,7 @@ export default function PlatformReviewSystem() {
                 required 
                 value={comment} 
                 onChange={(e) => setComment(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 h-24 resize-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#111111]/20 h-24 resize-none"
                 placeholder="Tell us how Zoopcart has changed the way you take orders..."
               />
             </div>
@@ -169,7 +169,7 @@ export default function PlatformReviewSystem() {
           ))}
         </div>
           <div className="flex justify-center mt-10">
-            <Link href="#reviews" className="text-blue-600 font-semibold hover:underline flex items-center gap-1">
+            <Link href="#reviews" className="text-[#111111] font-semibold hover:underline flex items-center gap-1">
               More reviews <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </Link>
           </div>

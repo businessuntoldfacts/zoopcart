@@ -31,8 +31,8 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
         
         {/* Status Header */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-zyp-border text-center">
-          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-blue-100">
-            <Package className="w-8 h-8 text-blue-500" />
+          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-blue-100">
+            <Package className="w-8 h-8 text-[#111111]" />
           </div>
           <h1 className="text-2xl font-extrabold text-[#0F172A] mb-1">
             {order.status === 'new' ? 'Request Submitted' : 
@@ -41,7 +41,7 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
              'Order Completed!'}
           </h1>
           <p className="text-sm font-medium text-slate-500">
-            From <Link href={`/${order.businesses.username}`} className="font-bold text-zyp-primary hover:underline">{order.businesses.business_name}</Link>
+            From <Link href={`/${order.businesses.username}`} className="font-bold text-[#111111] hover:underline">{order.businesses.business_name}</Link>
           </p>
 
           <div className="mt-6 flex items-center justify-center gap-2 border-t border-slate-100 pt-6">
@@ -50,7 +50,7 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
             </div>
             <div className="text-left">
               <div className="font-extrabold text-[#0F172A] text-sm">{order.products.name}</div>
-              <div className="text-xs font-bold text-zyp-primary mt-0.5">₹{order.products.price}</div>
+              <div className="text-xs font-bold text-[#111111] mt-0.5">₹{order.products.price}</div>
             </div>
           </div>
         </div>
@@ -74,7 +74,7 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
           <div className="relative pl-6 space-y-8">
             {/* Connecting Line */}
             <div className="absolute left-3 top-2 bottom-4 w-0.5 bg-slate-100">
-               <div className="w-full bg-zyp-primary transition-all duration-1000" style={{height: `${(currentIndex / 3) * 100}%`}}></div>
+               <div className="w-full bg-[#111111] transition-all duration-1000" style={{height: `${(currentIndex / 3) * 100}%`}}></div>
             </div>
 
             {[
@@ -91,8 +91,8 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
               return (
                 <div key={step.id} className={`relative ${isPending ? 'opacity-40' : ''}`}>
                   <div className={`absolute -left-10 w-8 h-8 rounded-full flex items-center justify-center border-4 border-white shadow-sm transition-colors ${
-                    isCompleted ? 'bg-zyp-primary text-white' : 
-                    isCurrent ? 'bg-blue-100 text-zyp-primary border-blue-50 ring-4 ring-blue-50' : 
+                    isCompleted ? 'bg-[#111111] text-white' : 
+                    isCurrent ? 'bg-slate-200 text-[#111111] border-blue-50 ring-4 ring-blue-50' : 
                     'bg-slate-200 text-slate-400'
                   }`}>
                     {isCurrent && !isCompleted && step.id === 'in_progress' ? (
@@ -102,7 +102,7 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
                     )}
                   </div>
                   <div>
-                    <h3 className={`font-extrabold text-sm ${isCurrent ? 'text-zyp-primary' : 'text-[#0F172A]'}`}>{step.title}</h3>
+                    <h3 className={`font-extrabold text-sm ${isCurrent ? 'text-[#111111]' : 'text-[#0F172A]'}`}>{step.title}</h3>
                     <p className="text-xs font-medium text-slate-500 mt-0.5">{step.desc}</p>
                     {isCurrent && (
                       <div className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">

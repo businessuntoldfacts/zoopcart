@@ -37,7 +37,7 @@ export default function AnalyticsPage() {
             <div className="text-sm font-bold text-slate-500 mb-2">Total Store Visitors</div>
             <div className="text-2xl font-extrabold text-[#0F172A]">{stats.storeViews}</div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center"><Users className="w-5 h-5 text-blue-500" /></div>
+          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center"><Users className="w-5 h-5 text-[#111111]" /></div>
         </Card>
 
         {/* Views */}
@@ -46,7 +46,7 @@ export default function AnalyticsPage() {
             <div className="text-sm font-bold text-slate-500 mb-2">Product Views</div>
             <div className="text-2xl font-extrabold text-[#0F172A]">{stats.productViews}</div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center"><Eye className="w-5 h-5 text-indigo-500" /></div>
+          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center"><Eye className="w-5 h-5 text-indigo-500" /></div>
         </Card>
 
         {/* Orders */}
@@ -70,8 +70,8 @@ export default function AnalyticsPage() {
 
       {stats.storeViews === 0 && stats.totalOrders === 0 && (
         <Card className="bg-white border-slate-100 shadow-sm rounded-2xl p-8 border flex flex-col items-center justify-center text-center mt-8">
-          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-            <Share2 className="w-8 h-8 text-blue-500" />
+          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <Share2 className="w-8 h-8 text-[#111111]" />
           </div>
           <h3 className="text-lg font-extrabold text-[#0F172A] mb-2">Not enough data yet.</h3>
           <p className="text-slate-500 mb-6 text-sm font-medium">Share your store link with customers to start receiving orders.</p>

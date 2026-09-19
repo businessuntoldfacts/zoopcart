@@ -38,7 +38,7 @@ export default function OrderTracker({ businessId }: { businessId: string }) {
     switch(status) {
       case 'pending': return { icon: <Clock className="w-6 h-6 text-orange-500" />, text: "Processing", color: "bg-orange-50 text-orange-700", border: "border-orange-200" };
       case 'completed': return { icon: <CheckCircle2 className="w-6 h-6 text-green-500" />, text: "Completed", color: "bg-green-50 text-green-700", border: "border-green-200" };
-      default: return { icon: <Package className="w-6 h-6 text-blue-500" />, text: status, color: "bg-blue-50 text-blue-700", border: "border-blue-200" };
+      default: return { icon: <Package className="w-6 h-6 text-[#111111]" />, text: status, color: "bg-slate-100 text-black", border: "border-slate-300" };
     }
   };
 
@@ -56,14 +56,14 @@ export default function OrderTracker({ businessId }: { businessId: string }) {
               placeholder="Order ID or Phone" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 font-bold bg-white" 
+              className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-[#111111] font-bold bg-white" 
             />
          </div>
 
          <Button 
             onClick={handleTrack}
             disabled={loading}
-            className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold shadow-md shadow-blue-600/20 border-none"
+            className="w-full h-12 rounded-xl bg-[#111111] hover:bg-black text-white font-extrabold shadow-md shadow-black/20 border-none"
          >
            {loading ? "Tracking..." : "Track Package"}
          </Button>

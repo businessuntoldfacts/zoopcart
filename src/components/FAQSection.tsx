@@ -44,7 +44,7 @@ export default function FAQSection() {
     <section id="faq" className="py-24 bg-white border-y border-slate-100">
       <div className="container mx-auto px-6 max-w-3xl">
         <div className="text-center mb-12">
-          <span className="text-blue-500 font-bold text-sm tracking-wide bg-blue-50 px-4 py-1 rounded-full mb-4 inline-block">FAQ</span>
+          <span className="text-[#111111] font-bold text-sm tracking-wide bg-slate-100 px-4 py-1 rounded-full mb-4 inline-block">FAQ</span>
           <h2 className="text-3xl md:text-5xl font-extrabold text-[#111111] mb-8">Frequently Asked Questions</h2>
         </div>
         
@@ -55,7 +55,7 @@ export default function FAQSection() {
                 onClick={() => toggle(index)}
                 className="w-full py-6 flex justify-between items-center text-left focus:outline-none group"
               >
-                <span className="font-semibold text-lg text-[#111111] group-hover:text-blue-600 transition-colors pr-8">{faq.question}</span>
+                <span className="font-semibold text-lg text-[#111111] group-hover:text-[#111111] transition-colors pr-8">{faq.question}</span>
                 <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openIndex === index ? 'rotate-180 text-[#111111]' : ''}`} />
               </button>
               <div 

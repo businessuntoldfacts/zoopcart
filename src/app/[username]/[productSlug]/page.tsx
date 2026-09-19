@@ -53,7 +53,7 @@ export default async function ProductDetailPage({ params }: { params: { username
           <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 text-slate-900 backdrop-blur-md shadow-sm border border-slate-100/50">
             <Share2 className="w-4 h-4" />
           </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 text-blue-500 backdrop-blur-md shadow-sm border border-slate-100/50">
+          <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 text-[#111111] backdrop-blur-md shadow-sm border border-slate-100/50">
             <Heart className="w-5 h-5 fill-current" />
           </button>
         </div>
@@ -79,7 +79,7 @@ export default async function ProductDetailPage({ params }: { params: { username
           {/* Title & Price */}
           <h1 className="text-2xl font-extrabold text-slate-900 leading-tight mb-2">{product.name}</h1>
           <div className="flex items-end gap-3 mb-4">
-             <span className="text-3xl font-extrabold text-indigo-600">₹{product.price}</span>
+             <span className="text-3xl font-extrabold text-[#111111]">₹{product.price}</span>
              {product.original_price && (
                <span className="text-lg font-bold text-slate-400 line-through mb-1">₹{product.original_price}</span>
              )}
@@ -99,7 +99,7 @@ export default async function ProductDetailPage({ params }: { params: { username
           {/* Trust Badges */}
           <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-slate-100">
              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-full bg-slate-100 text-[#111111] flex items-center justify-center shrink-0">
                    <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
@@ -108,7 +108,7 @@ export default async function ProductDetailPage({ params }: { params: { username
                 </div>
              </div>
              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-full bg-slate-100 text-indigo-500 flex items-center justify-center shrink-0">
                    <Zap className="w-5 h-5" />
                 </div>
                 <div>
@@ -143,7 +143,7 @@ export default async function ProductDetailPage({ params }: { params: { username
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50 p-4 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.06)]">
           <div className="max-w-md mx-auto">
             <Link href={`/${business.username}/${product.slug}/request`}>
-              <button className="w-full h-14 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 transition-all active:scale-[0.98]">
+              <button className="w-full h-14 rounded-2xl bg-[#111111] hover:bg-[#111111] text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-black/20 transition-all active:scale-[0.98]">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 Request This Product
               </button>

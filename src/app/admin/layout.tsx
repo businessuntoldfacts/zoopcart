@@ -54,7 +54,7 @@ export default function AdminLayout({
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
                   isActive
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-900/20"
+                    ? "bg-[#111111] text-white shadow-md shadow-black/20"
                     : "hover:bg-white/5 hover:text-white"
                 )}
               >
