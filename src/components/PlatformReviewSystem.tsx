@@ -84,9 +84,13 @@ export default function PlatformReviewSystem() {
   return (
     <div className="w-full max-w-4xl mx-auto py-12">
       <div className="flex flex-col md:flex-row items-center justify-between text-center md:text-left mb-10 gap-4">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] w-full text-center">Real Stories & Reviews</h2>
+          <div className="text-center w-full mb-8">
+     <span className="text-blue-500 font-bold text-sm tracking-wide bg-blue-50 px-4 py-1 rounded-full mb-4 inline-block">Customers</span>
+     <h2 className="text-4xl md:text-5xl font-extrabold text-[#111111] w-full text-center mb-4">What Customers Are Saying</h2>
+     <p className="text-slate-500 text-lg md:text-xl font-medium max-w-xl mx-auto">Small businesses across the world run on Zoopcart.</p>
+   </div>
           <div className="w-full flex justify-center mt-2">
-            <Button onClick={() => setShowForm(!showForm)} variant="secondary" className="font-bold border-blue-200 text-blue-600 hover:bg-blue-50">
+            <Button onClick={() => setShowForm(!showForm)} variant="secondary" className="font-bold border-slate-200 text-slate-800 hover:bg-slate-50 rounded-full">
               Write a Review
             </Button>
           </div>
@@ -129,7 +133,7 @@ export default function PlatformReviewSystem() {
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="ghost" onClick={() => setShowForm(false)}>Cancel</Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold" disabled={submitting}>
+              <Button type="submit" className="bg-[#111111] hover:bg-black text-white font-bold rounded-full" disabled={submitting}>
                 {submitting ? "Posting..." : "Post Review"}
               </Button>
             </div>
@@ -142,20 +146,15 @@ export default function PlatformReviewSystem() {
       ) : reviews.length > 0 ? (
         <div className="grid md:grid-cols-3 gap-6">
           {reviews.map((review) => (
-            <div key={review.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(review.quantity || 5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-slate-700 leading-relaxed font-medium mb-6 flex-1">"{review.notes}"</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-700 font-extrabold">
+            <div key={review.id} className="bg-white p-8 rounded-[32px] border border-slate-100 flex flex-col h-full shadow-sm hover:shadow-md transition-shadow">
+              <p className="text-[#111111] leading-relaxed font-bold text-lg mb-8 flex-1">"{review.notes}"</p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#111111] flex items-center justify-center text-white font-extrabold text-lg">
                   {review.customer_name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-[#0F172A] text-sm">{review.customer_name}</h4>
-                  <p className="text-xs text-slate-500 font-medium">Verified Seller</p>
+                  <h4 className="font-extrabold text-[#111111] text-base">{review.customer_name}</h4>
+                  <p className="text-sm text-slate-500 font-medium">Verified Seller</p>
                 </div>
               </div>
             </div>

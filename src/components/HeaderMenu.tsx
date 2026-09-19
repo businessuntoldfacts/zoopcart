@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,21 @@ import { Menu, X } from "lucide-react";
 export default function HeaderMenu() {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Prevent scrolling when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   return (
     <>
-      <header className="fixed top-0 w-full bg-white z-50 border-b border-slate-100">
+      <header className="fixed top-0 w-full bg-white z-40 border-b border-slate-100">
         <div className="container mx-auto px-6 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center z-50">
             <Logo darkText={true} />
@@ -18,13 +30,14 @@ export default function HeaderMenu() {
           
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-800">
-            <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
-            <Link href="/#how-it-works" className="hover:text-blue-600 transition-colors">How it works</Link>
-            <Link href="/#reviews" className="hover:text-blue-600 transition-colors">Reviews</Link>
+            <Link href="/" className="hover:text-slate-500 transition-colors">Home</Link>
+            <Link href="/#how-it-works" className="hover:text-slate-500 transition-colors">How it works</Link>
+            <Link href="/#reviews" className="hover:text-slate-500 transition-colors">Reviews</Link>
+            <Link href="/#faq" className="hover:text-slate-500 transition-colors">FAQ</Link>
           </nav>
           
           <div className="hidden md:flex items-center">
-            <Link href="/login" className="text-sm font-semibold text-slate-800 hover:text-blue-600 mr-4">
+            <Link href="/login" className="text-sm font-semibold text-slate-800 hover:text-slate-500 mr-4">
               Log in
             </Link>
             <Link href="/signup">
@@ -43,30 +56,39 @@ export default function HeaderMenu() {
       </header>
 
       {/* Mobile Nav Overlay */}
-      <div className={`fixed inset-0 bg-black/40 z-40 transition-all duration-300 md:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} onClick={() => setIsOpen(false)}></div>
-      <div className={`fixed top-4 left-4 right-4 bg-white rounded-3xl z-50 flex flex-col p-6 transition-all duration-300 transform md:hidden shadow-2xl ${isOpen ? 'translate-y-0 opacity-100 visible' : '-translate-y-10 opacity-0 invisible'}`}>
-        <div className="flex justify-between items-center border-b border-slate-100 pb-4 mb-4">
+      <div 
+        className={`fixed inset-0 bg-black/40 z-[60] transition-opacity duration-300 md:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} 
+        onClick={() => setIsOpen(false)}
+      ></div>
+      
+      {/* Mobile Nav Popup */}
+      <div className={`fixed top-4 left-4 right-4 bg-white rounded-[24px] z-[70] flex flex-col p-6 transition-all duration-300 ease-out transform origin-top md:hidden shadow-2xl ${isOpen ? 'scale-100 opacity-100 visible' : 'scale-95 opacity-0 invisible -translate-y-4'}`}>
+        <div className="flex justify-between items-center border-b border-slate-100 pb-4 mb-2">
           <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center">
             <Logo darkText={true} />
           </Link>
-          <button className="text-slate-800 p-2" onClick={() => setIsOpen(false)}>
-            <X className="w-6 h-6" />
+          <button className="text-slate-800 p-2 -mr-2 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors" onClick={() => setIsOpen(false)}>
+            <X className="w-5 h-5" />
           </button>
         </div>
-        <nav className="flex flex-col items-start w-full gap-1">
-          <Link href="/" onClick={() => setIsOpen(false)} className="hover:text-slate-500 font-medium text-slate-900 w-full py-4 border-b border-slate-100">Home</Link>
-          <Link href="/#how-it-works" onClick={() => setIsOpen(false)} className="hover:text-slate-500 font-medium text-slate-900 w-full py-4 border-b border-slate-100">How it works</Link>
-          <Link href="/#reviews" onClick={() => setIsOpen(false)} className="hover:text-slate-500 font-medium text-slate-900 w-full py-4 border-b border-slate-100">Reviews</Link>
-          
-          <div className="flex flex-col w-full gap-3 mt-6">
-            <Link href="/login" onClick={() => setIsOpen(false)} className="w-full">
-              <Button variant="secondary" className="w-full py-6 rounded-full font-bold border-slate-200 text-slate-900">Log in</Button>
-            </Link>
-            <Link href="/signup" onClick={() => setIsOpen(false)} className="w-full">
-              <Button variant="primary" className="w-full py-6 rounded-full font-bold">Start free</Button>
-            </Link>
-          </div>
+        
+        <nav className="flex flex-col items-start w-full gap-0 overflow-y-auto max-h-[60vh]">
+          <Link href="/" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Products</Link>
+          <Link href="/#how-it-works" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Business types</Link>
+          <Link href="/#reviews" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Pricing</Link>
+          <Link href="/help" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Help center</Link>
+          <Link href="/#faq" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4 border-b border-slate-100">Compare alternatives</Link>
+          <Link href="/about" onClick={() => setIsOpen(false)} className="font-semibold text-slate-800 w-full py-4">Download app</Link>
         </nav>
+        
+        <div className="flex flex-col w-full gap-3 mt-4 pt-4 border-t border-slate-100 bg-white">
+          <Link href="/login" onClick={() => setIsOpen(false)} className="w-full">
+            <Button variant="secondary" className="w-full py-6 rounded-full font-bold border border-slate-200 text-slate-900 bg-white">Log in</Button>
+          </Link>
+          <Link href="/signup" onClick={() => setIsOpen(false)} className="w-full">
+            <Button variant="primary" className="w-full py-6 rounded-full font-bold">Start free</Button>
+          </Link>
+        </div>
       </div>
     </>
   );

@@ -1,5 +1,6 @@
 import HeaderMenu from "@/components/HeaderMenu";
 import PlatformReviewSystem from "@/components/PlatformReviewSystem";
+import FAQSection from "@/components/FAQSection";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -268,6 +269,8 @@ export default async function LandingPage() {
       </section>
 
       <PlatformReviewSystem />
+
+      <FAQSection />
 
       {/* Bottom CTA */}
       <section className="py-24 px-6 max-w-5xl mx-auto">
