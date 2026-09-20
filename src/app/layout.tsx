@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   title: "Zoopcart",
   description: "Turn conversations into orders.",
   icons: {
-    icon: '/icon.jpg',
-    apple: '/icon.jpg',
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
   },
 };
 

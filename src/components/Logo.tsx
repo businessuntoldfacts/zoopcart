@@ -1,18 +1,32 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 export default function Logo({ className = "", darkText = false }: { className?: string, darkText?: boolean }) {
-  // Universally use multiply blend mode. Since we are moving to a 100% Light Theme UI, 
-  // the white background of the JPEG will perfectly vanish into any white/slate-50 background,
-  // leaving the logo crisp and untouched!
-  
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
-    <div className={`flex items-center hover:opacity-90 transition-opacity ${className}`}>
+    <Link href={user ? "/dashboard" : "/"} className={`flex items-center hover:opacity-90 transition-opacity ${className}`}>
       <img 
         src="/logo-black.jpg?v=1" 
         alt="Zoopcart" 
         className="h-14 md:h-16 w-auto object-contain" 
         style={{ mixBlendMode: 'multiply' }}
       />
-    </div>
+    </Link>
   );
 }

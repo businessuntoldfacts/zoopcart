@@ -84,7 +84,7 @@ export default function DashboardLayout({
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push("/login");
+    window.location.replace("/");
   };
 
   return (
@@ -162,11 +162,15 @@ export default function DashboardLayout({
               </div>
               <button 
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="relative w-10 h-10 rounded-full bg-gradient-to-tr from-[#111111] to-black flex items-center justify-center text-sm font-extrabold text-white shadow-md hover:shadow-lg transition-all ring-2 ring-white hover:ring-blue-100 group cursor-pointer"
+                className="relative w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-extrabold text-white shadow-md hover:shadow-lg transition-all ring-2 ring-white hover:ring-blue-100 group cursor-pointer overflow-hidden"
               >
-                <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
-                  {businessData.name ? businessData.name.charAt(0).toUpperCase() : "S"}
-                </div>
+                {businessData.image ? (
+                  <img src={businessData.image} alt={businessData.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-tr from-[#111111] to-black flex items-center justify-center">
+                    {businessData.name ? businessData.name.charAt(0).toUpperCase() : "S"}
+                  </div>
+                )}
               </button>
 
               {profileOpen && (

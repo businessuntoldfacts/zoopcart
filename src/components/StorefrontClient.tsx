@@ -1,18 +1,39 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck } from "lucide-react";
 import StoreBottomNav from "@/components/StoreBottomNav";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function StorefrontClient({ business, products }: { business: any, products: any[] }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Products");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [savedItems, setSavedItems] = useState<string[]>([]);
 
-  
+  useEffect(() => {
+    const saved = localStorage.getItem('zypcart_saved');
+    if (saved) {
+      try {
+        setSavedItems(JSON.parse(saved));
+      } catch (e) {
+        setSavedItems([]);
+      }
+    }
+  }, []);
+
+  const toggleSave = (productId: string) => {
+    const newSaved = savedItems.includes(productId)
+      ? savedItems.filter(id => id !== productId)
+      : [...savedItems, productId];
+    setSavedItems(newSaved);
+    localStorage.setItem('zypcart_saved', JSON.stringify(newSaved));
+    window.dispatchEvent(new Event('cart-updated'));
+  };
+
   let theme = 'light';
   if (business?.instagram_profile_url) {
     try {
@@ -24,7 +45,6 @@ export default function StorefrontClient({ business, products }: { business: any
     } catch(e) {}
   }
 
-  
   const getHeroGradient = () => {
     if (theme === 'dark') return 'bg-gradient-to-br from-slate-900 via-slate-900 to-black';
     if (theme === 'playful') return 'bg-gradient-to-br from-orange-400 via-amber-500 to-yellow-400';
@@ -35,7 +55,6 @@ export default function StorefrontClient({ business, products }: { business: any
   const primaryText = theme === 'playful' ? 'text-orange-500' : 'text-[#111111]';
   const activeTabColor = theme === 'playful' ? 'bg-orange-500' : 'bg-[#111111]';
 
-  // Filter products by category and search query
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
     const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -43,7 +62,6 @@ export default function StorefrontClient({ business, products }: { business: any
     return matchesCategory && matchesSearch;
   });
 
-  // Format member date beautifully from business created_at if available
   const getMemberSince = () => {
     if (!business.created_at) return "Active Seller";
     try {
@@ -55,11 +73,14 @@ export default function StorefrontClient({ business, products }: { business: any
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans pb-24 relative">
-      
-
-      {/* Top Header - Floating over purple gradient */}
-      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 h-16 bg-white border-b border-slate-100 shadow-sm">
+    <div className="min-h-screen bg-slate-50 font-sans pb-24 relative overflow-x-hidden">
+      {/* Top Header */}
+      <motion.header
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="fixed top-0 w-full z-50 flex items-center justify-between px-4 h-16 bg-white border-b border-slate-100 shadow-sm"
+      >
         <button onClick={() => { if (window.history.length > 1) router.back(); }} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-600 transition-colors hover:bg-slate-100">
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -80,19 +101,31 @@ export default function StorefrontClient({ business, products }: { business: any
         }} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-600 transition-colors hover:bg-slate-100">
           <Share2 className="w-5 h-5" />
         </button>
-      </header>
+      </motion.header>
 
       {/* Curved Hero */}
-      <div className={`absolute top-0 w-full h-[220px] ${getHeroGradient()} rounded-b-[40px] shadow-inner`} style={{ clipPath: 'ellipse(120% 100% at 50% 0%)' }}></div>
+      <motion.div
+        initial={{ scale: 1.1, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className={`absolute top-0 w-full h-[220px] ${getHeroGradient()} rounded-b-[40px] shadow-inner`}
+        style={{ clipPath: 'ellipse(120% 100% at 50% 0%)' }}
+      ></motion.div>
 
-      <div className="max-w-md mx-auto relative pt-[160px] px-4">
-        
+      <div className="max-w-md mx-auto relative pt-[120px] px-4">
         {/* Profile Card */}
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col items-center text-center relative mt-4">
-          
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+          className="bg-white rounded-3xl p-5 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col items-center text-center relative mt-12"
+        >
           {/* Avatar floating up */}
           <div className="absolute -top-12 w-24 h-24 rounded-full p-1 bg-white shadow-md">
-            <div className="w-full h-full rounded-full overflow-hidden bg-slate-100 border border-slate-100 relative">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="w-full h-full rounded-full overflow-hidden bg-slate-100 border border-slate-100 relative"
+            >
               {business.profile_image ? (
                 <img src={business.profile_image} alt={business.business_name} className="w-full h-full object-cover" />
               ) : (
@@ -100,7 +133,7 @@ export default function StorefrontClient({ business, products }: { business: any
                   {business.business_name?.charAt(0)}
                 </div>
               )}
-            </div>
+            </motion.div>
             {/* Verified Badge */}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1 border border-slate-100 whitespace-nowrap">
               <BadgeCheck className="w-3 h-3 text-green-500" />
@@ -109,8 +142,8 @@ export default function StorefrontClient({ business, products }: { business: any
           </div>
 
           <div className="mt-12 w-full">
-            <h2 className="text-xl font-extrabold text-slate-900">{business.business_name}</h2>
-            <p className="text-xs font-medium text-slate-500 mt-1">{business.business_description || "Quality products, trusted by customers"}</p>
+            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">{business.business_name}</h2>
+            <p className="text-xs font-medium text-slate-500 mt-1 px-4">{business.business_description || "Quality products, trusted by customers"}</p>
             
             <div className="flex items-center justify-center gap-1 mt-2 text-sm">
               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
@@ -119,206 +152,236 @@ export default function StorefrontClient({ business, products }: { business: any
             </div>
 
             {/* Stats Row */}
-            <div className="flex justify-between items-center px-4 mt-6">
+            <div className="flex justify-between items-center px-4 mt-6 bg-slate-50/60 p-3 rounded-2xl border border-slate-50">
               <div className="flex flex-col items-center">
                 <span className="font-extrabold text-lg text-slate-900">{products.length}</span>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Products</span>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Products</span>
               </div>
-              <div className="w-px h-8 bg-slate-100"></div>
+              <div className="w-px h-6 bg-slate-200/60"></div>
               <div className="flex flex-col items-center">
                 <span className="font-extrabold text-lg text-slate-900">100+</span>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Views</span>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Views</span>
               </div>
-              <div className="w-px h-8 bg-slate-100"></div>
+              <div className="w-px h-6 bg-slate-200/60"></div>
               <div className="flex flex-col items-center">
-                <span className="font-extrabold text-lg text-slate-900">Active</span>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Status</span>
+                <span className="font-extrabold text-lg text-green-600">Active</span>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Status</span>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 mt-6">
-              <button onClick={() => window.open(`https://wa.me/${business.whatsapp_country_code || '91'}${business.whatsapp_number}`, '_blank')} className="flex-1 py-3 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-sm shadow-green-500/30 hover:bg-green-600 transition-colors">
-                <MessageCircle className="w-4 h-4" /> Chat
-              </button>
+            <div className="flex gap-3 mt-5">
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => window.open(`https://wa.me/${business.whatsapp_country_code || '91'}${business.whatsapp_number}`, '_blank')}
+                className="flex-1 py-3 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 hover:bg-green-600 transition-colors"
+              >
+                <MessageCircle className="w-4 h-4" /> Chat with Seller
+                </motion.button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Tabs */}
-        <div className="flex items-center justify-between px-4 mt-6 border-b border-slate-200">
+        <div className="flex items-center justify-between px-2 mt-8 border-b border-slate-200">
           {["Products", "About", "Reviews"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-3 text-sm font-extrabold transition-all relative ${activeTab === tab ? "text-slate-900" : "text-slate-400"}`}
+              className={`pb-3 text-sm font-extrabold transition-all relative px-2 ${activeTab === tab ? "text-slate-900" : "text-slate-400"}`}
             >
               {tab}
               {activeTab === tab && (
-                <div className={`absolute bottom-0 left-0 w-full h-0.5 rounded-t-full ${activeTabColor}`}></div>
+                <motion.div
+                  layoutId="activeTabIndicator"
+                  className={`absolute bottom-0 left-0 w-full h-0.5 rounded-t-full ${activeTabColor}`}
+                />
               )}
             </button>
           ))}
         </div>
 
         {/* Tab Content */}
-        {activeTab === "Products" && (
-          <div className="mt-6">
-            {/* Search Bar */}
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                <input 
-                  type="text" 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products..."
-                  className={`w-full h-12 pl-10 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111]/20`}
-                />
-              </div>
-            </div>
-
-            {/* Categories */}
-            <div className="flex gap-2 overflow-x-auto no-scrollbar mt-4 pb-2">
-              <button 
-                onClick={() => setSelectedCategory('All')} 
-                className={`px-5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-colors ${selectedCategory === 'All' ? `${primaryColor} text-white shadow-sm` : 'bg-white border border-slate-200 text-slate-600'}`}
+        <div className="mt-6 min-h-[300px]">
+          <AnimatePresence mode="wait">
+            {activeTab === "Products" && (
+              <motion.div
+                key="products-tab"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.2 }}
               >
-                All
-              </button>
-              {Array.from(new Set(products.map(p => p.category).filter(Boolean))).map(cat => (
-                <button 
-                  key={cat} 
-                  onClick={() => setSelectedCategory(cat)} 
-                  className={`px-5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-colors ${selectedCategory === cat ? `${primaryColor} text-white shadow-sm` : 'bg-white border border-slate-200 text-slate-600'}`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Product Grid */}
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              {filteredProducts.length === 0 ? (
-                <div className="col-span-2 text-center py-12 bg-white rounded-3xl border border-slate-100">
-                  <h3 className="font-extrabold text-lg text-slate-900">No products found</h3>
-                  <p className="text-sm text-slate-500 mt-1">Try another search or category</p>
+                {/* Search Bar */}
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search products..."
+                      className="w-full h-12 pl-10 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111]/20 shadow-sm"
+                    />
+                  </div>
                 </div>
-              ) : (
-                filteredProducts.map((product) => (
-                  <Link href={`/${business.username}/${product.slug}`} key={product.id} className="block group bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden hover:border-slate-300 transition-colors relative pb-3">
-                    <button onClick={(e) => { e.preventDefault(); }} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-[#111111] hover:bg-white z-10 transition-colors shadow-sm">
-                      <Heart className="w-4 h-4" />
-                    </button>
-                    <div className={`w-full bg-slate-50 overflow-hidden relative ${product.image ? "aspect-square" : "h-40"}`}>
-                      {product.image ? (
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-300 font-bold text-sm">No Image</div>
-                      )}
-                    </div>
-                    <div className="px-3 pt-3">
-                      <div className={`text-[9px] font-extrabold tracking-widest ${primaryText} uppercase mb-1`}>{product.category || "General"}</div>
-                      <h3 className="font-extrabold text-sm text-slate-900 leading-tight mb-2 line-clamp-2">{product.name}</h3>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-base font-extrabold text-slate-900">₹{product.price}</span>
-                        {product.original_price && (
-                          <span className="text-[10px] font-bold text-slate-400 line-through">₹{product.original_price}</span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 text-[9px] font-bold text-green-600 mt-2 bg-green-50 self-start inline-flex px-1.5 py-0.5 rounded pl-1">
-                        <div className="w-1 h-1 rounded-full bg-green-500"></div>
-                        In stock &middot; ships soon
-                      </div>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </div>
-          </div>
-        )}
 
-        {/* Tab Content: About */}
-        {activeTab === "About" && (
-           <div className="mt-6 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-              <h3 className="font-extrabold text-lg text-slate-900 mb-4">About Store</h3>
-              <div className="space-y-4">
-                 <div className="flex gap-3">
+                {/* Categories */}
+                <div className="flex gap-2 overflow-x-auto no-scrollbar mt-4 pb-2">
+                  <button
+                    onClick={() => setSelectedCategory('All')}
+                    className={`px-5 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all duration-200 ${selectedCategory === 'All' ? `${primaryColor} text-white shadow-md` : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                  >
+                    All
+                  </button>
+                  {Array.from(new Set(products.map(p => p.category).filter(Boolean))).map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`px-5 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all duration-200 ${selectedCategory === cat ? `${primaryColor} text-white shadow-md` : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Product Grid */}
+                <motion.div layout className="grid grid-cols-2 gap-3 mt-4">
+                  {filteredProducts.length === 0 ? (
+                    <div className="col-span-2 text-center py-12 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                      <h3 className="font-extrabold text-lg text-slate-900">No products found</h3>
+                      <p className="text-sm text-slate-500 mt-1">Try another search or category</p>
+                    </div>
+                  ) : (
+                    filteredProducts.map((product, idx) => (
+                      <motion.div
+                        layout
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, delay: Math.min(idx * 0.05, 0.3) }}
+                        key={product.id}
+                      >
+                        <Link href={`/${business.username}/${product.slug}`} className="block group bg-white rounded-3xl border border-slate-100 shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 relative pb-3 h-full">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              toggleSave(product.id);
+                            }}
+                            className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center z-10 transition-all shadow-sm ${savedItems.includes(product.id) ? 'text-red-500 scale-110' : 'text-slate-300 hover:text-[#111111]'}`}
+                          >
+                            <Heart className={`w-4 h-4 ${savedItems.includes(product.id) ? 'fill-current' : ''}`} />
+                          </button>
+                          <div className={`w-full bg-slate-50 overflow-hidden relative ${product.image ? "aspect-square" : "h-40"}`}>
+                            {product.image ? (
+                              <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-slate-300 font-bold text-sm">No Image</div>
+                            )}
+                          </div>
+                          <div className="px-3 pt-3">
+                            <div className={`text-[9px] font-extrabold tracking-widest ${primaryText} uppercase mb-1`}>{product.category || "General"}</div>
+                            <h3 className="font-extrabold text-sm text-slate-900 leading-tight mb-2 line-clamp-2 min-h-[2.5rem] group-hover:text-black transition-colors">{product.name}</h3>
+                            <div className="flex items-baseline gap-1.5">
+                              <span className="text-base font-extrabold text-slate-900">₹{product.price}</span>
+                              {product.original_price && (
+                                <span className="text-[10px] font-bold text-slate-400 line-through">₹{product.original_price}</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 text-[9px] font-bold text-green-600 mt-2 bg-green-50 self-start inline-flex px-1.5 py-0.5 rounded pl-1">
+                              <div className="w-1 h-1 rounded-full bg-green-500"></div>
+                              In stock &middot; ships soon
+                            </div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))
+                  )}
+                </motion.div>
+              </motion.div>
+            )}
+
+            {activeTab === "About" && (
+              <motion.div
+                key="about-tab"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                className="bg-white rounded-3xl p-6 border border-slate-100 shadow-md space-y-6"
+              >
+                <h3 className="font-extrabold text-lg text-slate-900 mb-4">About Store</h3>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
                     <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 shrink-0">
-                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
                     <div>
-                       <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Member Since</div>
-                       <div className="font-extrabold text-slate-900 text-sm">{getMemberSince()}</div>
+                      <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Member Since</div>
+                      <div className="font-extrabold text-slate-900 text-sm">{getMemberSince()}</div>
                     </div>
-                 </div>
-                 {business.address && (
-                   <div className="flex gap-3">
+                  </div>
+                  {business.address && (
+                    <div className="flex gap-3">
                       <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 shrink-0">
-                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                       </div>
                       <div>
-                         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Location</div>
-                         <div className="font-extrabold text-slate-900 text-sm">{business.address}</div>
+                        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Location</div>
+                        <div className="font-extrabold text-slate-900 text-sm">{business.address}</div>
                       </div>
-                   </div>
-                 )}
-                 <div className="flex gap-3">
+                    </div>
+                  )}
+                  <div className="flex gap-3">
                     <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 shrink-0">
-                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                     </div>
                     <div>
-                       <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Response Time</div>
-                       <div className="font-extrabold text-slate-900 text-sm">Usually replies within a few hours</div>
+                      <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Response Time</div>
+                      <div className="font-extrabold text-slate-900 text-sm">Usually replies within a few hours</div>
                     </div>
-                 </div>
-              </div>
-              <h3 className="font-extrabold text-lg text-slate-900 mb-4 mt-8">Our Commitment</h3>
-              <div className="space-y-4">
-                 <div className="flex gap-3">
+                  </div>
+                </div>
+
+                <h3 className="font-extrabold text-lg text-slate-900 mb-4 pt-4 border-t border-slate-100">Our Commitment</h3>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
                     <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-[#111111] shrink-0">
-                       <BadgeCheck className="w-5 h-5" />
+                      <BadgeCheck className="w-5 h-5" />
                     </div>
                     <div>
-                       <div className="font-extrabold text-slate-900 text-sm mb-0.5">Quality Products</div>
-                       <div className="text-xs font-medium text-slate-500">Only the best for our customers</div>
+                      <div className="font-extrabold text-slate-900 text-sm mb-0.5">Quality Products</div>
+                      <div className="text-xs font-medium text-slate-500">Only the best for our customers</div>
                     </div>
-                 </div>
-                 <div className="flex gap-3">
-                    <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center text-purple-500 shrink-0">
-                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    </div>
-                    <div>
-                       <div className="font-extrabold text-slate-900 text-sm mb-0.5">Customer Support</div>
-                       <div className="text-xs font-medium text-slate-500">We're here to help you</div>
-                    </div>
-                 </div>
-              </div>
-           </div>
-        )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-        {/* Tab Content: Reviews */}
-        {activeTab === "Reviews" && (
-           <div className="mt-6 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm text-center">
-              <h3 className="font-extrabold text-lg text-slate-900 mb-2">Customer Reviews</h3>
-              <div className="flex justify-center items-center gap-2 mb-1">
-                 <Star className="w-8 h-8 fill-yellow-400 text-yellow-400" />
-                 <span className="text-3xl font-extrabold text-slate-900">5.0</span>
-              </div>
-              <p className="text-xs font-bold text-slate-400">Based on 0 reviews</p>
+            {activeTab === "Reviews" && (
+              <motion.div
+                key="reviews-tab"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                className="bg-white rounded-3xl p-6 border border-slate-100 shadow-md text-center"
+              >
+                <h3 className="font-extrabold text-lg text-slate-900 mb-2">Customer Reviews</h3>
+                <div className="flex justify-center items-center gap-2 mb-1">
+                  <Star className="w-8 h-8 fill-yellow-400 text-yellow-400" />
+                  <span className="text-3xl font-extrabold text-slate-900">5.0</span>
+                </div>
+                <p className="text-xs font-bold text-slate-400">Based on 0 reviews</p>
 
-              <div className="mt-8 pt-8 border-t border-slate-100 flex flex-col items-center">
-                 <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                <div className="mt-8 pt-8 border-t border-slate-100 flex flex-col items-center">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
                     <MessageCircle className="w-8 h-8" />
-                 </div>
-                 <h4 className="font-extrabold text-slate-900">No reviews yet.</h4>
-                 <p className="text-sm font-medium text-slate-500 mt-1 max-w-[200px]">Be the first to review this store and help other customers.</p>
-                 <button className={`mt-6 px-8 py-3 ${primaryColor} text-white font-extrabold rounded-2xl shadow-sm transition-colors`}>
-                    Write a Review
-                 </button>
-              </div>
-           </div>
-        )}
+                  </div>
+                  <h4 className="font-extrabold text-slate-900">No reviews yet.</h4>
+                  <p className="text-sm font-medium text-slate-500 mt-1 max-w-[200px]">Be the first to review this store and help other customers.</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       <StoreBottomNav username={business.username} />

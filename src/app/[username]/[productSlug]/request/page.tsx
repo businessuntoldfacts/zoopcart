@@ -63,11 +63,10 @@ export default function RequestForm({ params }: { params: { username: string, pr
       product_id: product.id,
       customer_name: formData.name,
       customer_phone: formData.phone,
-      customer_email: formData.email,
       quantity: formData.quantity,
       budget: finalPrice,
       required_date: formData.requiredDate || null,
-      notes: `Total: ₹${finalPrice} (Product: ₹${productTotal} + Delivery: ₹${deliveryType === "paid" ? deliveryCharge : 0})`,
+      notes: `${formData.email ? `Email: ${formData.email} | ` : ""}Total: ₹${finalPrice} (Product: ₹${productTotal} + Delivery: ₹${deliveryType === "paid" ? deliveryCharge : 0})`,
       delivery_location: formData.delivery_location,
       tracking_token: token,
       status: 'new'
