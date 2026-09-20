@@ -65,8 +65,11 @@ export default function DashboardLayout({
 
   if (loading || !business) {
     return (
-      <div className="flex h-screen items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+      <div className="flex fixed inset-0 items-center justify-center bg-white z-[9999]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-black"></div>
+          <p className="text-sm font-bold text-slate-500">Loading your store...</p>
+        </div>
       </div>
     );
   }
@@ -133,8 +136,7 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-1 min-w-0 flex flex-col mb-16 md:mb-0 ${theme === "dark" ? "zyp-dark-mode" : ""}`}>
-        <style dangerouslySetInnerHTML={{__html: `\n          .zyp-dark-mode {\n            filter: invert(1) hue-rotate(180deg);\n            background-color: #000;\n            transition: filter 0.5s ease;\n          }\n          .zyp-dark-mode img, .zyp-dark-mode svg, .zyp-dark-mode [data-theme-ignore] {\n            filter: invert(1) hue-rotate(180deg);\n          }\n        `}} />
+      <main className="flex-1 min-w-0 flex flex-col mb-16 md:mb-0 bg-slate-50">
         <header className="h-[72px] border-b border-zyp-border flex items-center justify-between px-6 md:px-8 bg-white shrink-0 relative z-50">
           <div className="flex items-center md:hidden">
             <Link href="/dashboard" className="flex items-center">

@@ -10,7 +10,7 @@ export default function AuthCatcher() {
   useEffect(() => {
     // If there's an access token in the hash (Supabase implicit flow fallback)
     if (window.location.hash.includes('access_token')) {
-      router.push('/dashboard');
+      router.replace('/dashboard');
       return;
     }
     
@@ -18,7 +18,6 @@ export default function AuthCatcher() {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data?.session) {
-        // Check if user has a business profile
         const { data: business } = await supabase
           .from('businesses')
           .select('id')
@@ -26,10 +25,9 @@ export default function AuthCatcher() {
           .single();
 
         if (business) {
-          router.push('/dashboard');
+          router.replace('/dashboard');
         } else {
-          // Logged in but no store? Take them to signup to finish setup
-          router.push('/signup?reason=no_store');
+          router.replace('/signup?reason=no_store');
         }
       }
     };
@@ -45,9 +43,9 @@ export default function AuthCatcher() {
           .single();
 
         if (business) {
-          router.push('/dashboard');
+          router.replace('/dashboard');
         } else {
-          router.push('/signup?reason=no_store');
+          router.replace('/signup?reason=no_store');
         }
       }
     });
