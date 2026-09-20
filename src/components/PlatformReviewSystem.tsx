@@ -172,13 +172,13 @@ export default function PlatformReviewSystem() {
             ))}
           </div>
           <div className="flex justify-center mt-10">
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-[#111111] font-bold hover:underline flex items-center gap-1.5 bg-slate-50 px-6 py-3 rounded-full border border-slate-200 text-sm transition-all active:scale-95"
+            <Link
+              href="/reviews"
+              className="text-[#111111] font-bold hover:underline flex items-center gap-1.5 bg-slate-50 px-6 py-3 rounded-full border border-slate-200 text-sm transition-all active:scale-95 shadow-sm hover:bg-slate-100"
             >
-              {isExpanded ? "Show Less Reviews" : "More reviews"}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isExpanded ? "rotate-90" : ""}`}><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
+              More reviews
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </Link>
           </div>
         </>
       ) : (
