@@ -113,7 +113,7 @@ export default function SignupPage() {
       return;
     }
     
-    if (formData.password.length < 6) {
+    if (!isGoogleUser && formData.password.length < 6) {
       setError("Password must be at least 6 characters.");
       setLoading(false);
       return;

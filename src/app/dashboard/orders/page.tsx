@@ -11,17 +11,62 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
+  // Tracking form states
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [carrierName, setCarrierName] = useState("");
+
+  useEffect(() => {
+    if (selectedOrder) {
+      setTrackingNumber(selectedOrder.tracking_number || "");
+      setCarrierName(selectedOrder.carrier_name || "");
+    }
+  }, [selectedOrder]);
+
   useEffect(() => {
     if (cachedOrders) {
       setOrders(cachedOrders.filter((o: any) => !['store_view', 'product_view', 'review'].includes(o.status)));
     }
   }, [cachedOrders]);
 
-  const updateOrderStatus = async (orderId: string, newStatus: string) => {
-    await supabase.from('orders').update({ status: newStatus }).eq('id', orderId); invalidateDashboardCache();
-    setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+  const updateOrderStatus = async (orderId: string, newStatus: string, trackingNumber = "", carrierName = "") => {
+    const updateData: any = { status: newStatus };
+    if (trackingNumber) updateData.tracking_number = trackingNumber;
+    if (carrierName) updateData.carrier_name = carrierName;
+
+    await supabase.from('orders').update(updateData).eq('id', orderId);
+    invalidateDashboardCache();
+
+    // Find current order details to send notification email
+    const currentOrder = orders.find(o => o.id === orderId);
+    if (currentOrder && currentOrder.customer_email) {
+      try {
+        await fetch("/api/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "order_notification",
+            email: currentOrder.customer_email,
+            orderId: `ORD-${currentOrder.tracking_token?.substring(0, 4) || orderId.substring(0, 4)}`,
+            customerName: currentOrder.customer_name,
+            customerPhone: currentOrder.customer_phone,
+            productName: currentOrder.products?.name || "Product",
+            price: currentOrder.products?.price || 0,
+            quantity: currentOrder.quantity || 1,
+            deliveryLocation: currentOrder.delivery_location || "Not specified",
+            trackingLink: `${window.location.origin}/order/${currentOrder.tracking_token}`,
+            status: newStatus,
+            trackingNumber,
+            carrierName
+          })
+        });
+      } catch (err) {
+        console.error("Failed to send order status notification email:", err);
+      }
+    }
+
+    setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus, tracking_number: trackingNumber || o.tracking_number, carrier_name: carrierName || o.carrier_name } : o));
     if (selectedOrder?.id === orderId) {
-      setSelectedOrder({ ...selectedOrder, status: newStatus });
+      setSelectedOrder({ ...selectedOrder, status: newStatus, tracking_number: trackingNumber || selectedOrder.tracking_number, carrier_name: carrierName || selectedOrder.carrier_name });
     }
   };
 
@@ -40,8 +85,21 @@ export default function OrdersPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input placeholder="Search orders..." className="w-full pl-9 h-10 rounded-lg border border-zyp-border bg-white text-sm outline-none focus:ring-2 focus:ring-[#111111]/20" />
             </div>
-            <select className="h-10 rounded-lg border border-zyp-border bg-white text-sm font-semibold px-3 outline-none">
-              <option>All Status</option>
+            <select
+              className="h-10 rounded-lg border border-zyp-border bg-white text-sm font-semibold px-3 outline-none"
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "All Status") {
+                  setOrders(cachedOrders.filter((o: any) => !['store_view', 'product_view', 'review'].includes(o.status)));
+                } else {
+                  setOrders(cachedOrders.filter((o: any) => o.status === val));
+                }
+              }}
+            >
+              <option value="All Status">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
             </select>
           </div>
           
@@ -59,9 +117,9 @@ export default function OrdersPage() {
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-[11px] font-bold text-zyp-textMuted font-mono uppercase">ORD-{order.tracking_token.substring(0,4)}</span>
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                        order.status === 'new' ? 'bg-yellow-100 text-yellow-700' : 
-                        order.status === 'completed' ? 'bg-green-100 text-green-700' : 
-                        order.status === 'accepted' ? 'bg-slate-200 text-black' :
+                        order.status === 'pending' || order.status === 'new' ? 'bg-yellow-100 text-yellow-700' :
+                        order.status === 'delivered' || order.status === 'completed' ? 'bg-green-100 text-green-700' :
+                        order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
                         'bg-purple-100 text-purple-700'
                       }`}>
                         {order.status.replace('_', ' ')}
@@ -162,27 +220,60 @@ export default function OrdersPage() {
               </div>
             </div>
 
+            {/* Shipping & Tracking Information */}
+            <div>
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Shipping Details</h3>
+              <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 space-y-3">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Carrier Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., BlueDart, Delhivery, FedEx"
+                    value={carrierName}
+                    onChange={(e) => setCarrierName(e.target.value)}
+                    className="w-full h-10 px-3 rounded-lg border border-zyp-border bg-white text-sm outline-none font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Tracking Number</label>
+                  <input
+                    type="text"
+                    placeholder="Enter shipment tracking reference"
+                    value={trackingNumber}
+                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    className="w-full h-10 px-3 rounded-lg border border-zyp-border bg-white text-sm outline-none font-medium"
+                  />
+                </div>
+                <button
+                  onClick={() => updateOrderStatus(selectedOrder.id, selectedOrder.status, trackingNumber, carrierName)}
+                  className="w-full h-9 bg-slate-900 text-white rounded-lg text-xs font-bold transition-all hover:bg-black mt-2"
+                >
+                  Save Shipment Info
+                </button>
+              </div>
+            </div>
+
             {/* Status Update Actions */}
             <div>
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Update Order Status</h3>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button 
-                  onClick={() => updateOrderStatus(selectedOrder.id, 'accepted')}
-                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'accepted' ? 'bg-[#111111] text-white border-black shadow-md' : 'bg-white text-[#111111] border-slate-300 hover:bg-slate-100'}`}
+                  onClick={() => updateOrderStatus(selectedOrder.id, 'pending', trackingNumber, carrierName)}
+                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'pending' || selectedOrder.status === 'new' ? 'bg-yellow-500 text-white border-yellow-500 shadow-md' : 'bg-white text-yellow-600 border-yellow-200 hover:bg-yellow-50'}`}
                 >
-                  Accept Order
+                  Pending
                 </button>
                 <button 
-                  onClick={() => updateOrderStatus(selectedOrder.id, 'in_progress')}
-                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'in_progress' ? 'bg-purple-600 text-white border-purple-600 shadow-md' : 'bg-white text-purple-600 border-purple-200 hover:bg-purple-50'}`}
+                  onClick={() => updateOrderStatus(selectedOrder.id, 'shipped', trackingNumber, carrierName)}
+                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'shipped' ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50'}`}
                 >
-                  Mark In Progress
+                  Shipped
                 </button>
                 <button 
-                  onClick={() => updateOrderStatus(selectedOrder.id, 'completed')}
-                  className={`py-3 rounded-xl text-sm font-bold border transition-colors col-span-2 ${selectedOrder.status === 'completed' ? 'bg-green-600 text-white border-green-600 shadow-md' : 'bg-white text-green-600 border-green-200 hover:bg-green-50'}`}
+                  onClick={() => updateOrderStatus(selectedOrder.id, 'delivered', trackingNumber, carrierName)}
+                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'delivered' || selectedOrder.status === 'completed' ? 'bg-green-600 text-white border-green-600 shadow-md' : 'bg-white text-green-600 border-green-200 hover:bg-green-50'}`}
                 >
-                  Mark Completed
+                  Delivered
                 </button>
               </div>
             </div>

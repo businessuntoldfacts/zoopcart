@@ -13,8 +13,10 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
 
   if (!order) notFound();
   
-  const statusOrder = ['new', 'accepted', 'in_progress', 'completed'];
-  const currentIndex = statusOrder.indexOf(order.status);
+  const statusOrder = ['pending', 'shipped', 'delivered'];
+  // mapping custom older fields or handling standard order statuses perfectly
+  const currentStatus = order.status === 'new' ? 'pending' : (order.status === 'completed' ? 'delivered' : order.status);
+  const currentIndex = statusOrder.indexOf(currentStatus);
 
   return (
     <div className="min-h-screen bg-zyp-bg font-sans flex flex-col items-center">
@@ -35,10 +37,9 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
             <Package className="w-8 h-8 text-[#111111]" />
           </div>
           <h1 className="text-2xl font-extrabold text-[#0F172A] mb-1">
-            {order.status === 'new' ? 'Request Submitted' : 
-             order.status === 'accepted' ? 'Order Accepted' : 
-             order.status === 'in_progress' ? 'Work in Progress' : 
-             'Order Completed!'}
+            {currentStatus === 'pending' ? 'Order Pending' :
+             currentStatus === 'shipped' ? 'Order Shipped' :
+             'Order Delivered!'}
           </h1>
           <p className="text-sm font-medium text-slate-500">
             From <Link href={`/${order.businesses.username}`} className="font-bold text-[#111111] hover:underline">{order.businesses.business_name}</Link>
@@ -56,14 +57,35 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
         </div>
 
         {/* Message from Seller (Mock) */}
-        {order.status === 'completed' && (
+        {currentStatus === 'delivered' && (
           <div className="bg-green-50 p-4 rounded-2xl rounded-tl-none border border-green-200 relative ml-4 shadow-sm">
             <div className="absolute -left-3 -top-3 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs border-2 border-white shadow-sm font-bold">
               {order.businesses.business_name.charAt(0)}
             </div>
             <p className="text-sm font-medium text-green-900 leading-relaxed ml-2">
-              "Hi {order.customer_name.split(' ')[0]}, your order is ready! Thank you for shopping with us. 🥰"
+              "Hi {order.customer_name.split(' ')[0]}, your order has been delivered! Thank you for shopping with us. 🥰"
             </p>
+          </div>
+        )}
+
+        {/* Tracking info if available */}
+        {(order.carrier_name || order.tracking_number) && (
+          <div className="bg-blue-50 p-5 rounded-3xl border border-blue-100 shadow-sm space-y-2">
+            <h4 className="text-xs font-bold text-blue-500 uppercase tracking-wider">Shipment Reference</h4>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              {order.carrier_name && (
+                <div>
+                  <span className="text-slate-400 font-medium text-xs block">Carrier</span>
+                  <span className="font-extrabold text-[#0F172A]">{order.carrier_name}</span>
+                </div>
+              )}
+              {order.tracking_number && (
+                <div>
+                  <span className="text-slate-400 font-medium text-xs block">Tracking ID</span>
+                  <span className="font-extrabold text-[#0F172A] font-mono">{order.tracking_number}</span>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -74,14 +96,13 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
           <div className="relative pl-6 space-y-8">
             {/* Connecting Line */}
             <div className="absolute left-3 top-2 bottom-4 w-0.5 bg-slate-100">
-               <div className="w-full bg-[#111111] transition-all duration-1000" style={{height: `${(currentIndex / 3) * 100}%`}}></div>
+               <div className="w-full bg-[#111111] transition-all duration-1000" style={{height: `${(currentIndex / 2) * 100}%`}}></div>
             </div>
 
             {[
-              { id: 'new', title: 'Request Submitted', desc: 'Sent to seller for review', icon: CheckCircle2 },
-              { id: 'accepted', title: 'Order Accepted', desc: 'Seller has accepted your request', icon: CheckCircle2 },
-              { id: 'in_progress', title: 'Work In Progress', desc: 'Seller is working on your order', icon: RefreshCw },
-              { id: 'completed', title: 'Order Ready', desc: 'Your order is ready', icon: Package },
+              { id: 'pending', title: 'Order Pending', desc: 'Sent to seller for review and approval', icon: CheckCircle2 },
+              { id: 'shipped', title: 'Order Shipped', desc: 'Package is handed over to the courier partner', icon: RefreshCw },
+              { id: 'delivered', title: 'Order Delivered', desc: 'Package delivered successfully to your address', icon: Package },
             ].map((step, index) => {
               const isCompleted = currentIndex > index;
               const isCurrent = currentIndex === index;
@@ -95,7 +116,7 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
                     isCurrent ? 'bg-slate-200 text-[#111111] border-blue-50 ring-4 ring-blue-50' : 
                     'bg-slate-200 text-slate-400'
                   }`}>
-                    {isCurrent && !isCompleted && step.id === 'in_progress' ? (
+                    {isCurrent && !isCompleted && step.id === 'shipped' ? (
                        <RefreshCw className="w-3 h-3 animate-spin" />
                     ) : (
                        <Icon className="w-3.5 h-3.5" />

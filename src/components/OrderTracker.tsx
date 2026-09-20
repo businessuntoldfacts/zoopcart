@@ -36,9 +36,16 @@ export default function OrderTracker({ businessId }: { businessId: string }) {
 
   const getStatusDisplay = (status: string) => {
     switch(status) {
-      case 'pending': return { icon: <Clock className="w-6 h-6 text-orange-500" />, text: "Processing", color: "bg-orange-50 text-orange-700", border: "border-orange-200" };
-      case 'completed': return { icon: <CheckCircle2 className="w-6 h-6 text-green-500" />, text: "Completed", color: "bg-green-50 text-green-700", border: "border-green-200" };
-      default: return { icon: <Package className="w-6 h-6 text-[#111111]" />, text: status, color: "bg-slate-100 text-black", border: "border-slate-300" };
+      case 'pending':
+      case 'new':
+        return { icon: <Clock className="w-6 h-6 text-orange-500" />, text: "Pending / Processing", color: "bg-orange-50 text-orange-700", border: "border-orange-200" };
+      case 'shipped':
+        return { icon: <Truck className="w-6 h-6 text-blue-500" />, text: "Shipped / In Transit", color: "bg-blue-50 text-blue-700", border: "border-blue-200" };
+      case 'delivered':
+      case 'completed':
+        return { icon: <CheckCircle2 className="w-6 h-6 text-green-500" />, text: "Delivered", color: "bg-green-50 text-green-700", border: "border-green-200" };
+      default:
+        return { icon: <Package className="w-6 h-6 text-[#111111]" />, text: status, color: "bg-slate-100 text-black", border: "border-slate-300" };
     }
   };
 
