@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 export default async function LandingPage() {
   const { data: realBusinesses } = await supabase
     .from('businesses')
-    .select('business_name, username, profile_image')
+    .select('business_name, username')
     .order('created_at', { ascending: false })
     .limit(4);
 
@@ -165,78 +165,48 @@ export default async function LandingPage() {
       </section>
 
       {/* Categories */}
-      <section className="py-20 bg-slate-50/50">
+      <section className="py-12 bg-white border-y border-zyp-border">
         <div className="container mx-auto px-6 text-center">
-          <p className="text-sm font-extrabold text-[#111111]/40 uppercase tracking-[0.2em] mb-12">Trusted by thousands of social sellers</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
-            <div className="flex flex-col items-center gap-4 group cursor-default">
-                <div className="w-16 h-16 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-sm shadow-pink-100">
-                    <ShoppingBag className="w-7 h-7" />
-                </div>
-                <span className="text-sm font-bold text-slate-700">Clothing</span>
-            </div>
-            <div className="flex flex-col items-center gap-4 group cursor-default">
-                <div className="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 transition-all group-hover:scale-110 group-hover:-rotate-3 shadow-sm shadow-orange-100">
-                    <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                </div>
-                <span className="text-sm font-bold text-slate-700">Home Bakers</span>
-            </div>
-            <div className="flex flex-col items-center gap-4 group cursor-default">
-                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-sm shadow-blue-100">
-                    <HelpCircle className="w-7 h-7" />
-                </div>
-                <span className="text-sm font-bold text-slate-700">Jewellery</span>
-            </div>
-            <div className="flex flex-col items-center gap-4 group cursor-default">
-                <div className="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center text-red-600 transition-all group-hover:scale-110 group-hover:-rotate-3 shadow-sm shadow-red-100">
-                    <Heart className="w-7 h-7" />
-                </div>
-                <span className="text-sm font-bold text-slate-700">Gifts</span>
-            </div>
-            <div className="flex flex-col items-center gap-4 group cursor-default">
-                <div className="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-sm shadow-indigo-100">
-                    <Grid className="w-7 h-7" />
-                </div>
-                <span className="text-sm font-bold text-slate-700">Interior</span>
-            </div>
-            <div className="flex flex-col items-center gap-4 group cursor-default">
-                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 transition-all group-hover:scale-110 group-hover:-rotate-3 shadow-sm shadow-purple-100">
-                    <Palette className="w-7 h-7" />
-                </div>
-                <span className="text-sm font-bold text-slate-700">Artists</span>
-            </div>
-            <div className="flex flex-col items-center gap-4 group cursor-default">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-sm shadow-emerald-100">
-                    <Camera className="w-7 h-7" />
-                </div>
-                <span className="text-sm font-bold text-slate-700">Photographers</span>
-            </div>
+          <p className="text-sm font-bold text-zyp-textMuted uppercase tracking-wider mb-8">Trusted by thousands of social sellers</p>
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-70">
+            <div className="flex flex-col items-center gap-2"><ShoppingBag className="w-6 h-6" /><span className="text-xs font-medium">Clothing</span></div>
+            <div className="flex flex-col items-center gap-2"><svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span className="text-xs font-medium">Home Bakers</span></div>
+            <div className="flex flex-col items-center gap-2"><HelpCircle className="w-6 h-6" /><span className="text-xs font-medium">Jewellery</span></div>
+            <div className="flex flex-col items-center gap-2"><Heart className="w-6 h-6" /><span className="text-xs font-medium">Gifts</span></div>
+            <div className="flex flex-col items-center gap-2"><Grid className="w-6 h-6" /><span className="text-xs font-medium">Interior</span></div>
+            <div className="flex flex-col items-center gap-2"><Palette className="w-6 h-6" /><span className="text-xs font-medium">Artists</span></div>
+            <div className="flex flex-col items-center gap-2"><Camera className="w-6 h-6" /><span className="text-xs font-medium">Photographers</span></div>
           </div>
         </div>
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-32 bg-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
-        <div className="container mx-auto px-6 max-w-6xl relative">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-6xl font-extrabold text-[#0F172A] mb-6 tracking-tight">Simple 3-Step Success</h2>
-            <p className="text-slate-500 text-xl font-medium max-w-2xl mx-auto">From a social link to a completed order in minutes.</p>
+      <section id="how-it-works" className="py-24 bg-white overflow-hidden">
+        <div className="container mx-auto px-6 max-w-5xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">How Zoopcart Works</h2>
+            <p className="text-zyp-textMuted text-lg">From a social link to a completed order.</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12 md:gap-4 relative">
+            <div className="hidden md:block absolute top-8 left-0 w-full h-0.5 bg-slate-200 -z-10"></div>
+            
             {[
-              { num: "01", title: "Setup Store", desc: "Create your professional store in 60 seconds with your own link.", color: "bg-blue-600", icon: <Store className="w-6 h-6 text-white" /> },
-              { num: "02", title: "Share Link", desc: "Add your store link to Instagram bio or share it directly on WhatsApp.", color: "bg-indigo-600", icon: <MessageCircle className="w-6 h-6 text-white" /> },
-              { num: "03", title: "Get Orders", desc: "Receive structured orders and payments directly without any hassle.", color: "bg-emerald-600", icon: <Zap className="w-6 h-6 text-white" /> }
-            ].map((step, idx) => (
-              <div key={idx} className="bg-slate-50 rounded-[40px] p-10 border border-slate-100 relative group hover:-translate-y-2 transition-all duration-300">
-                <div className={`w-14 h-14 rounded-2xl ${step.color} flex items-center justify-center mb-8 shadow-lg shadow-indigo-200`}>
-                  {step.icon}
+              { num: 1, title: "Create Your Store", desc: "Set up your link in 60 seconds." },
+              { num: 2, title: "Add Products", desc: "Upload photos and set prices." },
+              { num: 3, title: "Share Anywhere", desc: "Put your link in bio or WhatsApp." },
+              { num: 4, title: "Receive Requests", desc: "Orders come directly to you." },
+              { num: 5, title: "Manage Orders", desc: "Track everything in one place." }
+            ].map((step) => (
+              <div key={step.num} className="flex md:flex-col items-center md:text-center gap-6 md:gap-0 w-full">
+                <div className="w-16 h-16 rounded-full bg-white border-4 border-blue-50 shadow-sm flex items-center justify-center text-[#111111] font-bold text-xl mb-4 relative shrink-0">
+                  {step.num}
+                  {step.num === 1 && <div className="absolute -inset-1 rounded-full border-2 border-[#111111]/30 animate-pulse"></div>}
                 </div>
-                <div className="absolute top-10 right-10 text-5xl font-black text-slate-200/50 group-hover:text-slate-200 transition-colors">{step.num}</div>
-                <h3 className="text-2xl font-extrabold text-[#0F172A] mb-4">{step.title}</h3>
-                <p className="text-slate-600 font-medium leading-relaxed">{step.desc}</p>
+                <div>
+                  <div className="text-lg md:text-sm font-bold text-[#0F172A] leading-snug">{step.title}</div>
+                  <div className="text-sm text-slate-500 md:hidden mt-1">{step.desc}</div>
+                </div>
               </div>
             ))}
           </div>
@@ -245,32 +215,22 @@ export default async function LandingPage() {
 
       
       {/* Real Sellers Section */}
-      <section id="real-sellers" className="py-32 bg-slate-900 text-white overflow-hidden relative">
-        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent"></div>
-        <div className="container mx-auto px-6 max-w-6xl relative">
-          <div className="text-center mb-20">
-            <span className="text-indigo-400 font-bold uppercase tracking-widest text-sm">Join the family</span>
-            <h2 className="text-4xl md:text-6xl font-extrabold mb-6 mt-4">Meet Our Newest Sellers</h2>
-            <p className="text-slate-400 text-xl font-medium max-w-2xl mx-auto">These creators recently launched their stores. Your store could be next.</p>
+      <section id="real-sellers" className="py-24 bg-slate-50 border-y border-slate-200">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">Meet Our Real Sellers</h2>
+            <p className="text-slate-500 text-lg">Thousands of businesses use Zoopcart to power their online sales.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {realBusinesses && realBusinesses.map((b, i) => (
-              <div key={i} className="bg-white/5 backdrop-blur-md rounded-[32px] p-8 flex flex-col items-center text-center border border-white/10 transition-all animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both" style={{ animationDelay: `${i * 150}ms` }}>
-                <div className="w-24 h-24 rounded-full bg-slate-800 border-4 border-indigo-500/30 overflow-hidden mb-6 flex items-center justify-center shadow-2xl">
-                  {b.profile_image ? (
-                    <img src={b.profile_image} alt={b.business_name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-3xl font-black text-indigo-400">
-                        {b.business_name ? b.business_name.charAt(0).toUpperCase() : 'S'}
-                    </span>
-                  )}
+              <Link key={i} href={`/${b.username}`} className="bg-white rounded-3xl p-6 flex flex-col items-center text-center border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-300 transition-all group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${i * 100}ms` }}>
+                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-extrabold text-2xl mb-4 group-hover:scale-110 transition-transform">
+                  {b.business_name ? b.business_name.charAt(0).toUpperCase() : 'S'}
                 </div>
-                <h4 className="font-extrabold text-xl mb-2 line-clamp-1">{b.business_name || `Store ${b.username}`}</h4>
-                <div className="bg-indigo-500/20 text-indigo-300 px-4 py-1.5 rounded-full text-xs font-bold tracking-tight">
-                    zoopcart.com/{b.username}
-                </div>
-              </div>
+                <h4 className="font-extrabold text-[#0F172A] line-clamp-1">{b.business_name || `Store ${b.username}`}</h4>
+                <p className="text-xs font-medium text-[#111111] mt-1">zoopcart.com/{b.username}</p>
+              </Link>
             ))}
           </div>
         </div>
