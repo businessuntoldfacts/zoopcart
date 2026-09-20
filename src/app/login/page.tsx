@@ -19,15 +19,17 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: `${window.location.origin}/signup?reason=google_auth`
         }
       });
       if (error) throw error;
     } catch (err: any) {
       setError(err.message || "Could not authenticate with Google");
+      setLoading(false);
     }
   };
 
@@ -74,11 +76,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-[#111111]/20 text-[#0F172A]">
-      
-
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-black/20 w-full max-w-md border border-zyp-border">
+    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-[#111111]/20 text-[#0F172A] overflow-x-hidden">
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
+        <div className="bg-white p-6 md:p-10 rounded-[32px] shadow-2xl shadow-black/5 w-full max-w-[440px] border border-slate-100 animate-in fade-in zoom-in-95 duration-500">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-6">
               <Logo darkText={true} />

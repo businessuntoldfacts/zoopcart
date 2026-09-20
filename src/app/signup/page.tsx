@@ -40,8 +40,9 @@ export default function SignupPage() {
     checkUser();
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('reason') === 'no_store') {
-      setError("Please complete your store setup to access the dashboard.");
+    const reason = urlParams.get('reason');
+    if (reason === 'no_store' || reason === 'google_auth') {
+      setError("We found your account! Please complete your store setup below to continue.");
     }
   }, []);
 
@@ -160,9 +161,9 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-[#0F172A]">
-      <main className="flex-1 flex items-center justify-center p-4 py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="bg-white p-8 md:p-10 rounded-[32px] shadow-xl shadow-black/5 w-full max-w-lg border border-slate-100">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-[#0F172A] overflow-x-hidden">
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="bg-white p-6 md:p-10 rounded-[32px] shadow-2xl shadow-black/5 w-full max-w-[480px] border border-slate-100">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-6">
               <Logo darkText={true} />
