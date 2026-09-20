@@ -6,7 +6,6 @@ import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Play, Target, Zap, Smartphone, TrendingUp, Sparkles, ArrowRight, MessageCircle, ShoppingBag, Grid, Palette, Camera, Heart, HelpCircle, Star, Store, LineChart, LayoutTemplate, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import AuthCatcher from "@/components/AuthCatcher";
 
 export default async function LandingPage() {
   const { data: realBusinesses } = await supabase
@@ -31,7 +30,6 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-[#111111]/20">
-      <AuthCatcher />
       {/* Header */}
       <HeaderMenu />
 

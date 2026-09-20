@@ -1,33 +1,56 @@
-
 "use client";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export default function AuthCatcher() {
-  const router = useRouter();
-  
   useEffect(() => {
+    const currentPath = window.location.pathname;
+
     // If there's an access token in the hash (Supabase implicit flow fallback)
     if (window.location.hash.includes('access_token')) {
-      router.replace('/dashboard');
+      setTimeout(async () => {
+        const { data } = await supabase.auth.getSession();
+        if (data?.session) {
+          const { data: business } = await supabase
+            .from('businesses')
+            .select('id')
+            .eq('user_id', data.session.user.id)
+            .single();
+
+          if (business) {
+            if (currentPath !== '/dashboard') {
+              window.location.replace('/dashboard');
+            }
+          } else {
+            if (!currentPath.startsWith('/signup')) {
+              window.location.replace('/signup?reason=no_store');
+            }
+          }
+        } else {
+          if (currentPath !== '/dashboard') {
+            window.location.replace('/dashboard');
+          }
+        }
+      }, 500);
       return;
     }
     
-    // Or if they are already logged in and landed on homepage
+    // Only check session on public pages to avoid infinite loops
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data?.session) {
-        const { data: business } = await supabase
-          .from('businesses')
-          .select('id')
-          .eq('user_id', data.session.user.id)
-          .single();
+      if (currentPath === '/' || currentPath === '/login') {
+        const { data } = await supabase.auth.getSession();
+        if (data?.session) {
+          const { data: business } = await supabase
+            .from('businesses')
+            .select('id')
+            .eq('user_id', data.session.user.id)
+            .single();
 
-        if (business) {
-          router.replace('/dashboard');
-        } else {
-          router.replace('/signup?reason=no_store');
+          if (business) {
+            window.location.replace('/dashboard');
+          } else {
+            window.location.replace('/signup?reason=no_store');
+          }
         }
       }
     };
@@ -36,7 +59,7 @@ export default function AuthCatcher() {
     // Listen for auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        // Fix for mobile redirect scaling: force a small delay then reload
+        // Fix for mobile redirect scaling: force a 500ms delay then hard replace window to reset viewport scale matrix
         setTimeout(async () => {
           const { data: business } = await supabase
             .from('businesses')
@@ -44,19 +67,24 @@ export default function AuthCatcher() {
             .eq('user_id', session.user.id)
             .single();
 
+          const latestPath = window.location.pathname;
           if (business) {
-            window.location.replace('/dashboard');
+            if (latestPath !== '/dashboard') {
+              window.location.replace('/dashboard');
+            }
           } else {
-            window.location.replace('/signup?reason=no_store');
+            if (!latestPath.startsWith('/signup')) {
+              window.location.replace('/signup?reason=no_store');
+            }
           }
-        }, 100);
+        }, 500);
       }
     });
     
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [router]);
+  }, []);
   
   return null;
 }

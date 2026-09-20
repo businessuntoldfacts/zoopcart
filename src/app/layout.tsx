@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import AuthCatcher from "@/components/AuthCatcher";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className={`${inter.variable} font-sans antialiased h-full w-full overflow-x-hidden touch-manipulation`}>
+        <AuthCatcher />
         {children}
       </body>
     </html>
