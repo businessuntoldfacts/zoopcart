@@ -29,6 +29,18 @@ export default function SignupPage() {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
+        // Check if business already exists
+        const { data: business } = await supabase
+          .from('businesses')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (business) {
+          window.location.href = '/dashboard';
+          return;
+        }
+
         setIsGoogleUser(true);
         setFormData(prev => ({
           ...prev,
@@ -42,7 +54,7 @@ export default function SignupPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const reason = urlParams.get('reason');
     if (reason === 'no_store' || reason === 'google_auth') {
-      setError("We found your account! Please complete your store setup below to continue.");
+      setError("We found your Google account! Please choose a store name and username to complete your setup.");
     }
   }, []);
 

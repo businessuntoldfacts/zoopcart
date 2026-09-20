@@ -91,10 +91,10 @@ export default async function LandingPage() {
         </div>
 
         {/* Right side Phone Mockup */}
-        <div className="flex-1 relative w-full flex justify-center lg:justify-end">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-slate-100 via-white to-slate-50 rounded-full blur-3xl -z-10" />
+        <div className="flex-1 relative w-full flex justify-center lg:justify-end overflow-hidden py-10 lg:overflow-visible">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full lg:w-[120%] lg:h-[120%] bg-gradient-to-tr from-slate-100 via-white to-slate-50 rounded-full blur-3xl -z-10" />
           
-          <div className="relative w-[300px] h-[600px] bg-black rounded-[40px] p-3 shadow-2xl shadow-2xl shadow-slate-900/20 rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+          <div className="relative w-[280px] sm:w-[300px] h-[560px] sm:h-[600px] bg-black rounded-[40px] p-3 shadow-2xl shadow-2xl shadow-slate-900/20 rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
             <div className="w-full h-full bg-[#F8FAFC] rounded-[32px] overflow-hidden flex flex-col relative border border-white/10">
               <div className="absolute top-0 inset-x-0 h-6 bg-black rounded-b-3xl w-1/2 mx-auto z-20"></div>
               
@@ -183,29 +183,32 @@ export default async function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-24 bg-white">
+      <section id="how-it-works" className="py-24 bg-white overflow-hidden">
         <div className="container mx-auto px-6 max-w-5xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">How Zoopcart Works</h2>
             <p className="text-zyp-textMuted text-lg">From a social link to a completed order.</p>
           </div>
           
-          <div className="flex justify-between items-center relative">
-            <div className="absolute top-8 left-0 w-full h-0.5 bg-slate-200 -z-10"></div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12 md:gap-4 relative">
+            <div className="hidden md:block absolute top-8 left-0 w-full h-0.5 bg-slate-200 -z-10"></div>
             
             {[
-              { num: 1, title: "Create\nYour Store" },
-              { num: 2, title: "Add\nProducts" },
-              { num: 3, title: "Share\nAnywhere" },
-              { num: 4, title: "Receive\nRequests" },
-              { num: 5, title: "Manage\nOrders" }
+              { num: 1, title: "Create Your Store", desc: "Set up your link in 60 seconds." },
+              { num: 2, title: "Add Products", desc: "Upload photos and set prices." },
+              { num: 3, title: "Share Anywhere", desc: "Put your link in bio or WhatsApp." },
+              { num: 4, title: "Receive Requests", desc: "Orders come directly to you." },
+              { num: 5, title: "Manage Orders", desc: "Track everything in one place." }
             ].map((step) => (
-              <div key={step.num} className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-white border-4 border-blue-50 shadow-sm flex items-center justify-center text-[#111111] font-bold text-xl mb-4 relative">
+              <div key={step.num} className="flex md:flex-col items-center md:text-center gap-6 md:gap-0 w-full">
+                <div className="w-16 h-16 rounded-full bg-white border-4 border-blue-50 shadow-sm flex items-center justify-center text-[#111111] font-bold text-xl mb-4 relative shrink-0">
                   {step.num}
                   {step.num === 1 && <div className="absolute -inset-1 rounded-full border-2 border-[#111111]/30 animate-pulse"></div>}
                 </div>
-                <div className="text-sm font-bold text-[#0F172A] whitespace-pre-line leading-snug">{step.title}</div>
+                <div>
+                  <div className="text-lg md:text-sm font-bold text-[#0F172A] leading-snug">{step.title}</div>
+                  <div className="text-sm text-slate-500 md:hidden mt-1">{step.desc}</div>
+                </div>
               </div>
             ))}
           </div>
