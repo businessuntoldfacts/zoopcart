@@ -31,6 +31,7 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-[#111111]/20">
+      <AuthCatcher />
       {/* Header */}
       <HeaderMenu />
 

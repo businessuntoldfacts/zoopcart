@@ -116,10 +116,10 @@ export default function SignupPage() {
           throw dbError;
         }
 
-        setSuccess("Account created successfully! Redirecting to login...");
+        setSuccess("Account created successfully! Redirecting to dashboard...");
         setTimeout(() => {
-          window.location.href = "/login";
-        }, 2000);
+          window.location.href = "/dashboard";
+        }, 1500);
       }
     } catch (err: any) {
       setError(err.message || "An error occurred during signup");
