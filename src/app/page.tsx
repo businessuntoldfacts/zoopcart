@@ -38,12 +38,16 @@ export default async function LandingPage() {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
         <div className="flex-1 text-center lg:text-left z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0F172A] mb-6 leading-tight">
-            Already selling through <span className="text-[#111111]">Instagram</span>, <span className="text-slate-800">YouTube</span> or <span className="text-black">TikTok?</span>
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-[#0F172A] mb-6 leading-[1.1]">
+            Already selling through <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Instagram</span>,
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-500"> YouTube</span> or
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700"> TikTok?</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-slate-600 mb-8 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
-            Create your free Zoopcart store in minutes.
+          <p className="text-xl md:text-2xl text-slate-500 mb-10 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
+            Create your professional Zoopcart store in 60 seconds. <br className="hidden md:block" />
+            <span className="text-[#111111] font-bold">No coding, no monthly fees.</span>
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
@@ -59,12 +63,29 @@ export default async function LandingPage() {
             </Link>
           </div>
           
-          <div className="mt-8 flex items-center justify-center lg:justify-start gap-4">
-            <div className="flex -space-x-3">
-              {[1,2,3,4].map(i => <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"><img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${i}&backgroundColor=e2e8f0`} alt="Avatar" /></div>)}
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
+            <div className="flex -space-x-4">
+              {[
+                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
+                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+                "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+                "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop"
+              ].map((url, i) => (
+                <div key={i} className="w-12 h-12 rounded-full border-4 border-white shadow-lg overflow-hidden relative z-[10]">
+                  <img src={url} alt="Seller" className="w-full h-full object-cover" />
+                </div>
+              ))}
+              <div className="w-12 h-12 rounded-full border-4 border-white shadow-lg bg-[#111111] flex items-center justify-center text-[10px] text-white font-bold relative z-[5]">
+                +1k
+              </div>
             </div>
-            <div className="text-sm font-bold text-[#0F172A]">
-              Join <span className="text-slate-900">1,000+</span> social sellers
+            <div className="flex flex-col items-center sm:items-start">
+              <div className="flex items-center gap-1 mb-0.5">
+                {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 fill-yellow-400 text-yellow-400" />)}
+              </div>
+              <p className="text-sm font-bold text-[#0F172A]">
+                Trusted by <span className="text-indigo-600">1,200+ active sellers</span>
+              </p>
             </div>
           </div>
         </div>

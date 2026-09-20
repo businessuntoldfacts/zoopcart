@@ -51,7 +51,7 @@ export default function DashboardLayout({
   useEffect(() => {
     if (!loading && !business) {
       // If user is logged in but has no business profile, send to signup to complete setup
-      router.push('/signup');
+      router.replace('/signup');
     }
 
     if (business) {
@@ -62,6 +62,14 @@ export default function DashboardLayout({
       });
     }
   }, [business, loading, router]);
+
+  if (loading || !business) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+      </div>
+    );
+  }
 
   const navigation = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
