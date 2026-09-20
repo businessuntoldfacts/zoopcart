@@ -168,14 +168,14 @@ export default async function LandingPage() {
       <section className="py-12 bg-white border-y border-zyp-border">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm font-bold text-zyp-textMuted uppercase tracking-wider mb-8">Trusted by thousands of social sellers</p>
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-70">
-            <div className="flex flex-col items-center gap-2"><ShoppingBag className="w-6 h-6" /><span className="text-xs font-medium">Clothing</span></div>
-            <div className="flex flex-col items-center gap-2"><svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span className="text-xs font-medium">Home Bakers</span></div>
-            <div className="flex flex-col items-center gap-2"><HelpCircle className="w-6 h-6" /><span className="text-xs font-medium">Jewellery</span></div>
-            <div className="flex flex-col items-center gap-2"><Heart className="w-6 h-6" /><span className="text-xs font-medium">Gifts</span></div>
-            <div className="flex flex-col items-center gap-2"><Grid className="w-6 h-6" /><span className="text-xs font-medium">Interior</span></div>
-            <div className="flex flex-col items-center gap-2"><Palette className="w-6 h-6" /><span className="text-xs font-medium">Artists</span></div>
-            <div className="flex flex-col items-center gap-2"><Camera className="w-6 h-6" /><span className="text-xs font-medium">Photographers</span></div>
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+            <div className="flex flex-col items-center gap-2 transition-transform hover:scale-110"><ShoppingBag className="w-6 h-6 text-pink-500 fill-pink-50" /><span className="text-xs font-bold text-slate-700">Clothing</span></div>
+            <div className="flex flex-col items-center gap-2 transition-transform hover:scale-110"><svg className="w-6 h-6 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span className="text-xs font-bold text-slate-700">Home Bakers</span></div>
+            <div className="flex flex-col items-center gap-2 transition-transform hover:scale-110"><HelpCircle className="w-6 h-6 text-blue-500 fill-blue-50" /><span className="text-xs font-bold text-slate-700">Jewellery</span></div>
+            <div className="flex flex-col items-center gap-2 transition-transform hover:scale-110"><Heart className="w-6 h-6 text-red-500 fill-red-50" /><span className="text-xs font-bold text-slate-700">Gifts</span></div>
+            <div className="flex flex-col items-center gap-2 transition-transform hover:scale-110"><Grid className="w-6 h-6 text-indigo-500" /><span className="text-xs font-bold text-slate-700">Interior</span></div>
+            <div className="flex flex-col items-center gap-2 transition-transform hover:scale-110"><Palette className="w-6 h-6 text-purple-500 fill-purple-50" /><span className="text-xs font-bold text-slate-700">Artists</span></div>
+            <div className="flex flex-col items-center gap-2 transition-transform hover:scale-110"><Camera className="w-6 h-6 text-emerald-500 fill-emerald-50" /><span className="text-xs font-bold text-slate-700">Photographers</span></div>
           </div>
         </div>
       </section>
