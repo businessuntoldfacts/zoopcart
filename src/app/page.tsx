@@ -12,7 +12,7 @@ export default async function LandingPage() {
     .from('businesses')
     .select('business_name, username')
     .order('created_at', { ascending: false })
-    .limit(3);
+    .limit(4);
 
   const defaultReviews = [
     {name: "Priya Sharma", role: "Home Baker", text: "Zoopcart completely changed how I take orders. No more messy DMs, just a clean catalog link on my Instagram bio!"},
@@ -224,7 +224,7 @@ export default async function LandingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {realBusinesses && realBusinesses.map((b, i) => (
-              <Link key={i} href={`/${b.username}`} className="bg-white rounded-3xl p-6 flex flex-col items-center text-center border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-300 transition-all group">
+              <Link key={i} href={`/${b.username}`} className="bg-white rounded-3xl p-6 flex flex-col items-center text-center border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-300 transition-all group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${i * 100}ms` }}>
                 <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-extrabold text-2xl mb-4 group-hover:scale-110 transition-transform">
                   {b.business_name ? b.business_name.charAt(0).toUpperCase() : 'S'}
                 </div>

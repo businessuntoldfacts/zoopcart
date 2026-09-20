@@ -38,7 +38,7 @@ export default function PlatformReviewSystem() {
                 const defaultReviews = [
           {id: 'def1', customer_name: "Priya Sharma", quantity: 5, notes: "Zoopcart's workflows let us automate repetitive tasks, saving valuable time and resources.", avatar: "https://i.pravatar.cc/150?img=5", role: "Marketer", country: "🇮🇳 India"},
           {id: 'def2', customer_name: "Rahul Gupta", quantity: 5, notes: "Zoopcart is a great tool for any export business looking to manage sales efficiently and grow.", avatar: "https://i.pravatar.cc/150?img=11", role: "CEO", country: "🇮🇳 India"},
-          {id: 'def3', customer_name: "Sneha Reddy", quantity: 5, notes: "With Zoopcart, I receive everything directly on my WhatsApp number. It's very user-friendly.", avatar: "https://i.pravatar.cc/150?img=43", role: "Proprietor", country: "🇮🇳 India"}
+          {id: 'def3', customer_name: "Sneha Reddy", quantity: 5, notes: "With Zoopcart, I receive everything directly on my dashboard. It's very user-friendly.", avatar: "https://i.pravatar.cc/150?img=43", role: "Proprietor", country: "🇮🇳 India"}
         ];
         
         if (data && data.length > 0) {
