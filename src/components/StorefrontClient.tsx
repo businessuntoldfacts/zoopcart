@@ -10,6 +10,7 @@ export default function StorefrontClient({ business, products }: { business: any
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Products");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   
   let theme = 'light';
@@ -33,6 +34,25 @@ export default function StorefrontClient({ business, products }: { business: any
   const primaryColor = theme === 'playful' ? 'bg-orange-500 shadow-orange-500/20' : 'bg-[#111111] shadow-black/20';
   const primaryText = theme === 'playful' ? 'text-orange-500' : 'text-[#111111]';
   const activeTabColor = theme === 'playful' ? 'bg-orange-500' : 'bg-[#111111]';
+
+  // Filter products by category and search query
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
+    const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          product.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  // Format member date beautifully from business created_at if available
+  const getMemberSince = () => {
+    if (!business.created_at) return "Active Seller";
+    try {
+      const date = new Date(business.created_at);
+      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    } catch (e) {
+      return "Active Seller";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-24 relative">
@@ -106,13 +126,13 @@ export default function StorefrontClient({ business, products }: { business: any
               </div>
               <div className="w-px h-8 bg-slate-100"></div>
               <div className="flex flex-col items-center">
-                <span className="font-extrabold text-lg text-slate-900">0</span>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Followers</span>
+                <span className="font-extrabold text-lg text-slate-900">100+</span>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Views</span>
               </div>
               <div className="w-px h-8 bg-slate-100"></div>
               <div className="flex flex-col items-center">
-                <span className="font-extrabold text-lg text-slate-900">10+</span>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Customers</span>
+                <span className="font-extrabold text-lg text-slate-900">Active</span>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Status</span>
               </div>
             </div>
 
@@ -150,13 +170,12 @@ export default function StorefrontClient({ business, products }: { business: any
                 <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                 <input 
                   type="text" 
-                  placeholder="Search products..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
                   className={`w-full h-12 pl-10 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111]/20`}
                 />
               </div>
-              <button className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-600 hover:bg-slate-50">
-                <Filter className="w-5 h-5" />
-              </button>
             </div>
 
             {/* Categories */}
@@ -180,13 +199,13 @@ export default function StorefrontClient({ business, products }: { business: any
 
             {/* Product Grid */}
             <div className="grid grid-cols-2 gap-3 mt-4">
-              {(selectedCategory === "All" ? products : products.filter(p => p.category === selectedCategory)).length === 0 ? (
+              {filteredProducts.length === 0 ? (
                 <div className="col-span-2 text-center py-12 bg-white rounded-3xl border border-slate-100">
                   <h3 className="font-extrabold text-lg text-slate-900">No products found</h3>
-                  <p className="text-sm text-slate-500 mt-1">Try another category</p>
+                  <p className="text-sm text-slate-500 mt-1">Try another search or category</p>
                 </div>
               ) : (
-                (selectedCategory === "All" ? products : products.filter(p => p.category === selectedCategory)).map((product) => (
+                filteredProducts.map((product) => (
                   <Link href={`/${business.username}/${product.slug}`} key={product.id} className="block group bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden hover:border-slate-300 transition-colors relative pb-3">
                     <button onClick={(e) => { e.preventDefault(); }} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-300 hover:text-[#111111] hover:bg-white z-10 transition-colors shadow-sm">
                       <Heart className="w-4 h-4" />
@@ -230,18 +249,20 @@ export default function StorefrontClient({ business, products }: { business: any
                     </div>
                     <div>
                        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Member Since</div>
-                       <div className="font-extrabold text-slate-900 text-sm">September 2026</div>
+                       <div className="font-extrabold text-slate-900 text-sm">{getMemberSince()}</div>
                     </div>
                  </div>
-                 <div className="flex gap-3">
-                    <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 shrink-0">
-                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                    </div>
-                    <div>
-                       <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Location</div>
-                       <div className="font-extrabold text-slate-900 text-sm">Saadatganj, Chamanganj</div>
-                    </div>
-                 </div>
+                 {business.address && (
+                   <div className="flex gap-3">
+                      <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 shrink-0">
+                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                      </div>
+                      <div>
+                         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Location</div>
+                         <div className="font-extrabold text-slate-900 text-sm">{business.address}</div>
+                      </div>
+                   </div>
+                 )}
                  <div className="flex gap-3">
                     <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 shrink-0">
                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>

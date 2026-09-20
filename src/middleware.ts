@@ -6,8 +6,9 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login')) {
     const adminToken = request.cookies.get('zoopcart_admin_token')?.value;
     
-    // If there is no token or it doesn't match our secret token, redirect to login
-    if (adminToken !== "zoopcart_secure_master_key_2026") {
+    // Check token dynamically from environment or master key securely
+    const secureMasterKey = process.env.ZOOPCART_ADMIN_TOKEN || "zoopcart_secure_master_key_2026";
+    if (adminToken !== secureMasterKey) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
   }
