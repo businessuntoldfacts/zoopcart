@@ -26,7 +26,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: `https://www.zoopcart.com/dashboard`
         }
       });
       if (error) throw error;
@@ -85,7 +85,7 @@ export default function LoginPage() {
           throw new Error("Account found but store profile is missing. Please sign up again.");
         }
 
-        window.location.href = "/dashboard";
+        window.location.replace("/dashboard");
       }
     } catch (err: any) {
       setError(err.message || "Invalid or expired code");
@@ -128,7 +128,8 @@ export default function LoginPage() {
         throw new Error("Account found but store profile is missing. Please sign up again.");
       }
       
-      window.location.href = "/dashboard";
+        window.location.replace("/dashboard");
+      }
     } catch (err: any) {
       setError(err.message || "Invalid credentials");
     } finally {

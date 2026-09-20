@@ -36,17 +36,20 @@ export default function AuthCatcher() {
     // Listen for auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        const { data: business } = await supabase
-          .from('businesses')
-          .select('id')
-          .eq('user_id', session.user.id)
-          .single();
+        // Fix for mobile redirect scaling: force a small delay then reload
+        setTimeout(async () => {
+          const { data: business } = await supabase
+            .from('businesses')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .single();
 
-        if (business) {
-          router.replace('/dashboard');
-        } else {
-          router.replace('/signup?reason=no_store');
-        }
+          if (business) {
+            window.location.replace('/dashboard');
+          } else {
+            window.location.replace('/signup?reason=no_store');
+          }
+        }, 100);
       }
     });
     
