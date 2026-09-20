@@ -37,12 +37,33 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        if (authError.message.includes("Invalid login credentials")) {
+          throw new Error("Incorrect email or password. Please check and try again.");
+        }
+        if (authError.message.includes("Email not confirmed")) {
+          throw new Error("Please confirm your email address before logging in.");
+        }
+        throw authError;
+      }
+
+      // Check if business exists for this user
+      const { data: business } = await supabase
+        .from('businesses')
+        .select('id')
+        .eq('user_id', data.user.id)
+        .single();
+
+      if (!business) {
+        // If user exists in Auth but not in businesses table (e.g. signup failed midway)
+        await supabase.auth.signOut();
+        throw new Error("Account found but store profile is missing. Please sign up again.");
+      }
       
       window.location.href = "/dashboard";
     } catch (err: any) {

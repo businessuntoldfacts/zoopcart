@@ -41,7 +41,7 @@ export default function DashboardLayout({
     };
   }, []);
 
-  const { business } = useDashboardData();
+  const { business, loading } = useDashboardData();
   const [businessData, setBusinessData] = useState<{name: string, username: string, image: string | null}>({
     name: "Store Owner",
     username: "",
@@ -49,6 +49,11 @@ export default function DashboardLayout({
   });
 
   useEffect(() => {
+    if (!loading && !business) {
+      // If user is logged in but has no business profile, send to signup to complete setup
+      router.push('/signup');
+    }
+
     if (business) {
       setBusinessData({
         name: business.business_name || "Store Owner",
@@ -56,7 +61,7 @@ export default function DashboardLayout({
         image: business.profile_image || null
       });
     }
-  }, [business]);
+  }, [business, loading, router]);
 
   const navigation = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },

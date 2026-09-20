@@ -23,6 +23,13 @@ export default function SignupPage() {
   
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('reason') === 'no_store') {
+      setError("Please complete your store setup to access the dashboard.");
+    }
+  }, []);
+
   // Debounced Username Checker
   useEffect(() => {
     const checkUsername = async () => {
@@ -85,24 +92,33 @@ export default function SignupPage() {
     }
 
     try {
-      // 1. Sign up user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            full_name: formData.fullName,
+      // Check if user is already logged in (e.g. via Google)
+      const { data: { session } } = await supabase.auth.getSession();
+      let userId = session?.user?.id;
+      let userEmail = formData.email;
+
+      if (!userId) {
+        // 1. Sign up user only if not already logged in
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: {
+              full_name: formData.fullName,
+            }
           }
-        }
-      });
+        });
 
-      if (authError) throw authError;
+        if (authError) throw authError;
+        userId = authData.user?.id;
+        userEmail = authData.user?.email || formData.email;
+      }
 
-      if (authData.user) {
+      if (userId) {
         // 2. Create business profile
         const { error: dbError } = await supabase.from('businesses').insert([
           {
-            user_id: authData.user.id,
+            user_id: userId,
             business_name: formData.businessName,
             username: formData.username.toLowerCase()
           }

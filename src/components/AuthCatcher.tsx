@@ -18,16 +18,37 @@ export default function AuthCatcher() {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data?.session) {
-        // Uncomment below to strictly redirect all logged-in users from homepage to dashboard
-        router.push('/dashboard');
+        // Check if user has a business profile
+        const { data: business } = await supabase
+          .from('businesses')
+          .select('id')
+          .eq('user_id', data.session.user.id)
+          .single();
+
+        if (business) {
+          router.push('/dashboard');
+        } else {
+          // Logged in but no store? Take them to signup to finish setup
+          router.push('/signup?reason=no_store');
+        }
       }
     };
     checkSession();
     
     // Listen for auth state changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') {
-        router.push('/dashboard');
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        const { data: business } = await supabase
+          .from('businesses')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (business) {
+          router.push('/dashboard');
+        } else {
+          router.push('/signup?reason=no_store');
+        }
       }
     });
     
