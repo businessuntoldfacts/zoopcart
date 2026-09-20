@@ -122,12 +122,7 @@ export default function LoginPage() {
         .eq('user_id', data.user.id)
         .single();
 
-      if (!business) {
-        // If user exists in Auth but not in businesses table (e.g. signup failed midway)
-        await supabase.auth.signOut();
-        throw new Error("Account found but store profile is missing. Please sign up again.");
-      }
-      
+      if (data.user) {
         window.location.replace("/dashboard");
       }
     } catch (err: any) {
