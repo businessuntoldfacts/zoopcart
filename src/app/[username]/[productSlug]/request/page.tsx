@@ -72,6 +72,30 @@ export default function RequestForm({ params }: { params: { username: string, pr
       status: 'new'
     }]);
 
+    // Send high-quality branded email notification instantly to the buyer if email is provided
+    if (!error && formData.email) {
+      try {
+        await fetch("/api/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "order_notification",
+            email: formData.email,
+            orderId: token,
+            customerName: formData.name,
+            customerPhone: formData.phone,
+            productName: product.name,
+            price: product.price,
+            quantity: formData.quantity,
+            deliveryLocation: formData.delivery_location,
+            trackingLink: `https://zoopcart.com/${business.username}/track?token=${token}`
+          })
+        });
+      } catch (emailErr) {
+        console.error("Order notification email failed to fire synchronously:", emailErr);
+      }
+    }
+
     setLoading(false);
     if (error) {
       alert("Error submitting request. Please try again.");

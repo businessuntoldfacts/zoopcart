@@ -19,9 +19,40 @@ export default function TrackOrderPage({ params }: { params: { username: string 
     async function fetchBusiness() {
       const { data } = await supabase.from('businesses').select('*').eq('username', params.username.toLowerCase()).single();
       setBusiness(data);
+
+      // Auto-trigger search if token parameter exists in URL query
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+        if (urlToken && data) {
+          setQuery(urlToken);
+          triggerAutoSearch(urlToken, data.id);
+        }
+      }
     }
     fetchBusiness();
   }, [params.username]);
+
+  const triggerAutoSearch = async (tokenVal: string, businessId: string) => {
+    setLoading(true);
+    setSearched(true);
+
+    const { data: orderData } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('business_id', businessId)
+      .eq('tracking_token', tokenVal.toUpperCase())
+      .maybeSingle();
+
+    if (orderData) {
+      setOrder(orderData);
+      if (orderData.product_id) {
+        const { data: prodData } = await supabase.from('products').select('*').eq('id', orderData.product_id).single();
+        setProduct(prodData);
+      }
+    }
+    setLoading(false);
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,12 +62,44 @@ export default function TrackOrderPage({ params }: { params: { username: string 
     setOrder(null);
     setProduct(null);
 
-    const { data: orderData } = await supabase
+    let orderData = null;
+    const cleanQuery = query.trim();
+
+    // 1. Search by Tracking Token / Order ID
+    const { data: byToken } = await supabase
       .from('orders')
       .select('*')
       .eq('business_id', business.id)
-      .eq('tracking_token', query.trim().toUpperCase())
-      .single();
+      .eq('tracking_token', cleanQuery.toUpperCase())
+      .maybeSingle();
+
+    if (byToken) {
+      orderData = byToken;
+    } else {
+      // 2. Search by Customer Phone Number
+      const { data: byPhone } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('business_id', business.id)
+        .eq('customer_phone', cleanQuery)
+        .order('created_at', { ascending: false });
+
+      if (byPhone && byPhone.length > 0) {
+        orderData = byPhone[0];
+      } else {
+        // 3. Search by Customer Name / Token
+        const { data: byName } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('business_id', business.id)
+          .ilike('customer_name', `%${cleanQuery}%`)
+          .order('created_at', { ascending: false });
+
+        if (byName && byName.length > 0) {
+          orderData = byName[0];
+        }
+      }
+    }
 
     if (orderData) {
       setOrder(orderData);

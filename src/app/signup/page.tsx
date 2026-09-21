@@ -161,6 +161,24 @@ export default function SignupPage() {
         }
 
         setSuccess("Account created successfully! Redirecting to dashboard...");
+
+        // Trigger customized premium Welcome Email notifications instantly via local API route
+        try {
+          await fetch("/api/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "welcome",
+              email: userEmail,
+              fullName: formData.fullName,
+              businessName: formData.businessName,
+              storeUrl: `https://zoopcart.com/${formData.username.toLowerCase()}`
+            })
+          });
+        } catch (emailErr) {
+          console.error("Welcome email failed to fire synchronously:", emailErr);
+        }
+
         setTimeout(() => {
           window.location.href = "/dashboard";
         }, 1500);
