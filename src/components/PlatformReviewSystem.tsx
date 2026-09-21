@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Star, MessageCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function PlatformReviewSystem() {
   const [reviews, setReviews] = useState<any[]>([]);
