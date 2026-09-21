@@ -7,7 +7,7 @@ import { Search, MapPin, Calendar, Clock, CheckCircle, Smartphone } from "lucide
 import { useDashboardData, invalidateDashboardCache } from "@/lib/useDashboardData";
 
 export default function OrdersPage() {
-  const { orders: cachedOrders, loading } = useDashboardData();
+  const { business, orders: cachedOrders, loading } = useDashboardData();
   const [orders, setOrders] = useState<any[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
@@ -40,7 +40,7 @@ export default function OrdersPage() {
     const currentOrder = orders.find(o => o.id === orderId);
     if (currentOrder && currentOrder.customer_email) {
       try {
-        const businessName = currentOrder.businesses?.name || "Zoopcart Store";
+        const businessName = business?.business_name || "Zoopcart Store";
         await fetch("/api/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -52,9 +52,9 @@ export default function OrdersPage() {
             customerPhone: currentOrder.customer_phone,
             productName: currentOrder.products?.name || "Ordered Items",
             price: currentOrder.budget || 0,
-            quantity: 1,
+            quantity: currentOrder.quantity || 1,
             deliveryLocation: currentOrder.delivery_location || "Not specified",
-            trackingLink: `${window.location.origin}/${currentOrder.businesses?.username || 'track'}/track?token=${currentOrder.tracking_token}`,
+            trackingLink: `${window.location.origin}/${business?.username || 'track'}/track?token=${currentOrder.tracking_token}`,
             status: newStatus
           })
         });

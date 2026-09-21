@@ -73,26 +73,61 @@ export default function RequestForm({ params }: { params: { username: string, pr
     }]);
 
     // Send high-quality branded email notification instantly to the buyer if email is provided
-    if (!error && formData.email) {
+    if (!error) {
+      // 1. Send to Buyer
+      if (formData.email) {
+        try {
+          await fetch("/api/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "order_notification",
+              email: formData.email,
+              orderId: token,
+              customerName: formData.name,
+              customerPhone: formData.phone,
+              productName: product.name,
+              price: product.price,
+              quantity: formData.quantity,
+              deliveryLocation: formData.delivery_location,
+              trackingLink: `${window.location.origin}/${business.username}/track?token=${token}`
+            })
+          });
+        } catch (emailErr) {
+          console.error("Order notification email failed to fire synchronously:", emailErr);
+        }
+      }
+
+      // 2. Send to Seller
       try {
-        await fetch("/api/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "order_notification",
-            email: formData.email,
-            orderId: token,
-            customerName: formData.name,
-            customerPhone: formData.phone,
-            productName: product.name,
-            price: product.price,
-            quantity: formData.quantity,
-            deliveryLocation: formData.delivery_location,
-            trackingLink: `https://zoopcart.com/${business.username}/track?token=${token}`
-          })
-        });
-      } catch (emailErr) {
-        console.error("Order notification email failed to fire synchronously:", emailErr);
+        let sellerEmail = "";
+        try {
+          if (business.instagram_profile_url && business.instagram_profile_url.startsWith('{')) {
+            const settings = JSON.parse(business.instagram_profile_url);
+            sellerEmail = settings.email;
+          }
+        } catch (e) {}
+
+        if (sellerEmail) {
+          await fetch("/api/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "seller_order_notification",
+              email: sellerEmail,
+              orderId: token,
+              customerName: formData.name,
+              customerPhone: formData.phone,
+              productName: product.name,
+              price: finalPrice,
+              quantity: formData.quantity,
+              deliveryLocation: formData.delivery_location,
+              notes: `Total: ₹${finalPrice} (Product: ₹${productTotal} + Delivery: ₹${deliveryType === "paid" ? deliveryCharge : 0})`
+            })
+          });
+        }
+      } catch (sellerEmailErr) {
+        console.error("Seller notification failed:", sellerEmailErr);
       }
     }
 

@@ -94,7 +94,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     }]);
 
     if (!error) {
-      // Send email
+      // 1. Send email to Buyer
       if (formData.email) {
         try {
           await fetch("/api/send", {
@@ -106,14 +106,48 @@ export default function CheckoutPage({ params }: { params: { username: string } 
               orderId: token,
               customerName: formData.name,
               customerPhone: formData.phone,
-              productName: "Multiple Items (Cart)",
+              productName: itemDetails,
               price: total,
-              quantity: cartItems.length,
+              quantity: totalQuantity,
               deliveryLocation: formData.delivery_location,
               trackingLink: `${window.location.origin}/${business.username}/track?token=${token}`
             })
           });
-        } catch (emailErr) {}
+        } catch (emailErr) {
+          console.error("Buyer email failed:", emailErr);
+        }
+      }
+
+      // 2. Send email to Seller
+      try {
+        let sellerEmail = "";
+        try {
+          if (business.instagram_profile_url && business.instagram_profile_url.startsWith('{')) {
+            const settings = JSON.parse(business.instagram_profile_url);
+            sellerEmail = settings.email;
+          }
+        } catch (e) {}
+
+        if (sellerEmail) {
+          await fetch("/api/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "seller_order_notification",
+              email: sellerEmail,
+              orderId: token,
+              customerName: formData.name,
+              customerPhone: formData.phone,
+              productName: itemDetails,
+              price: total,
+              quantity: totalQuantity,
+              deliveryLocation: formData.delivery_location,
+              notes: formData.delivery_location
+            })
+          });
+        }
+      } catch (sellerEmailErr) {
+        console.error("Seller notification failed:", sellerEmailErr);
       }
 
       localStorage.removeItem('zypcart_cart');

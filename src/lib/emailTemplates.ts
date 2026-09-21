@@ -144,6 +144,81 @@ export function getWelcomeEmailTemplate(fullName: string, businessName: string, 
   `;
 }
 
+export function getSellerOrderNotificationEmailTemplate(orderData: {
+  orderId: string;
+  customerName: string;
+  customerPhone: string;
+  productName: string;
+  price: number;
+  quantity: number;
+  deliveryLocation: string;
+  notes?: string;
+}) {
+  const currentYear = new Date().getFullYear();
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Order Received! 🛍️</title>
+      <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f7fa; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .header { background-color: #000000; padding: 40px 20px; text-align: center; }
+        .content { padding: 40px; color: #334155; line-height: 1.6; }
+        h1 { font-size: 24px; font-weight: 800; color: #0F172A; margin-top: 0; margin-bottom: 8px; }
+        .order-id { font-size: 14px; font-weight: 700; color: #64748B; margin-bottom: 32px; }
+        .cta-button { display: inline-block; background-color: #000000; color: #ffffff !important; font-weight: 700; font-size: 16px; padding: 16px 32px; text-decoration: none; border-radius: 12px; margin-bottom: 32px; }
+        .info-grid { background-color: #f8fafc; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; margin-top: 32px; }
+        .info-title { font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; margin-bottom: 4px; }
+        .info-value { font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 16px; }
+        .footer { background-color: #f8fafc; padding: 30px; text-align: center; font-size: 12px; color: #94A3B8; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="https://www.zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 35px; width: auto;">
+        </div>
+        <div class="content">
+          <h1>You've got a new order! 🛍️</h1>
+          <div class="order-id">Order Ref: ${orderData.orderId}</div>
+
+          <p>Great news! <strong>${orderData.customerName}</strong> just placed an order from your store.</p>
+
+          <div class="info-grid">
+            <div class="info-title">Customer Details</div>
+            <div class="info-value">${orderData.customerName} (${orderData.customerPhone})</div>
+
+            <div class="info-title">Items Ordered</div>
+            <div class="info-value">${orderData.productName} (x${orderData.quantity})</div>
+
+            <div class="info-title">Order Total</div>
+            <div class="info-value">₹${orderData.price}</div>
+
+            <div class="info-title">Delivery Address</div>
+            <div class="info-value">${orderData.deliveryLocation}</div>
+
+            ${orderData.notes ? `
+            <div class="info-title">Notes</div>
+            <div class="info-value">${orderData.notes}</div>
+            ` : ''}
+          </div>
+
+          <div style="text-align: center; margin-top: 32px;">
+            <a href="https://www.zoopcart.com/dashboard/orders" class="cta-button">View Order in Dashboard</a>
+          </div>
+        </div>
+        <div class="footer">
+          &copy; ${currentYear} Zoopcart. All rights reserved.
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 export function getOrderNotificationEmailTemplate(orderData: {
   orderId: string;
   customerName: string;
@@ -209,6 +284,81 @@ export function getOrderNotificationEmailTemplate(orderData: {
 
           <div style="text-align: center; margin-top: 32px;">
             <a href="${orderData.trackingLink}" class="cta-button">Track Order Status</a>
+          </div>
+        </div>
+        <div class="footer">
+          &copy; ${currentYear} Zoopcart. All rights reserved.
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+export function getSellerOrderNotificationEmailTemplate(orderData: {
+  orderId: string;
+  customerName: string;
+  customerPhone: string;
+  productName: string;
+  price: number;
+  quantity: number;
+  deliveryLocation: string;
+  notes?: string;
+}) {
+  const currentYear = new Date().getFullYear();
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Order Received! 🛍️</title>
+      <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f7fa; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .header { background-color: #000000; padding: 40px 20px; text-align: center; }
+        .content { padding: 40px; color: #334155; line-height: 1.6; }
+        h1 { font-size: 24px; font-weight: 800; color: #0F172A; margin-top: 0; margin-bottom: 8px; }
+        .order-id { font-size: 14px; font-weight: 700; color: #64748B; margin-bottom: 32px; }
+        .cta-button { display: inline-block; background-color: #000000; color: #ffffff !important; font-weight: 700; font-size: 16px; padding: 16px 32px; text-decoration: none; border-radius: 12px; margin-bottom: 32px; }
+        .info-grid { background-color: #f8fafc; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; margin-top: 32px; }
+        .info-title { font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; margin-bottom: 4px; }
+        .info-value { font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 16px; }
+        .footer { background-color: #f8fafc; padding: 30px; text-align: center; font-size: 12px; color: #94A3B8; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="https://www.zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 35px; width: auto;">
+        </div>
+        <div class="content">
+          <h1>You've got a new order! 🛍️</h1>
+          <div class="order-id">Order Ref: ${orderData.orderId}</div>
+
+          <p>Great news! <strong>${orderData.customerName}</strong> just placed an order from your store.</p>
+
+          <div class="info-grid">
+            <div class="info-title">Customer Details</div>
+            <div class="info-value">${orderData.customerName} (${orderData.customerPhone})</div>
+
+            <div class="info-title">Items Ordered</div>
+            <div class="info-value">${orderData.productName} (x${orderData.quantity})</div>
+
+            <div class="info-title">Order Total</div>
+            <div class="info-value">₹${orderData.price}</div>
+
+            <div class="info-title">Delivery Address</div>
+            <div class="info-value">${orderData.deliveryLocation}</div>
+
+            ${orderData.notes ? `
+            <div class="info-title">Notes</div>
+            <div class="info-value">${orderData.notes}</div>
+            ` : ''}
+          </div>
+
+          <div style="text-align: center; margin-top: 32px;">
+            <a href="https://www.zoopcart.com/dashboard/orders" class="cta-button">View Order in Dashboard</a>
           </div>
         </div>
         <div class="footer">

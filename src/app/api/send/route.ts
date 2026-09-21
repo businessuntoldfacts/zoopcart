@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getWelcomeEmailTemplate, getOrderNotificationEmailTemplate } from "@/lib/emailTemplates";
+import { getWelcomeEmailTemplate, getOrderNotificationEmailTemplate, getSellerOrderNotificationEmailTemplate } from "@/lib/emailTemplates";
 
 export async function POST(request: Request) {
   try {
@@ -27,6 +27,9 @@ export async function POST(request: Request) {
     } else if (type === "order_notification") {
       html = getOrderNotificationEmailTemplate(data);
       subject = `Order Update: ${data.productName} - Zoopcart`;
+    } else if (type === "seller_order_notification") {
+      html = getSellerOrderNotificationEmailTemplate(data);
+      subject = `New Order Received! 🛍️ #${data.orderId}`;
     } else {
       return NextResponse.json({ error: "Invalid email type" }, { status: 400 });
     }
@@ -38,7 +41,7 @@ export async function POST(request: Request) {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Zoopcart <welcome@zoopcart.com>",
+        from: "Zoopcart <orders@zoopcart.com>",
         to: [email],
         subject,
         html,
