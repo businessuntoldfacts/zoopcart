@@ -41,7 +41,7 @@ export default function DashboardLayout({
     };
   }, []);
 
-  const { business, loading } = useDashboardData();
+  const { business, products, orders, loading } = useDashboardData();
   const [businessData, setBusinessData] = useState<{name: string, username: string, image: string | null}>({
     name: "Store Owner",
     username: "",
@@ -74,7 +74,7 @@ export default function DashboardLayout({
     );
   }
 
-  const newOrdersCount = cachedOrders?.filter((o: any) => o.status === 'new' || o.status === 'pending').length;
+  const newOrdersCount = orders?.filter((o: any) => o.status === 'new' || o.status === 'pending').length;
 
   const navigation = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
