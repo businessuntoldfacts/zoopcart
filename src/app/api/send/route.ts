@@ -6,14 +6,19 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { type, email, ...data } = body;
 
+    console.log("Email Request Received:", { type, email });
+
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
-      console.error("RESEND_API_KEY is missing in environment variables.");
-      return NextResponse.json({ error: "Email configuration missing (RESEND_API_KEY)" }, { status: 500 });
+      console.error("CRITICAL: RESEND_API_KEY is missing in environment variables.");
+      return NextResponse.json({
+        error: "Email configuration missing (RESEND_API_KEY)",
+        debug: "Please add RESEND_API_KEY to your environment variables."
+      }, { status: 500 });
     }
 
     let html = "";
@@ -47,13 +52,17 @@ export async function POST(request: Request) {
       }),
     });
 
+    const result = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Resend API error detail:", JSON.stringify(errorData));
-      return NextResponse.json({ error: "Resend API Error", detail: errorData }, { status: response.status });
+      console.error("Resend API error detail:", JSON.stringify(result));
+      return NextResponse.json({
+        error: "Resend API Error",
+        detail: result
+      }, { status: response.status });
     }
 
-    const result = await response.json();
+    console.log("Email sent successfully:", result.id);
     return NextResponse.json({ success: true, data: result });
   } catch (error: any) {
     console.error("Error in send email API route:", error);

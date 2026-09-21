@@ -97,7 +97,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
       // 1. Send email to Buyer
       if (formData.email) {
         try {
-          await fetch("/api/send", {
+          const buyerRes = await fetch("/api/send", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -113,6 +113,8 @@ export default function CheckoutPage({ params }: { params: { username: string } 
               trackingLink: `${window.location.origin}/${business.username}/track?token=${token}`
             })
           });
+          const buyerResult = await buyerRes.json();
+          if (!buyerRes.ok) console.error("Buyer Email Error:", buyerResult);
         } catch (emailErr) {
           console.error("Buyer email failed:", emailErr);
         }
@@ -129,7 +131,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
         } catch (e) {}
 
         if (sellerEmail) {
-          await fetch("/api/send", {
+          const sellerRes = await fetch("/api/send", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -145,6 +147,8 @@ export default function CheckoutPage({ params }: { params: { username: string } 
               notes: formData.delivery_location
             })
           });
+          const sellerResult = await sellerRes.json();
+          if (!sellerRes.ok) console.error("Seller Email Error:", sellerResult);
         }
       } catch (sellerEmailErr) {
         console.error("Seller notification failed:", sellerEmailErr);
