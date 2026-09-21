@@ -12,9 +12,8 @@ export async function POST(request: Request) {
 
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
-      console.warn("RESEND_API_KEY environment variable is missing. Logging email instead.");
-      console.log(`Email Type: ${type}, To: ${email}, Data:`, data);
-      return NextResponse.json({ success: true, message: "Email simulated successfully (missing API key)" });
+      console.error("RESEND_API_KEY is missing in environment variables.");
+      return NextResponse.json({ error: "Email configuration missing (RESEND_API_KEY)" }, { status: 500 });
     }
 
     let html = "";
@@ -41,7 +40,7 @@ export async function POST(request: Request) {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Zoopcart <onboarding@resend.dev>", // Default for testing if domain not verified
+        from: "Zoopcart <onboarding@resend.dev>",
         to: [email],
         subject,
         html,
