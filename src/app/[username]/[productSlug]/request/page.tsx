@@ -76,6 +76,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
     // Send high-quality branded email notification instantly to the buyer if email is provided
     if (!error) {
       // 1. Send to Buyer
+      console.log("Attempting to send Buyer email to:", formData.email);
       if (formData.email) {
         try {
           const buyerRes = await fetch("/api/send", {
@@ -95,10 +96,16 @@ export default function RequestForm({ params }: { params: { username: string, pr
             })
           });
           const buyerResult = await buyerRes.json();
-          if (!buyerRes.ok) console.error("Buyer Email Error:", buyerResult);
+          if (buyerRes.ok) {
+            console.log("✅ Buyer Email Sent Successfully:", buyerResult);
+          } else {
+            console.error("❌ Buyer Email Error:", buyerResult);
+          }
         } catch (emailErr) {
-          console.error("Order notification email failed:", emailErr);
+          console.error("❌ Order notification email failed:", emailErr);
         }
+      } else {
+        console.log("ℹ️ No buyer email provided, skipping.");
       }
 
       // 2. Send to Seller
@@ -111,6 +118,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
           }
         } catch (e) {}
 
+        console.log("Attempting to send Seller email to:", sellerEmail);
         if (sellerEmail) {
           const sellerRes = await fetch("/api/send", {
             method: "POST",
@@ -129,10 +137,16 @@ export default function RequestForm({ params }: { params: { username: string, pr
             })
           });
           const sellerResult = await sellerRes.json();
-          if (!sellerRes.ok) console.error("Seller Email Error:", sellerResult);
+          if (sellerRes.ok) {
+            console.log("✅ Seller Email Sent Successfully:", sellerResult);
+          } else {
+            console.error("❌ Seller Email Error:", sellerResult);
+          }
+        } else {
+          console.log("ℹ️ Seller email not found in business settings, skipping.");
         }
       } catch (sellerEmailErr) {
-        console.error("Seller notification failed:", sellerEmailErr);
+        console.error("❌ Seller notification failed:", sellerEmailErr);
       }
     }
 

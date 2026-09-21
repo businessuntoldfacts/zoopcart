@@ -95,6 +95,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
 
     if (!error) {
       // 1. Send email to Buyer
+      console.log("Attempting to send Buyer email to:", formData.email);
       if (formData.email) {
         try {
           const buyerRes = await fetch("/api/send", {
@@ -114,10 +115,16 @@ export default function CheckoutPage({ params }: { params: { username: string } 
             })
           });
           const buyerResult = await buyerRes.json();
-          if (!buyerRes.ok) console.error("Buyer Email Error:", buyerResult);
+          if (buyerRes.ok) {
+            console.log("✅ Buyer Email Sent Successfully:", buyerResult);
+          } else {
+            console.error("❌ Buyer Email Error:", buyerResult);
+          }
         } catch (emailErr) {
-          console.error("Buyer email failed:", emailErr);
+          console.error("❌ Buyer email failed to fetch:", emailErr);
         }
+      } else {
+        console.log("ℹ️ No buyer email provided, skipping.");
       }
 
       // 2. Send email to Seller
@@ -130,6 +137,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
           }
         } catch (e) {}
 
+        console.log("Attempting to send Seller email to:", sellerEmail);
         if (sellerEmail) {
           const sellerRes = await fetch("/api/send", {
             method: "POST",
@@ -148,10 +156,16 @@ export default function CheckoutPage({ params }: { params: { username: string } 
             })
           });
           const sellerResult = await sellerRes.json();
-          if (!sellerRes.ok) console.error("Seller Email Error:", sellerResult);
+          if (sellerRes.ok) {
+            console.log("✅ Seller Email Sent Successfully:", sellerResult);
+          } else {
+            console.error("❌ Seller Email Error:", sellerResult);
+          }
+        } else {
+          console.log("ℹ️ Seller email not found in business settings, skipping.");
         }
       } catch (sellerEmailErr) {
-        console.error("Seller notification failed:", sellerEmailErr);
+        console.error("❌ Seller notification failed to fetch:", sellerEmailErr);
       }
 
       localStorage.removeItem('zypcart_cart');
