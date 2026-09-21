@@ -23,10 +23,10 @@ export async function POST(request: Request) {
     if (type === "welcome") {
       const { fullName, businessName, storeUrl } = data;
       html = getWelcomeEmailTemplate(fullName, businessName, storeUrl);
-      subject = `Welcome to Zypcart, ${fullName}!`;
+      subject = `Welcome to Zoopcart, ${fullName}! 🚀`;
     } else if (type === "order_notification") {
       html = getOrderNotificationEmailTemplate(data);
-      subject = `Your Order Status Update - Ref: ${data.orderId}`;
+      subject = `Order Update: ${data.productName} - Zoopcart`;
     } else {
       return NextResponse.json({ error: "Invalid email type" }, { status: 400 });
     }
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "ZoopCart <noreply@zoopcart.com>",
+        from: "Zoopcart <welcome@zoopcart.com>",
         to: [email],
         subject,
         html,
