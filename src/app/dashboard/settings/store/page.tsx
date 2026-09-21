@@ -17,6 +17,8 @@ export default function StoreSettingsPage() {
     city: "",
     description: "",
     email: "",
+    whatsapp_number: "",
+    whatsapp_country_code: "91",
     orderPrefix: "FAI",
     freeShipping: false,
     shippingCharge: "500",
@@ -108,6 +110,8 @@ export default function StoreSettingsPage() {
     const newExtraSettings = {
       ...extraSettings,
       email: business.email,
+      whatsapp_number: business.whatsapp_number,
+      whatsapp_country_code: business.whatsapp_country_code,
       orderPrefix: business.orderPrefix,
       freeShipping: business.freeShipping,
       shippingCharge: business.shippingCharge,
@@ -191,6 +195,13 @@ export default function StoreSettingsPage() {
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Email</label>
                 <Input value={business.email} onChange={(e: any) => setBusiness({...business, email: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-slate-900 mb-1.5 block">WhatsApp Number</label>
+                <div className="flex gap-2">
+                  <Input value={business.whatsapp_country_code} onChange={(e: any) => setBusiness({...business, whatsapp_country_code: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900 w-20" placeholder="+91" />
+                  <Input value={business.whatsapp_number} onChange={(e: any) => setBusiness({...business, whatsapp_number: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900 flex-1" placeholder="Mobile number" />
+                </div>
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Location</label>

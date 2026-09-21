@@ -69,7 +69,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
       notes: `${formData.email ? `Email: ${formData.email} | ` : ""}Total: ₹${finalPrice} (Product: ₹${productTotal} + Delivery: ₹${deliveryType === "paid" ? deliveryCharge : 0})`,
       delivery_location: formData.delivery_location,
       tracking_token: token,
-      status: 'new'
+      status: 'pending'
     }]);
 
     // Send high-quality branded email notification instantly to the buyer if email is provided

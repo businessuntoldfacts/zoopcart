@@ -6,6 +6,7 @@ import { Heart, ArrowLeft, Share2, ShieldCheck, Zap, ShoppingCart, Loader2 } fro
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ClientTracker from "@/components/ClientTracker";
+import ReviewSystem from "@/components/ReviewSystem";
 import { motion } from "framer-motion";
 
 export default function ProductDetailPage({ params }: { params: { username: string, productSlug: string } }) {
@@ -179,6 +180,16 @@ export default function ProductDetailPage({ params }: { params: { username: stri
             </div>
           </div>
 
+          {/* Details */}
+          <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-100 mb-6">
+             <div className="flex items-center gap-2 mb-3">
+                <h3 className="font-extrabold text-xs text-slate-400 uppercase tracking-widest">Product Details</h3>
+             </div>
+             <p className="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-wrap">
+               {cleanDescription || "No description provided for this product."}
+             </p>
+          </div>
+
           {/* Video Section */}
           {videoLink && (
             <div className="mb-8">
@@ -209,18 +220,8 @@ export default function ProductDetailPage({ params }: { params: { username: stri
             </div>
           )}
 
-          {/* Details */}
-          <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-100 mb-6">
-             <div className="flex items-center gap-2 mb-3">
-                <h3 className="font-extrabold text-xs text-slate-400 uppercase tracking-widest">Product Details</h3>
-             </div>
-             <p className="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-wrap">
-               {cleanDescription || "No description provided for this product."}
-             </p>
-          </div>
-
           {/* Trust Section */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 mb-12">
              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
                 <ShieldCheck className="w-6 h-6 text-[#111111] mb-2" />
                 <h4 className="text-[10px] font-extrabold text-slate-900 uppercase mb-0.5">Secure</h4>
@@ -232,6 +233,9 @@ export default function ProductDetailPage({ params }: { params: { username: stri
                 <p className="text-[9px] font-bold text-slate-400 uppercase">24/7 Help</p>
              </div>
           </div>
+
+          {/* Review System */}
+          <ReviewSystem businessId={business.id} productId={product.id} />
         </motion.div>
       </div>
 

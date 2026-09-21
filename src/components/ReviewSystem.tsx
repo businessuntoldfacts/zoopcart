@@ -128,7 +128,7 @@ export default function ReviewSystem({ businessId, productId }: { businessId: st
                 </div>
               </div>
             </div>
-            <p className="text-sm font-medium text-slate-600 leading-relaxed">{r.address}</p>
+            <p className="text-sm font-medium text-slate-600 leading-relaxed">{r.notes}</p>
           </div>
         ))}
       </div>

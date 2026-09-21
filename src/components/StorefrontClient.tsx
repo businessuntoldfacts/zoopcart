@@ -4,6 +4,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck } from "lucide-react";
 import StoreBottomNav from "@/components/StoreBottomNav";
+import ReviewSystem from "@/components/ReviewSystem";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -71,6 +72,9 @@ export default function StorefrontClient({ business, products }: { business: any
       return "Active Seller";
     }
   };
+
+  const whatsappNumber = business.whatsapp_number || (business.instagram_profile_url?.startsWith('{') ? JSON.parse(business.instagram_profile_url).whatsapp_number : '');
+  const whatsappCountryCode = business.whatsapp_country_code || (business.instagram_profile_url?.startsWith('{') ? JSON.parse(business.instagram_profile_url).whatsapp_country_code : '91');
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-24 relative overflow-x-hidden">
@@ -170,15 +174,17 @@ export default function StorefrontClient({ business, products }: { business: any
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 mt-5">
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                onClick={() => window.open(`https://wa.me/${business.whatsapp_country_code || '91'}${business.whatsapp_number}`, '_blank')}
-                className="flex-1 py-3 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 hover:bg-green-600 transition-colors"
-              >
-                <MessageCircle className="w-4 h-4" /> Chat with Seller
-                </motion.button>
-            </div>
+            {whatsappNumber && (
+              <div className="flex gap-3 mt-5">
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => window.open(`https://wa.me/${whatsappCountryCode}${whatsappNumber}`, '_blank')}
+                  className="flex-1 py-3 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 hover:bg-green-600 transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4" /> Chat with Seller
+                  </motion.button>
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -362,22 +368,8 @@ export default function StorefrontClient({ business, products }: { business: any
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
-                className="bg-white rounded-3xl p-6 border border-slate-100 shadow-md text-center"
               >
-                <h3 className="font-extrabold text-lg text-slate-900 mb-2">Customer Reviews</h3>
-                <div className="flex justify-center items-center gap-2 mb-1">
-                  <Star className="w-8 h-8 fill-yellow-400 text-yellow-400" />
-                  <span className="text-3xl font-extrabold text-slate-900">5.0</span>
-                </div>
-                <p className="text-xs font-bold text-slate-400">Based on 0 reviews</p>
-
-                <div className="mt-8 pt-8 border-t border-slate-100 flex flex-col items-center">
-                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                    <MessageCircle className="w-8 h-8" />
-                  </div>
-                  <h4 className="font-extrabold text-slate-900">No reviews yet.</h4>
-                  <p className="text-sm font-medium text-slate-500 mt-1 max-w-[200px]">Be the first to review this store and help other customers.</p>
-                </div>
+                <ReviewSystem businessId={business.id} />
               </motion.div>
             )}
           </AnimatePresence>

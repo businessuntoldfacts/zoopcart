@@ -69,24 +69,28 @@ export default function CheckoutPage({ params }: { params: { username: string } 
 
     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
     const total = calculateTotal();
+    const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+    const firstProductId = cartItems.length > 0 ? cartItems[0].id : null;
 
     // Create order entries for each product or one summary order
     // For now, we'll create one summary order with item details in notes
     const itemDetails = cartItems.map(item => {
       const p = products.find(prod => prod.id === item.id);
-      return `${p?.name} (x${item.quantity}) - ₹${(p?.price || 0) * item.quantity}`;
+      return `${p?.name} (x${item.quantity})`;
     }).join(", ");
 
     const { error } = await supabase.from('orders').insert([{
       business_id: business.id,
+      product_id: firstProductId,
       customer_name: formData.name,
       customer_phone: formData.phone,
-      customer_email: formData.email, // Save email in its own column
+      customer_email: formData.email,
+      quantity: totalQuantity,
       budget: total,
-      notes: `Cart Items: ${itemDetails}`,
+      notes: `Cart Items: ${itemDetails}. ${formData.delivery_location}`,
       delivery_location: formData.delivery_location,
       tracking_token: token,
-      status: 'new'
+      status: 'pending'
     }]);
 
     if (!error) {
