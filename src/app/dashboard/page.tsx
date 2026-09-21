@@ -17,10 +17,11 @@ export default function DashboardOverview() {
   const userName = user?.user_metadata?.full_name?.split(' ')[0] || "Seller";
   const businessSlug = business?.username || "";
 
-  // Process analytics from cached orders
-  const storeViews = orders.filter((o: any) => o.status === 'store_view').length;
-  const productViews = orders.filter((o: any) => o.status === 'product_view').length;
-  const realOrders = orders.filter((o: any) => !['store_view', 'product_view', 'review'].includes(o.status));
+  // Process analytics safely
+  const safeOrders = Array.isArray(orders) ? orders : [];
+  const storeViews = safeOrders.filter((o: any) => o?.status === 'store_view').length;
+  const productViews = safeOrders.filter((o: any) => o?.status === 'product_view').length;
+  const realOrders = safeOrders.filter((o: any) => o?.status && !['store_view', 'product_view', 'review'].includes(o.status));
   
   const totalOrdersCount = realOrders.length;
   const conversionRate = storeViews > 0 ? ((totalOrdersCount / storeViews) * 100).toFixed(1) : "0";
