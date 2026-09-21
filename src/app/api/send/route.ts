@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Zypcart <onboarding@resend.dev>", // Or verified domain once configured
+        from: "ZoopCart <noreply@zoopcart.com>",
         to: [email],
         subject,
         html,

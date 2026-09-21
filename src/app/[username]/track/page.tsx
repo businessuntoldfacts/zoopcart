@@ -190,7 +190,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               <div className="absolute left-9 top-8 bottom-12 w-0.5 bg-slate-100"></div>
               
               <div className="flex gap-4 mb-8 relative z-10">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 1 ? 'bg-[#111111] shadow-sm shadow-black/20' : 'bg-slate-100 border-2 border-white'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 1 ? 'bg-orange-500 shadow-sm shadow-orange-500/20' : 'bg-slate-100 border-2 border-white'}`}>
                    {currentStep >= 1 && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
                 </div>
                 <div>
@@ -200,7 +200,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               </div>
 
               <div className="flex gap-4 mb-8 relative z-10">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 2 ? 'bg-[#111111] shadow-sm shadow-black/20' : 'bg-slate-100 border-2 border-white'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 2 ? 'bg-blue-600 shadow-sm shadow-blue-600/20' : 'bg-slate-100 border-2 border-white'}`}>
                    {currentStep >= 2 && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
                 </div>
                 <div>
@@ -210,7 +210,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               </div>
 
               <div className="flex gap-4 mb-8 relative z-10">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 3 ? 'bg-[#111111] shadow-sm shadow-black/20' : 'bg-slate-100 border-2 border-white'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 3 ? 'bg-indigo-600 shadow-sm shadow-indigo-600/20' : 'bg-slate-100 border-2 border-white'}`}>
                    {currentStep >= 3 && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
                 </div>
                 <div>
@@ -220,7 +220,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               </div>
 
               <div className="flex gap-4 relative z-10">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 4 ? 'bg-[#111111] shadow-sm shadow-black/20' : 'bg-slate-100 border-2 border-white'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${currentStep >= 4 ? 'bg-emerald-600 shadow-sm shadow-emerald-600/20' : 'bg-slate-100 border-2 border-white'}`}>
                    {currentStep >= 4 && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
                 </div>
                 <div>

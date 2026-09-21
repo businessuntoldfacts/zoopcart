@@ -170,11 +170,13 @@ export default function CartPage({ params }: { params: { username: string } }) {
               </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50 p-4 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.06)]">
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-[100] p-4 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
               <div className="max-w-md mx-auto">
-                <button className="w-full h-14 rounded-2xl bg-[#111111] hover:bg-black text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-black/20 transition-all active:scale-[0.98]">
-                  Checkout Now
-                </button>
+                <Link href={`/${business.username}/checkout`}>
+                  <button className="w-full h-14 rounded-2xl bg-[#111111] hover:bg-black text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-black/20 transition-all active:scale-[0.98]">
+                    Checkout Now
+                  </button>
+                </Link>
               </div>
             </div>
           </>

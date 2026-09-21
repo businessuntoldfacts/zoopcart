@@ -89,6 +89,18 @@ export default function ProductDetailPage({ params }: { params: { username: stri
   }
 
   let cleanDescription = product.description || "";
+  let videoLink = "";
+  if (cleanDescription.includes('---ZYP_DELIVERY:')) {
+    const parts = cleanDescription.split('---ZYP_DELIVERY:');
+    cleanDescription = parts[0].trim();
+    try {
+      const meta = JSON.parse(parts[1].split('---')[0]);
+      videoLink = meta.video || "";
+    } catch(e) {}
+  }
+
+  const isYouTube = videoLink.includes('youtube.com') || videoLink.includes('youtu.be');
+  const isInstagram = videoLink.includes('instagram.com');
 
   return (
     <div className="min-h-screen bg-white font-sans pb-32 relative overflow-x-hidden">
@@ -166,6 +178,36 @@ export default function ProductDetailPage({ params }: { params: { username: stri
               FAST SHIPPING
             </div>
           </div>
+
+          {/* Video Section */}
+          {videoLink && (
+            <div className="mb-8">
+               <div className="flex items-center gap-2 mb-3">
+                  <h3 className="font-extrabold text-xs text-slate-400 uppercase tracking-widest">Product Video</h3>
+               </div>
+               <a
+                 href={videoLink}
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className={`flex items-center justify-center gap-3 w-full p-4 rounded-2xl border-2 transition-all active:scale-[0.98] ${
+                   isYouTube ? 'bg-red-50 border-red-100 text-red-600 hover:bg-red-100' :
+                   isInstagram ? 'bg-pink-50 border-pink-100 text-pink-600 hover:bg-pink-100' :
+                   'bg-slate-50 border-slate-100 text-slate-900 hover:bg-slate-100'
+                 }`}
+               >
+                 {isYouTube ? (
+                   <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                 ) : isInstagram ? (
+                   <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.245 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.063 1.366-.333 2.633-1.308 3.608-.975.975-2.242 1.245-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.245-2.242-1.308-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.245 3.608-1.308 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-1.503.069-2.993.368-4.145 1.52-1.152 1.152-1.451 2.642-1.52 4.145-.058 1.281-.072 1.689-.072 4.948s.014 3.667.072 4.947c.069 1.503.368 2.993 1.52 4.145 1.152 1.152 2.642 1.451 4.145 1.52 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c1.503-.069 2.993-.368 4.145-1.52 1.152-1.152 1.451-2.642 1.52-4.145.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.069-1.503-.368-2.993-1.52-4.145-1.152-1.152-2.642-1.451-4.145-1.52-1.281-.058-1.689-.072-4.948-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                 ) : (
+                   <Zap className="w-6 h-6" />
+                 )}
+                 <span className="font-extrabold text-sm uppercase tracking-wide">
+                   {isYouTube ? "Watch on YouTube" : isInstagram ? "Watch on Instagram" : "Watch Product Video"}
+                 </span>
+               </a>
+            </div>
+          )}
 
           {/* Details */}
           <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-100 mb-6">

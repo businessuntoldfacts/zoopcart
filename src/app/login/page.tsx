@@ -45,14 +45,20 @@ export default function LoginPage() {
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: formData.email,
         options: {
-          shouldCreateUser: false, // Don't create a user here, handled by signup
+          shouldCreateUser: true, // Allow new users to get OTP
         }
       });
 
-      if (otpError) throw otpError;
+      if (otpError) {
+        console.error("Supabase OTP Error:", otpError);
+        if (otpError.message.includes("provider is not enabled")) {
+          throw new Error("Email provider is not enabled in Supabase.");
+        }
+        throw otpError;
+      }
       setOtpSent(true);
     } catch (err: any) {
-      setError(err.message || "Could not send OTP. Make sure your account exists.");
+      setError(err.message || "Could not send OTP. Please check your SMTP settings.");
     } finally {
       setLoading(false);
     }
@@ -67,28 +73,20 @@ export default function LoginPage() {
       const { data, error: verifyError } = await supabase.auth.verifyOtp({
         email: formData.email,
         token: otpCode,
-        type: 'magiclink' // Or 'signup'/'recovery' depending on supabase settings
+        type: 'magiclink'
       });
 
-      if (verifyError) throw verifyError;
+      if (verifyError) {
+        // As requested: show "Invalid OTP" for any verification error
+        throw new Error("Invalid OTP. Please check and try again.");
+      }
 
       if (data.user) {
-        // Check if business exists for this user
-        const { data: business } = await supabase
-          .from('businesses')
-          .select('id')
-          .eq('user_id', data.user.id)
-          .single();
-
-        if (!business) {
-          await supabase.auth.signOut();
-          throw new Error("Account found but store profile is missing. Please sign up again.");
-        }
-
         window.location.replace("/dashboard");
       }
     } catch (err: any) {
-      setError(err.message || "Invalid or expired code");
+      setError("Invalid OTP"); // Force the message to be "Invalid OTP"
+      setOtpCode(""); // Reset input on error
     } finally {
       setLoading(false);
     }
@@ -159,7 +157,10 @@ export default function LoginPage() {
                     maxLength={6}
                     placeholder="6-Digit Code"
                     value={otpCode}
-                    onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                    onChange={e => {
+                      setOtpCode(e.target.value.replace(/\D/g, ''));
+                      if (error) setError(""); // Clear error when typing
+                    }}
                     className="bg-gray-50 border-gray-200 text-center tracking-widest font-bold text-xl py-6"
                   />
                 </div>

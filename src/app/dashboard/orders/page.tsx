@@ -40,6 +40,7 @@ export default function OrdersPage() {
     const currentOrder = orders.find(o => o.id === orderId);
     if (currentOrder && currentOrder.customer_email) {
       try {
+        const businessName = currentOrder.businesses?.name || "Zoopcart Store";
         await fetch("/api/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -49,14 +50,12 @@ export default function OrdersPage() {
             orderId: `ORD-${currentOrder.tracking_token?.substring(0, 4) || orderId.substring(0, 4)}`,
             customerName: currentOrder.customer_name,
             customerPhone: currentOrder.customer_phone,
-            productName: currentOrder.products?.name || "Product",
-            price: currentOrder.products?.price || 0,
-            quantity: currentOrder.quantity || 1,
+            productName: currentOrder.products?.name || "Ordered Items",
+            price: currentOrder.budget || 0,
+            quantity: 1,
             deliveryLocation: currentOrder.delivery_location || "Not specified",
-            trackingLink: `${window.location.origin}/order/${currentOrder.tracking_token}`,
-            status: newStatus,
-            trackingNumber,
-            carrierName
+            trackingLink: `${window.location.origin}/${currentOrder.businesses?.username || 'track'}/track?token=${currentOrder.tracking_token}`,
+            status: newStatus
           })
         });
       } catch (err) {
@@ -97,9 +96,10 @@ export default function OrdersPage() {
               }}
             >
               <option value="All Status">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
+              <option value="pending">Request Submitted</option>
+              <option value="accepted">Accepted</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
             </select>
           </div>
           
@@ -114,19 +114,31 @@ export default function OrdersPage() {
                     onClick={() => setSelectedOrder(order)}
                     className={`p-4 cursor-pointer transition-colors hover:bg-slate-100 ${selectedOrder?.id === order.id ? 'bg-blue-50/50' : ''}`}
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-[11px] font-bold text-zyp-textMuted font-mono uppercase">ORD-{order.tracking_token.substring(0,4)}</span>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                        order.status === 'pending' || order.status === 'new' ? 'bg-yellow-100 text-yellow-700' :
-                        order.status === 'delivered' || order.status === 'completed' ? 'bg-green-100 text-green-700' :
-                        order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
-                        'bg-purple-100 text-purple-700'
-                      }`}>
-                        {order.status.replace('_', ' ')}
-                      </span>
+                    <div className="flex gap-4">
+                      <div className="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
+                        {order.products?.image ? (
+                          <img src={order.products.image} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-300">📦</div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="text-[10px] font-bold text-slate-400 font-mono uppercase">ORD-{order.tracking_token?.substring(0,4)}</span>
+                          <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+                            order.status === 'pending' || order.status === 'new' ? 'bg-orange-100 text-orange-700' :
+                            order.status === 'accepted' ? 'bg-blue-100 text-blue-700' :
+                            order.status === 'in_progress' ? 'bg-indigo-100 text-indigo-700' :
+                            order.status === 'completed' || order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
+                            'bg-slate-100 text-slate-700'
+                          }`}>
+                            {order.status === 'pending' || order.status === 'new' ? 'NEW' : order.status.replace('_', ' ')}
+                          </span>
+                        </div>
+                        <div className="text-sm font-extrabold text-[#0F172A] truncate">{order.customer_name}</div>
+                        <div className="text-xs font-medium text-slate-500 truncate">{order.products?.name}</div>
+                      </div>
                     </div>
-                    <div className="text-sm font-extrabold text-[#0F172A] mb-1">{order.customer_name}</div>
-                    <div className="text-xs font-medium text-slate-500 truncate">{order.products?.name}</div>
                   </div>
                 ))}
               </div>
@@ -256,24 +268,30 @@ export default function OrdersPage() {
             {/* Status Update Actions */}
             <div>
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Update Order Status</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <button 
                   onClick={() => updateOrderStatus(selectedOrder.id, 'pending', trackingNumber, carrierName)}
-                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'pending' || selectedOrder.status === 'new' ? 'bg-yellow-500 text-white border-yellow-500 shadow-md' : 'bg-white text-yellow-600 border-yellow-200 hover:bg-yellow-50'}`}
+                  className={`py-3.5 rounded-2xl text-xs font-extrabold border transition-all ${selectedOrder.status === 'pending' || selectedOrder.status === 'new' ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-500/20' : 'bg-white text-orange-600 border-orange-100 hover:bg-orange-50'}`}
                 >
-                  Pending
+                  Request Submitted
                 </button>
                 <button 
-                  onClick={() => updateOrderStatus(selectedOrder.id, 'shipped', trackingNumber, carrierName)}
-                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'shipped' ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50'}`}
+                  onClick={() => updateOrderStatus(selectedOrder.id, 'accepted', trackingNumber, carrierName)}
+                  className={`py-3.5 rounded-2xl text-xs font-extrabold border transition-all ${selectedOrder.status === 'accepted' ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20' : 'bg-white text-blue-600 border-blue-100 hover:bg-blue-50'}`}
                 >
-                  Shipped
+                  Accepted
                 </button>
                 <button 
-                  onClick={() => updateOrderStatus(selectedOrder.id, 'delivered', trackingNumber, carrierName)}
-                  className={`py-3 rounded-xl text-sm font-bold border transition-colors ${selectedOrder.status === 'delivered' || selectedOrder.status === 'completed' ? 'bg-green-600 text-white border-green-600 shadow-md' : 'bg-white text-green-600 border-green-200 hover:bg-green-50'}`}
+                  onClick={() => updateOrderStatus(selectedOrder.id, 'in_progress', trackingNumber, carrierName)}
+                  className={`py-3.5 rounded-2xl text-xs font-extrabold border transition-all ${selectedOrder.status === 'in_progress' ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20' : 'bg-white text-indigo-600 border-indigo-100 hover:bg-indigo-50'}`}
                 >
-                  Delivered
+                  In Progress
+                </button>
+                <button
+                  onClick={() => updateOrderStatus(selectedOrder.id, 'completed', trackingNumber, carrierName)}
+                  className={`py-3.5 rounded-2xl text-xs font-extrabold border transition-all ${selectedOrder.status === 'completed' || selectedOrder.status === 'delivered' ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/20' : 'bg-white text-emerald-600 border-emerald-100 hover:bg-emerald-50'}`}
+                >
+                  Completed
                 </button>
               </div>
             </div>

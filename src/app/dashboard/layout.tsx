@@ -74,9 +74,11 @@ export default function DashboardLayout({
     );
   }
 
+  const newOrdersCount = cachedOrders?.filter((o: any) => o.status === 'new' || o.status === 'pending').length;
+
   const navigation = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag, badge: undefined },
+    { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag, badge: newOrdersCount > 0 ? newOrdersCount : undefined },
     { name: "Products", href: "/dashboard/products", icon: Store },
     { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },
     { name: "More", href: "/dashboard/settings", icon: Settings },
