@@ -78,7 +78,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
       // 1. Send to Buyer
       if (formData.email) {
         try {
-          await fetch("/api/send", {
+          const buyerRes = await fetch("/api/send", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -94,8 +94,10 @@ export default function RequestForm({ params }: { params: { username: string, pr
               trackingLink: `${window.location.origin}/${business.username}/track?token=${token}`
             })
           });
+          const buyerResult = await buyerRes.json();
+          if (!buyerRes.ok) console.error("Buyer Email Error:", buyerResult);
         } catch (emailErr) {
-          console.error("Order notification email failed to fire synchronously:", emailErr);
+          console.error("Order notification email failed:", emailErr);
         }
       }
 
@@ -110,7 +112,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
         } catch (e) {}
 
         if (sellerEmail) {
-          await fetch("/api/send", {
+          const sellerRes = await fetch("/api/send", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -126,6 +128,8 @@ export default function RequestForm({ params }: { params: { username: string, pr
               notes: `Total: ₹${finalPrice} (Product: ₹${productTotal} + Delivery: ₹${deliveryType === "paid" ? deliveryCharge : 0})`
             })
           });
+          const sellerResult = await sellerRes.json();
+          if (!sellerRes.ok) console.error("Seller Email Error:", sellerResult);
         }
       } catch (sellerEmailErr) {
         console.error("Seller notification failed:", sellerEmailErr);
