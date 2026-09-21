@@ -40,7 +40,7 @@ export async function POST(request: Request) {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Zoopcart <onboarding@resend.dev>",
+        from: "Zoopcart <orders@zoopcart.com>",
         to: [email],
         subject,
         html,
