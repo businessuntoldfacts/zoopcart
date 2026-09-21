@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Zoopcart <orders@zoopcart.com>",
+        from: "Zoopcart <onboarding@resend.dev>", // Default for testing if domain not verified
         to: [email],
         subject,
         html,
@@ -50,8 +50,8 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Resend API error:", errorData);
-      return NextResponse.json({ error: "Failed to send email via Resend" }, { status: 500 });
+      console.error("Resend API error detail:", JSON.stringify(errorData));
+      return NextResponse.json({ error: "Resend API Error", detail: errorData }, { status: response.status });
     }
 
     const result = await response.json();
