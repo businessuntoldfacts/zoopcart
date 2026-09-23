@@ -64,40 +64,40 @@ export default function SettingsHubPage() {
   return (
     <div className="max-w-2xl mx-auto pb-12 pt-4">
       <div className="mb-8">
-        <h2 className="text-3xl font-extrabold text-slate-900 mb-1">Settings</h2>
-        <p className="text-sm text-slate-500 font-medium">Manage your store, billing and account.</p>
+        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-1">Settings</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Manage your store, billing and account.</p>
       </div>
 
       <div className="space-y-8">
         {menuSections.map((section, idx) => (
           <div key={idx} className="space-y-3">
-            <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">{section.title}</h3>
+            <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase ml-1">{section.title}</h3>
             
-            <div className="bg-white rounded-[24px] shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div className="bg-white dark:bg-slate-800 rounded-[24px] shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
               {section.items.map((item: any, itemIdx: number) => {
                 const Icon = item.icon;
                 const isLast = itemIdx === section.items.length - 1;
                 
                 const Content = (
-                  <div className={`flex items-start gap-4 p-5 ${!isLast ? 'border-b border-slate-100' : ''} hover:bg-slate-50/50 transition-colors w-full text-left`}>
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
-                      <Icon className={`w-5 h-5 ${item.isDanger ? 'text-red-500' : 'text-slate-600'}`} />
+                  <div className={`flex items-start gap-4 p-5 ${!isLast ? 'border-b border-slate-100 dark:border-slate-700' : ''} hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors w-full text-left`}>
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-600">
+                      <Icon className={`w-5 h-5 ${item.isDanger ? 'text-red-500' : 'text-slate-600 dark:text-slate-300'}`} />
                     </div>
                     <div className="flex-1 min-w-0 pt-0.5">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className={`font-bold text-sm ${item.isDanger ? 'text-red-500' : 'text-slate-900'}`}>{item.label}</span>
+                        <span className={`font-bold text-sm ${item.isDanger ? 'text-red-500' : 'text-slate-900 dark:text-white'}`}>{item.label}</span>
                         {item.badge && (
-                          <span className="bg-slate-100 text-[#111111] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          <span className="bg-slate-100 dark:bg-slate-700 text-[#111111] dark:text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                             {item.badge}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-500 font-medium truncate">{item.description}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate">{item.description}</p>
                       
                       {item.customAction && item.customAction}
                     </div>
                     {!item.customAction && (
-                      <ChevronRight className="w-4 h-4 text-slate-400 ml-auto shrink-0 mt-2" />
+                      <ChevronRight className="w-4 h-4 text-slate-400 dark:text-slate-500 ml-auto shrink-0 mt-2" />
                     )}
                   </div>
                 );

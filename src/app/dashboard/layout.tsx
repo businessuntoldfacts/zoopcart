@@ -144,8 +144,8 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0 flex flex-col mb-16 md:mb-0 bg-slate-50">
-        <header className="h-[72px] border-b border-zyp-border flex items-center justify-between px-6 md:px-8 bg-white shrink-0 relative z-50">
+      <main className="flex-1 min-w-0 flex flex-col mb-16 md:mb-0 bg-slate-50 dark:bg-slate-900">
+        <header className="h-[72px] border-b border-zyp-border dark:border-slate-800 flex items-center justify-between px-6 md:px-8 bg-white dark:bg-slate-800 shrink-0 relative z-50">
           <div className="flex items-center md:hidden">
             <Link href="/dashboard" className="flex items-center">
               <Logo darkText={true} />
@@ -153,24 +153,24 @@ export default function DashboardLayout({
           </div>
           
           <div className="hidden md:flex items-center gap-4 flex-1">
-             <h1 className="text-xl font-bold text-slate-900 capitalize">
+             <h1 className="text-xl font-bold text-slate-900 dark:text-white capitalize">
                {navigation.find((item) => pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard"))?.name || "Dashboard"}
              </h1>
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6">
-            <button className="relative text-slate-500 hover:text-[#111111] transition-colors">
+            <button className="relative text-slate-500 dark:text-slate-400 hover:text-[#111111] dark:hover:text-white transition-colors">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-800"></span>
             </button>
-            <div className="flex items-center gap-3 border-l border-zyp-border pl-4 sm:pl-6 relative" ref={profileRef}>
+            <div className="flex items-center gap-3 border-l border-zyp-border dark:border-slate-700 pl-4 sm:pl-6 relative" ref={profileRef}>
               <div className="hidden sm:block text-right">
-                <div className="text-sm font-bold text-slate-900 leading-tight">{businessData.name}</div>
-                <div className="text-xs text-slate-500 font-medium">Seller</div>
+                <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{businessData.name}</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Seller</div>
               </div>
               <button 
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="relative w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-extrabold text-white shadow-md hover:shadow-lg transition-all ring-2 ring-white hover:ring-blue-100 group cursor-pointer overflow-hidden"
+                className="relative w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-sm font-extrabold text-white shadow-md hover:shadow-lg transition-all ring-2 ring-white dark:ring-slate-800 hover:ring-blue-100 group cursor-pointer overflow-hidden"
               >
                 {businessData.image ? (
                   <img src={businessData.image} alt={businessData.name} className="w-full h-full object-cover" />
@@ -182,15 +182,15 @@ export default function DashboardLayout({
               </button>
 
               {profileOpen && (
-                <div className="absolute top-12 right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-1 flex flex-col z-50">
-                   <Link href={businessData.username ? `/${businessData.username}` : '#'} onClick={() => setProfileOpen(false)} className="px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                <div className="absolute top-12 right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 flex flex-col z-50">
+                   <Link href={businessData.username ? `/${businessData.username}` : '#'} onClick={() => setProfileOpen(false)} className="px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2">
                      <ExternalLink className="w-4 h-4" /> View Store
                    </Link>
-                   <Link href="/dashboard/settings" onClick={() => setProfileOpen(false)} className="px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                   <Link href="/dashboard/settings" onClick={() => setProfileOpen(false)} className="px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2">
                      <Settings className="w-4 h-4" /> Settings
                    </Link>
-                   <div className="h-px bg-slate-100 my-1"></div>
-                   <button onClick={handleLogout} className="px-4 py-2 text-sm font-bold text-red-600 hover:bg-slate-50 flex items-center gap-2 text-left w-full">
+                   <div className="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
+                   <button onClick={handleLogout} className="px-4 py-2 text-sm font-bold text-red-600 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 text-left w-full">
                      <LogOut className="w-4 h-4" /> Logout
                    </button>
                 </div>
@@ -199,7 +199,7 @@ export default function DashboardLayout({
           </div>
         </header>
         
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 dark:bg-slate-900">
           <div className="max-w-[1200px] mx-auto">
             {children}
           </div>
@@ -207,7 +207,7 @@ export default function DashboardLayout({
       </main>
 
       {/* Mobile Bottom Navigation (Light theme) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-[90] pb-safe">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-[90] pb-safe">
         <div className="flex justify-around items-center h-16">
           {navigation.map((item) => {
             const isActive = pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard");
