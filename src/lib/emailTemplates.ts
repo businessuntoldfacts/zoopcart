@@ -27,13 +27,11 @@ export function getWelcomeEmailTemplate(fullName: string, businessName: string, 
           border-radius: 20px;
           overflow: hidden;
           box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-          border: 1px solid #e2e8f0;
         }
         .header {
-          background: #ffffff;
-          padding: 30px 20px;
+          background: #000000;
+          padding: 40px 20px;
           text-align: center;
-          border-bottom: 1px solid #f1f5f9;
         }
         .content {
           padding: 40px 40px 30px;
@@ -111,7 +109,7 @@ export function getWelcomeEmailTemplate(fullName: string, businessName: string, 
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://www.zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 45px; width: auto; display: inline-block; vertical-align: middle;">
+          <img src="https://zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 35px; width: auto;">
         </div>
         <div class="content">
           <h1 class="greeting">Hi ${fullName}, your store is live! 🚀</h1>
@@ -166,8 +164,8 @@ export function getSellerOrderNotificationEmailTemplate(orderData: {
       <title>New Order Received! 🛍️</title>
       <style>
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f7fa; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .header { background-color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .header { background-color: #000000; padding: 40px 20px; text-align: center; }
         .content { padding: 40px; color: #334155; line-height: 1.6; }
         h1 { font-size: 24px; font-weight: 800; color: #0F172A; margin-top: 0; margin-bottom: 8px; }
         .order-id { font-size: 14px; font-weight: 700; color: #64748B; margin-bottom: 32px; }
@@ -181,7 +179,7 @@ export function getSellerOrderNotificationEmailTemplate(orderData: {
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://www.zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 45px; width: auto; display: inline-block; vertical-align: middle;">
+          <img src="https://zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 35px; width: auto;">
         </div>
         <div class="content">
           <h1>You've got a new order! 🛍️</h1>
@@ -253,8 +251,8 @@ export function getOrderNotificationEmailTemplate(orderData: {
       <title>${statusText}</title>
       <style>
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f7fa; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .header { background-color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .header { background-color: #000000; padding: 40px 20px; text-align: center; }
         .content { padding: 40px; color: #334155; line-height: 1.6; }
         h1 { font-size: 24px; font-weight: 800; color: #0F172A; margin-top: 0; margin-bottom: 8px; }
         .order-id { font-size: 14px; font-weight: 700; color: #64748B; margin-bottom: 32px; }
@@ -268,7 +266,7 @@ export function getOrderNotificationEmailTemplate(orderData: {
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://www.zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 45px; width: auto; display: inline-block; vertical-align: middle;">
+          <img src="https://zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 35px; width: auto;">
         </div>
         <div class="content">
           <h1>${statusText}</h1>
