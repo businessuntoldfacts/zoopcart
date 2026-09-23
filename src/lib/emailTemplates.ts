@@ -1,7 +1,6 @@
 /**
- * Professional HTML Email Templates for Zoopcart Store Signups & Buyer Orders.
- * Designed to look elegant, minimalist, and beautifully responsive.
- * All crucial styles are strictly inlined to guarantee perfect rendering across all email clients (Gmail, Outlook, Yahoo).
+ * Ultra-Premium Professional HTML Email Templates for Zoopcart.
+ * Dark Mode Theme with White Logo Box - Designed for Maximum Impact.
  */
 
 export function getWelcomeEmailTemplate(fullName: string, businessName: string, storeUrl: string) {
@@ -14,42 +13,42 @@ export function getWelcomeEmailTemplate(fullName: string, businessName: string, 
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Welcome to Zoopcart</title>
     </head>
-    <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; margin: 0; padding: 0; color: #111827;-webkit-font-smoothing:antialiased;">
-      <div style="max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f3f4f6;">
-        <!-- Header -->
-        <div style="background: #ffffff; padding: 35px 20px; text-align: center; border-bottom: 1px solid #f3f4f6;">
-          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 45px; width: auto; display: inline-block; border-radius: 6px;">
+    <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #000000; margin: 0; padding: 0; color: #ffffff; -webkit-font-smoothing: antialiased;">
+      <div style="max-width: 600px; margin: 20px auto; background: #0a0a0a; border-radius: 24px; overflow: hidden; border: 1px solid #1a1a1a;">
+        <!-- White Logo Box (Patla & Professional) -->
+        <div style="background: #ffffff; padding: 18px 20px; text-align: center; margin: 12px; border-radius: 16px;">
+          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 55px; width: auto; display: inline-block;">
         </div>
 
         <!-- Content -->
-        <div style="padding: 40px 40px 32px; line-height: 1.6;">
-          <h1 style="font-size: 26px; font-weight: 800; color: #111827; margin: 0 0 16px 0; letter-spacing: -0.03em;">Your store is live! 🚀</h1>
-          <p style="font-size: 15px; color: #4b5563; margin: 0 0 24px 0;">Hi ${fullName}, welcome to Zoopcart. Your professional digital storefront <strong>${businessName}</strong> is ready to accept orders from customers around the world.</p>
+        <div style="padding: 30px 40px 40px; line-height: 1.6;">
+          <h1 style="font-size: 28px; font-weight: 800; color: #ffffff; margin: 0 0 16px 0; letter-spacing: -0.03em;">Your store is live! 🚀</h1>
+          <p style="font-size: 16px; color: #a1a1aa; margin: 0 0 24px 0;">Hi ${fullName}, welcome to the elite circle of Zoopcart sellers. Your professional storefront <strong>${businessName}</strong> is now open for business.</p>
 
           <!-- Store Card -->
-          <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; margin: 32px 0; text-align: center;">
-            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #9ca3af; font-weight: 700; margin-bottom: 8px;">Store Address</div>
-            <a href="${storeUrl}" target="_blank" style="font-size: 18px; font-weight: 700; color: #000000; text-decoration: none; word-break: break-all;">${storeUrl}</a>
+          <div style="background: #111111; border: 1px solid #222222; border-radius: 20px; padding: 32px 24px; margin: 32px 0; text-align: center;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: #71717a; font-weight: 700; margin-bottom: 12px;">Store Link</div>
+            <a href="${storeUrl}" target="_blank" style="font-size: 20px; font-weight: 700; color: #ffffff; text-decoration: none; word-break: break-all;">${storeUrl}</a>
           </div>
 
           <!-- CTA Button -->
           <div style="text-align: center; margin: 32px 0;">
-            <a href="https://www.zoopcart.com/dashboard" target="_blank" style="display: inline-block; background: #000000; color: #ffffff !important; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">Go to Dashboard</a>
+            <a href="https://www.zoopcart.com/dashboard" target="_blank" style="display: inline-block; background: #ffffff; color: #000000 !important; padding: 18px 40px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 16px;">Manage Store</a>
           </div>
 
-          <!-- Recommended Next Steps -->
-          <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #f3f4f6;">
-            <p style="font-weight: 700; font-size: 14px; margin: 0 0 16px 0; color: #111827; text-transform: uppercase; letter-spacing: 0.05em;">Recommended next steps:</p>
-            <div style="margin-bottom: 12px; font-size: 14px; color: #4b5563;">⚡ <b>Upload products:</b> Add your first item with beautiful images.</div>
-            <div style="margin-bottom: 12px; font-size: 14px; color: #4b5563;">⚡ <b>WhatsApp configuration:</b> Enable direct buyer messaging.</div>
-            <div style="margin-bottom: 0; font-size: 14px; color: #4b5563;">⚡ <b>Share link:</b> Put your store URL in your Instagram & WhatsApp bio.</div>
+          <!-- Steps -->
+          <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #1a1a1a;">
+            <p style="font-weight: 700; font-size: 12px; margin: 0 0 16px 0; color: #71717a; text-transform: uppercase; letter-spacing: 0.1em;">Next Steps</p>
+            <div style="margin-bottom: 12px; font-size: 14px; color: #d4d4d8;">✅ List your first 5 premium products</div>
+            <div style="margin-bottom: 12px; font-size: 14px; color: #d4d4d8;">✅ Connect your WhatsApp for instant orders</div>
+            <div style="margin-bottom: 0; font-size: 14px; color: #d4d4d8;">✅ Share your link to start earning</div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div style="background: #f9fafb; padding: 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #f3f4f6;">
+        <div style="background: #000000; padding: 32px; text-align: center; font-size: 12px; color: #52525b; border-top: 1px solid #1a1a1a;">
           <p style="margin: 0 0 8px 0;">&copy; ${currentYear} Zoopcart. All rights reserved.</p>
-          <p style="margin: 0;"><a href="https://www.zoopcart.com" target="_blank" style="color: #9ca3af; text-decoration: none; font-weight: 600;">zoopcart.com</a></p>
+          <a href="https://www.zoopcart.com" target="_blank" style="color: #71717a; text-decoration: none;">zoopcart.com</a>
         </div>
       </div>
     </body>
@@ -74,50 +73,48 @@ export function getSellerOrderNotificationEmailTemplate(orderData: {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>New Order Received!</title>
+      <title>New Order!</title>
     </head>
-    <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; margin: 0; padding: 0; color: #111827;-webkit-font-smoothing:antialiased;">
-      <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f3f4f6;">
-        <!-- Header -->
-        <div style="background-color: #ffffff; padding: 35px 20px; text-align: center; border-bottom: 1px solid #f3f4f6;">
-          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 45px; width: auto; display: inline-block; border-radius: 6px;">
+    <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #000000; margin: 0; padding: 0; color: #ffffff; -webkit-font-smoothing: antialiased;">
+      <div style="max-width: 600px; margin: 20px auto; background-color: #0a0a0a; border-radius: 24px; overflow: hidden; border: 1px solid #1a1a1a;">
+        <!-- White Logo Box (Patla & Professional) -->
+        <div style="background: #ffffff; padding: 18px 20px; text-align: center; margin: 12px; border-radius: 16px;">
+          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 55px; width: auto; display: inline-block;">
         </div>
 
         <!-- Content -->
-        <div style="padding: 40px; color: #374151; line-height: 1.6;">
-          <h1 style="font-size: 26px; font-weight: 800; color: #111827; margin: 0 0 6px 0; letter-spacing: -0.02em;">New Order Received! 🛍️</h1>
-          <div style="font-size: 13px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.05em;">Order Ref: ${orderData.orderId}</div>
+        <div style="padding: 30px 40px 40px; color: #ffffff; line-height: 1.6;">
+          <h1 style="font-size: 28px; font-weight: 800; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.02em;">New Order Received! 🛍️</h1>
+          <div style="font-size: 12px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.1em;">Order ID: ${orderData.orderId}</div>
 
-          <p style="font-size: 15px; color: #4b5563; margin: 0 0 24px 0;">Great news! You have just received a new order from <strong>${orderData.customerName}</strong>.</p>
+          <p style="font-size: 16px; color: #a1a1aa; margin: 0 0 24px 0;">Congratulations! You just made a sale from <strong>${orderData.customerName}</strong>.</p>
 
-          <!-- Order Summary Grid Box -->
-          <div style="background-color: #f9fafb; border-radius: 16px; padding: 24px; border: 1px solid #f3f4f6; margin: 24px 0;">
-            <div style="font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.1em;">Product Item</div>
-            <div style="font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 16px;">${orderData.productName} <span style="color: #6b7280; font-weight: 500;">(x${orderData.quantity})</span></div>
+          <!-- Order Summary Card -->
+          <div style="background-color: #111111; border-radius: 20px; padding: 24px; border: 1px solid #222222; margin: 24px 0;">
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Item</div>
+            <div style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 20px;">${orderData.productName} <span style="color: #71717a; font-weight: 500;">(x${orderData.quantity})</span></div>
 
-            <div style="font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.1em;">Customer Details</div>
-            <div style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 16px;">${orderData.customerName} · <a href="tel:${orderData.customerPhone}" style="color: #000000; text-decoration: underline;">${orderData.customerPhone}</a></div>
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Customer Details</div>
+            <div style="font-size: 15px; font-weight: 600; color: #ffffff; margin-bottom: 20px;">${orderData.customerName} · <a href="tel:${orderData.customerPhone}" style="color: #ffffff; text-decoration: underline;">${orderData.customerPhone}</a></div>
 
-            <div style="font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.1em;">Total Amount</div>
-            <div style="font-size: 18px; font-weight: 800; color: #111827; margin-bottom: 16px;">₹${orderData.price}</div>
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Total Amount</div>
+            <div style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 20px;">₹${orderData.price}</div>
 
-            <div style="font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.1em;">Shipping Address</div>
-            <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 0;">${orderData.deliveryLocation}</div>
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Shipping Address</div>
+            <div style="font-size: 15px; font-weight: 600; color: #a1a1aa; margin-bottom: 0;">${orderData.deliveryLocation}</div>
 
             ${orderData.notes ? `
-            <div style="font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-top: 16px; margin-bottom: 4px; letter-spacing: 0.1em;">Buyer Notes</div>
-            <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 0; background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb;">${orderData.notes}</div>
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-top: 20px; margin-bottom: 6px; letter-spacing: 0.1em;">Notes</div>
+            <div style="font-size: 14px; font-weight: 500; color: #d4d4d8; background: #1a1a1a; padding: 12px; border-radius: 8px;">${orderData.notes}</div>
             ` : ''}
           </div>
 
-          <!-- Styled Button -->
           <div style="text-align: center; margin-top: 32px;">
-            <a href="https://www.zoopcart.com/dashboard/orders" target="_blank" style="display: inline-block; background-color: #000000; color: #ffffff !important; font-weight: 700; font-size: 15px; padding: 16px 32px; text-decoration: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">View Order in Dashboard</a>
+            <a href="https://www.zoopcart.com/dashboard/orders" target="_blank" style="display: inline-block; background-color: #ffffff; color: #000000 !important; font-weight: 800; font-size: 15px; padding: 18px 40px; text-decoration: none; border-radius: 14px;">Process Order</a>
           </div>
         </div>
 
-        <!-- Footer -->
-        <div style="background-color: #f9fafb; padding: 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #f3f4f6;">
+        <div style="background-color: #000000; padding: 32px; text-align: center; font-size: 12px; color: #52525b; border-top: 1px solid #1a1a1a;">
           &copy; ${currentYear} Zoopcart. All rights reserved.
         </div>
       </div>
@@ -157,42 +154,39 @@ export function getOrderNotificationEmailTemplate(orderData: {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${statusText}</title>
     </head>
-    <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; margin: 0; padding: 0; color: #111827;-webkit-font-smoothing:antialiased;">
-      <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f3f4f6;">
-        <!-- Header -->
-        <div style="background-color: #ffffff; padding: 35px 20px; text-align: center; border-bottom: 1px solid #f3f4f6;">
-          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 45px; width: auto; display: inline-block; border-radius: 6px;">
+    <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #000000; margin: 0; padding: 0; color: #ffffff; -webkit-font-smoothing: antialiased;">
+      <div style="max-width: 600px; margin: 20px auto; background-color: #0a0a0a; border-radius: 24px; overflow: hidden; border: 1px solid #1a1a1a;">
+        <!-- White Logo Box (Patla & Professional) -->
+        <div style="background: #ffffff; padding: 18px 20px; text-align: center; margin: 12px; border-radius: 16px;">
+          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 55px; width: auto; display: inline-block;">
         </div>
 
         <!-- Content -->
-        <div style="padding: 40px; color: #374151; line-height: 1.6;">
-          <h1 style="font-size: 26px; font-weight: 800; color: #111827; margin: 0 0 6px 0; letter-spacing: -0.02em;">${statusText} 🎉</h1>
-          <div style="font-size: 13px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.05em;">Order Ref: ${orderData.orderId}</div>
+        <div style="padding: 30px 40px 40px; color: #ffffff; line-height: 1.6;">
+          <h1 style="font-size: 28px; font-weight: 800; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.02em;">${statusText} 🎉</h1>
+          <div style="font-size: 12px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.1em;">Order ID: ${orderData.orderId}</div>
 
-          <p style="font-size: 15px; color: #4b5563; margin: 0 0 24px 0;">Hello ${orderData.customerName}, your order for <strong>${orderData.productName}</strong> has been successfully updated to <span style="background-color: #f3f4f6; color: #111827; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px; border: 1px solid #e5e7eb;">${orderData.status?.replace('_', ' ').toUpperCase() || 'CONFIRMED'}</span>.</p>
+          <p style="font-size: 16px; color: #a1a1aa; margin: 0 0 24px 0;">Hello ${orderData.customerName}, your order for <strong>${orderData.productName}</strong> has been updated to <span style="background-color: #222222; color: #ffffff; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; border: 1px solid #333333;">${orderData.status?.replace('_', ' ').toUpperCase() || 'CONFIRMED'}</span>.</p>
 
           <!-- Order Summary Card -->
-          <div style="background-color: #f9fafb; border-radius: 16px; padding: 24px; border: 1px solid #f3f4f6; margin: 24px 0;">
-            <div style="font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.1em;">Items Ordered</div>
-            <div style="font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 16px;">${orderData.productName} <span style="color: #6b7280; font-weight: 500;">(x${orderData.quantity || 1})</span></div>
+          <div style="background-color: #111111; border-radius: 20px; padding: 24px; border: 1px solid #222222; margin: 24px 0;">
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Items Ordered</div>
+            <div style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 20px;">${orderData.productName} <span style="color: #71717a; font-weight: 500;">(x${orderData.quantity || 1})</span></div>
 
-            <div style="font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.1em;">Delivery Address</div>
-            <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 16px;">${orderData.deliveryLocation}</div>
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Delivery Address</div>
+            <div style="font-size: 15px; font-weight: 600; color: #a1a1aa; margin-bottom: 20px;">${orderData.deliveryLocation}</div>
 
-            <div style="font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.1em;">Total Amount</div>
-            <div style="font-size: 18px; font-weight: 800; color: #111827; margin-bottom: 0;">₹${orderData.price}</div>
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Total Paid</div>
+            <div style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 0;">₹${orderData.price}</div>
           </div>
 
-          <!-- Fully Inlined Button that prevents client stripping -->
-          <div style="text-align: center; margin-top: 32px; margin-bottom: 12px;">
-            <a href="${orderData.trackingLink}" target="_blank" style="display: inline-block; background-color: #000000; color: #ffffff !important; font-weight: 700; font-size: 15px; padding: 16px 34px; text-decoration: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">Track Order Status</a>
+          <div style="text-align: center; margin-top: 32px;">
+            <a href="${orderData.trackingLink}" target="_blank" style="display: inline-block; background-color: #ffffff; color: #000000 !important; font-weight: 800; font-size: 15px; padding: 18px 40px; text-decoration: none; border-radius: 14px;">Track Status</a>
           </div>
         </div>
 
-        <!-- Footer -->
-        <div style="background-color: #f9fafb; padding: 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #f3f4f6;">
-          <p style="margin: 0 0 6px 0;">&copy; ${currentYear} Zoopcart. All rights reserved.</p>
-          <p style="margin: 0;">Thank you for shopping with us!</p>
+        <div style="background-color: #000000; padding: 32px; text-align: center; font-size: 12px; color: #52525b; border-top: 1px solid #1a1a1a;">
+          &copy; ${currentYear} Zoopcart. All rights reserved.
         </div>
       </div>
     </body>
