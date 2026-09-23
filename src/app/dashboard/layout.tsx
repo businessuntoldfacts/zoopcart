@@ -25,7 +25,13 @@ export default function DashboardLayout({
   useEffect(() => {
     const t = localStorage.getItem('zoopcart-theme') || 'light';
     setTheme(t);
-    const handleTheme = () => setTheme(localStorage.getItem('zoopcart-theme') || 'light');
+    document.documentElement.classList.toggle('dark', t === 'dark');
+
+    const handleTheme = () => {
+      const newTheme = localStorage.getItem('zoopcart-theme') || 'light';
+      setTheme(newTheme);
+      document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    };
     window.addEventListener('theme-changed', handleTheme);
 
     const handleClickOutside = (event: MouseEvent) => {
