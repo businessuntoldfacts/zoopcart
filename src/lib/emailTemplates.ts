@@ -15,58 +15,60 @@ export function getWelcomeEmailTemplate(fullName: string, businessName: string, 
       <style>
         body {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          background-color: #f4f7fa;
+          background-color: #f9fafb;
           margin: 0;
           padding: 0;
-          color: #1a1a1a;
+          color: #111827;
         }
         .container {
           max-width: 600px;
           margin: 40px auto;
           background: #ffffff;
-          border-radius: 20px;
+          border-radius: 24px;
           overflow: hidden;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+          border: 1px solid #f3f4f6;
         }
         .header {
-          background: #000000;
+          background: #ffffff;
           padding: 40px 20px;
           text-align: center;
+          border-bottom: 1px solid #f3f4f6;
         }
         .content {
-          padding: 40px 40px 30px;
+          padding: 48px 40px 32px;
           line-height: 1.6;
         }
         .greeting {
-          font-size: 24px;
+          font-size: 26px;
           font-weight: 800;
-          color: #000000;
-          margin-bottom: 20px;
-          letter-spacing: -0.02em;
+          color: #111827;
+          margin-bottom: 24px;
+          letter-spacing: -0.03em;
         }
         .text {
           font-size: 16px;
-          color: #4a5568;
-          margin-bottom: 25px;
+          color: #4b5563;
+          margin-bottom: 24px;
         }
         .store-card {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 24px;
-          margin: 30px 0;
+          background: #f9fafb;
+          border: 1px solid #e5e7eb;
+          border-radius: 20px;
+          padding: 32px 24px;
+          margin: 32px 0;
           text-align: center;
         }
         .store-name {
-          font-size: 14px;
+          font-size: 11px;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: #718096;
+          letter-spacing: 0.15em;
+          color: #9ca3af;
           font-weight: 700;
-          margin-bottom: 8px;
+          margin-bottom: 12px;
         }
         .store-url {
-          font-size: 18px;
+          font-size: 20px;
           font-weight: 700;
           color: #000000;
           text-decoration: none;
@@ -76,67 +78,64 @@ export function getWelcomeEmailTemplate(fullName: string, businessName: string, 
           display: inline-block;
           background: #000000;
           color: #ffffff !important;
-          padding: 16px 32px;
-          border-radius: 12px;
+          padding: 18px 36px;
+          border-radius: 14px;
           text-decoration: none;
           font-weight: 700;
           font-size: 16px;
           margin: 20px 0;
-          transition: transform 0.2s;
+          text-align: center;
         }
         .features {
           margin-top: 40px;
-          padding-top: 30px;
-          border-top: 1px solid #edf2f7;
+          padding-top: 32px;
+          border-top: 1px solid #f3f4f6;
         }
         .feature-item {
+          margin-bottom: 12px;
+          font-size: 14px;
+          color: #6b7280;
           display: flex;
           align-items: center;
-          margin-bottom: 15px;
-          font-size: 14px;
-          color: #4a5568;
         }
         .footer {
-          background: #f8fafc;
-          padding: 30px;
+          background: #f9fafb;
+          padding: 32px;
           text-align: center;
           font-size: 13px;
-          color: #94a3b8;
+          color: #9ca3af;
+          border-top: 1px solid #f3f4f6;
         }
-        .footer a { color: #4a5568; text-decoration: underline; }
       </style>
     </head>
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 35px; width: auto;">
+          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 50px; width: auto; display: inline-block;">
         </div>
         <div class="content">
-          <h1 class="greeting">Hi ${fullName}, your store is live! 🚀</h1>
-          <p class="text">We're thrilled to have you on board. Your professional digital storefront <strong>${businessName}</strong> is ready to start accepting orders.</p>
+          <h1 class="greeting">Your store is live! 🚀</h1>
+          <p class="text">Hi ${fullName}, welcome to Zoopcart. Your professional digital storefront <strong>${businessName}</strong> is ready for customers.</p>
 
           <div class="store-card">
-            <div class="store-name">Your Store Link</div>
+            <div class="store-name">Store Address</div>
             <a href="${storeUrl}" class="store-url">${storeUrl}</a>
           </div>
 
-          <p class="text">You can now share this link on your Instagram bio, WhatsApp status, or Facebook page to start selling instantly.</p>
-
           <div style="text-align: center;">
-            <a href="https://www.zoopcart.com/dashboard" class="cta-button">Manage Your Store</a>
+            <a href="https://www.zoopcart.com/dashboard" class="cta-button">Go to Dashboard</a>
           </div>
 
           <div class="features">
-            <p style="font-weight: 700; font-size: 14px; margin-bottom: 15px; color: #000000;">What's next?</p>
-            <div class="feature-item">✅ Add your first 5 products</div>
-            <div class="feature-item">✅ Set up your WhatsApp for customer chats</div>
-            <div class="feature-item">✅ Share your store link with your customers</div>
+            <p style="font-weight: 700; font-size: 14px; margin-bottom: 16px; color: #111827;">Recommended next steps:</p>
+            <div class="feature-item">✓ Upload your first product</div>
+            <div class="feature-item">✓ Add your WhatsApp number for orders</div>
+            <div class="feature-item">✓ Share your link on social media</div>
           </div>
         </div>
         <div class="footer">
           <p>&copy; ${currentYear} Zoopcart. All rights reserved.</p>
-          <p>You received this because you signed up for Zoopcart.<br>
-          <a href="https://www.zoopcart.com">www.zoopcart.com</a></p>
+          <p><a href="https://www.zoopcart.com" style="color: #9ca3af; text-decoration: none;">zoopcart.com</a></p>
         </div>
       </div>
     </body>
@@ -161,53 +160,53 @@ export function getSellerOrderNotificationEmailTemplate(orderData: {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>New Order Received! 🛍️</title>
+      <title>New Order Received!</title>
       <style>
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f7fa; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .header { background-color: #000000; padding: 40px 20px; text-align: center; }
-        .content { padding: 40px; color: #334155; line-height: 1.6; }
-        h1 { font-size: 24px; font-weight: 800; color: #0F172A; margin-top: 0; margin-bottom: 8px; }
-        .order-id { font-size: 14px; font-weight: 700; color: #64748B; margin-bottom: 32px; }
-        .cta-button { display: inline-block; background-color: #000000; color: #ffffff !important; font-weight: 700; font-size: 16px; padding: 16px 32px; text-decoration: none; border-radius: 12px; margin-bottom: 32px; }
-        .info-grid { background-color: #f8fafc; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; margin-top: 32px; }
-        .info-title { font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; margin-bottom: 4px; }
-        .info-value { font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 16px; }
-        .footer { background-color: #f8fafc; padding: 30px; text-align: center; font-size: 12px; color: #94A3B8; }
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f3f4f6; }
+        .header { background-color: #ffffff; padding: 35px 20px; text-align: center; border-bottom: 1px solid #f3f4f6; }
+        .content { padding: 40px; color: #374151; line-height: 1.6; }
+        h1 { font-size: 26px; font-weight: 800; color: #111827; margin: 0 0 8px 0; letter-spacing: -0.02em; }
+        .order-id { font-size: 13px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 32px; letter-spacing: 0.05em; }
+        .cta-button { display: inline-block; background-color: #000000; color: #ffffff !important; font-weight: 700; font-size: 16px; padding: 16px 32px; text-decoration: none; border-radius: 14px; margin-top: 24px; }
+        .info-grid { background-color: #f9fafb; border-radius: 20px; padding: 24px; border: 1px solid #f3f4f6; margin-top: 24px; }
+        .info-title { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.1em; }
+        .info-value { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 18px; }
+        .footer { background-color: #f9fafb; padding: 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #f3f4f6; }
       </style>
     </head>
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 35px; width: auto;">
+          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 50px; width: auto; display: inline-block;">
         </div>
         <div class="content">
-          <h1>You've got a new order! 🛍️</h1>
-          <div class="order-id">Order Ref: ${orderData.orderId}</div>
+          <h1>New Order Received! 🛍️</h1>
+          <div class="order-id">ID: ${orderData.orderId}</div>
 
-          <p>Great news! <strong>${orderData.customerName}</strong> just placed an order from your store.</p>
+          <p>Great news! You have a new sale from <strong>${orderData.customerName}</strong>.</p>
 
           <div class="info-grid">
-            <div class="info-title">Customer Details</div>
-            <div class="info-value">${orderData.customerName} (${orderData.customerPhone})</div>
-
-            <div class="info-title">Items Ordered</div>
+            <div class="info-title">Product</div>
             <div class="info-value">${orderData.productName} (x${orderData.quantity})</div>
 
-            <div class="info-title">Order Total</div>
+            <div class="info-title">Customer</div>
+            <div class="info-value">${orderData.customerName} (${orderData.customerPhone})</div>
+
+            <div class="info-title">Total Amount</div>
             <div class="info-value">₹${orderData.price}</div>
 
-            <div class="info-title">Delivery Address</div>
+            <div class="info-title">Shipping To</div>
             <div class="info-value">${orderData.deliveryLocation}</div>
 
             ${orderData.notes ? `
-            <div class="info-title">Notes</div>
+            <div class="info-title">Customer Notes</div>
             <div class="info-value">${orderData.notes}</div>
             ` : ''}
           </div>
 
-          <div style="text-align: center; margin-top: 32px;">
-            <a href="https://www.zoopcart.com/dashboard/orders" class="cta-button">View Order in Dashboard</a>
+          <div style="text-align: center;">
+            <a href="https://www.zoopcart.com/dashboard/orders" class="cta-button">View Order Details</a>
           </div>
         </div>
         <div class="footer">
@@ -231,15 +230,15 @@ export function getOrderNotificationEmailTemplate(orderData: {
   status?: string;
 }) {
   const statusMessages: Record<string, string> = {
-    'new': 'Thank you for your order!',
-    'pending': 'Thank you for your order!',
-    'accepted': 'Your order has been Accepted!',
-    'in_progress': 'Your order is now In Progress!',
-    'completed': 'Great news! Your order is Completed!',
-    'delivered': 'Your order has been Delivered!'
+    'new': 'Order Received!',
+    'pending': 'Order Received!',
+    'accepted': 'Order Accepted!',
+    'in_progress': 'Order Processing!',
+    'completed': 'Order Completed!',
+    'delivered': 'Order Delivered!'
   };
 
-  const statusText = statusMessages[orderData.status || 'new'] || 'Order Status Update';
+  const statusText = statusMessages[orderData.status || 'new'] || 'Order Update';
   const currentYear = new Date().getFullYear();
 
   return `
@@ -250,39 +249,39 @@ export function getOrderNotificationEmailTemplate(orderData: {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${statusText}</title>
       <style>
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f7fa; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .header { background-color: #000000; padding: 40px 20px; text-align: center; }
-        .content { padding: 40px; color: #334155; line-height: 1.6; }
-        h1 { font-size: 24px; font-weight: 800; color: #0F172A; margin-top: 0; margin-bottom: 8px; }
-        .order-id { font-size: 14px; font-weight: 700; color: #64748B; margin-bottom: 32px; }
-        .cta-button { display: inline-block; background-color: #000000; color: #ffffff !important; font-weight: 700; font-size: 16px; padding: 16px 32px; text-decoration: none; border-radius: 12px; margin-bottom: 32px; }
-        .info-grid { background-color: #f8fafc; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; margin-top: 32px; }
-        .info-title { font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; margin-bottom: 4px; }
-        .info-value { font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 16px; }
-        .footer { background-color: #f8fafc; padding: 30px; text-align: center; font-size: 12px; color: #94A3B8; }
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f3f4f6; }
+        .header { background-color: #ffffff; padding: 35px 20px; text-align: center; border-bottom: 1px solid #f3f4f6; }
+        .content { padding: 40px; color: #374151; line-height: 1.6; }
+        h1 { font-size: 26px; font-weight: 800; color: #111827; margin: 0 0 8px 0; letter-spacing: -0.02em; }
+        .order-id { font-size: 13px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 32px; letter-spacing: 0.05em; }
+        .cta-button { display: inline-block; background-color: #000000; color: #ffffff !important; font-weight: 700; font-size: 16px; padding: 18px 36px; text-decoration: none; border-radius: 14px; margin-top: 24px; }
+        .info-grid { background-color: #f9fafb; border-radius: 20px; padding: 24px; border: 1px solid #f3f4f6; margin-top: 24px; }
+        .info-title { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.1em; }
+        .info-value { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 18px; }
+        .footer { background-color: #f9fafb; padding: 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #f3f4f6; }
       </style>
     </head>
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://zoopcart.com/logo.jpg" alt="Zoopcart" style="height: 35px; width: auto;">
+          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 50px; width: auto; display: inline-block;">
         </div>
         <div class="content">
           <h1>${statusText}</h1>
-          <div class="order-id">Order Ref: ${orderData.orderId}</div>
+          <div class="order-id">Ref: ${orderData.orderId}</div>
 
-          <p>Hello ${orderData.customerName}, your order for <strong>${orderData.productName}</strong> has been updated to <b>${orderData.status?.replace('_', ' ').toUpperCase() || 'SUBMITTED'}</b>.</p>
+          <p>Hi ${orderData.customerName}, your order for <strong>${orderData.productName}</strong> has been updated to <b>${orderData.status?.replace('_', ' ').toUpperCase() || 'CONFIRMED'}</b>.</p>
 
           <div class="info-grid">
             <div class="info-title">Delivery Address</div>
             <div class="info-value">${orderData.deliveryLocation}</div>
 
-            <div class="info-title">Order Total</div>
+            <div class="info-title">Total Amount</div>
             <div class="info-value">₹${orderData.price}</div>
           </div>
 
-          <div style="text-align: center; margin-top: 32px;">
+          <div style="text-align: center;">
             <a href="${orderData.trackingLink}" class="cta-button">Track Order Status</a>
           </div>
         </div>
