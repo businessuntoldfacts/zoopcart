@@ -17,7 +17,12 @@ export default function SettingsHubPage() {
 
   const [appearance, setAppearance] = useState("light");
   useEffect(() => { setAppearance(localStorage.getItem("zoopcart-theme") || "light") }, []);
-  const changeTheme = (t: string) => { setAppearance(t); localStorage.setItem("zoopcart-theme", t); window.dispatchEvent(new Event("theme-changed")); };
+  const changeTheme = (t: string) => {
+    setAppearance(t);
+    localStorage.setItem("zoopcart-theme", t);
+    document.documentElement.classList.toggle('dark', t === 'dark');
+    window.dispatchEvent(new Event("theme-changed"));
+  };
 
   const menuSections: any[] = [
     {
@@ -31,7 +36,6 @@ export default function SettingsHubPage() {
       items: [
         { icon: Store, label: "Store Settings", description: "Name, description and shipping", href: "/dashboard/settings/store" },
         { icon: Palette, label: "Website Theme", description: "Choose theme and brand colour", href: "/dashboard/settings/theme" },
-        { icon: Wallet, label: "Payment Details", description: "UPI or Razorpay checkout", href: "/dashboard/settings/payment" },
         ]
     },
     {
