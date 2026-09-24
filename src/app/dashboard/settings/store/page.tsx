@@ -209,11 +209,10 @@ export default function StoreSettingsPage() {
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Description</label>
-                <textarea value={business.description} onChange={(e: any) => setBusiness({...business, description: e.target.value})} className="w-full bg-slate-50 border border-slate-200 p-3 h-24 rounded-xl text-slate-900 resize-none text-sm outline-none focus:border-[#111111]" placeholder="Shown on your storefront. What you make, and for whom." />
-                <p className="text-xs text-slate-500 mt-2">Shown on your storefront. What you make, and for whom.</p>
+                <textarea value={business.description} onChange={(e: any) => setBusiness({...business, description: e.target.value})} className="w-full bg-slate-50 border border-slate-200 p-3 h-24 rounded-xl text-slate-900 resize-none text-sm outline-none focus:border-[#111111]" placeholder="Write a short bio about your store..." />
               </div>
               <div className="pt-2">
-                <p className="text-sm font-medium text-slate-600">Your storefront: <span className="font-extrabold text-[#111111]">{business.username}.zoopcart.com</span></p>
+                <p className="text-sm font-medium text-slate-600">Your storefront: <span className="font-extrabold text-[#111111]">zoopcart.com/{business.username}</span></p>
               </div>
             </div>
           </div>
