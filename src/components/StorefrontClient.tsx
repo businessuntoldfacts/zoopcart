@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck, MapPin } from "lucide-react";
+import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck, MapPin, LayoutGrid } from "lucide-react";
 import StoreBottomNav from "@/components/StoreBottomNav";
 import ReviewSystem from "@/components/ReviewSystem";
 import { useRouter } from "next/navigation";
@@ -35,16 +35,16 @@ export default function StorefrontClient({ business, products, stats }: { busine
     window.dispatchEvent(new Event('cart-updated'));
   };
 
-  let theme = 'light';
-  if (business?.instagram_profile_url) {
+  const extraSettings = useMemo(() => {
     try {
-      if (business.instagram_profile_url.startsWith('{')) {
-        theme = JSON.parse(business.instagram_profile_url).theme || 'light';
-      } else {
-        theme = business.instagram_profile_url;
+      if (business?.instagram_profile_url?.startsWith('{')) {
+        return JSON.parse(business.instagram_profile_url);
       }
-    } catch(e) {}
-  }
+    } catch (e) {}
+    return {};
+  }, [business?.instagram_profile_url]);
+
+  const theme = extraSettings.theme || (business?.instagram_profile_url && !business.instagram_profile_url.startsWith('{') ? business.instagram_profile_url : 'light');
 
   const getHeroGradient = () => {
     if (theme === 'dark') return 'bg-gradient-to-br from-slate-900 via-slate-900 to-black';
@@ -73,16 +73,9 @@ export default function StorefrontClient({ business, products, stats }: { busine
     }
   };
 
-  const whatsappNumber = business.whatsapp_number || (business.instagram_profile_url?.startsWith('{') ? JSON.parse(business.instagram_profile_url).whatsapp_number : '');
-  const whatsappCountryCode = business.whatsapp_country_code || (business.instagram_profile_url?.startsWith('{') ? JSON.parse(business.instagram_profile_url).whatsapp_country_code : '91');
-
-  let instaFollowers = '';
-  try {
-    if (business.instagram_profile_url?.startsWith('{')) {
-      const parsed = JSON.parse(business.instagram_profile_url);
-      instaFollowers = parsed.insta_followers || '';
-    }
-  } catch (e) {}
+  const whatsappNumber = business.whatsapp_number || extraSettings.whatsapp_number || '';
+  const whatsappCountryCode = business.whatsapp_country_code || extraSettings.whatsapp_country_code || '91';
+  const instaFollowers = extraSettings.insta_followers || '';
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-24 relative overflow-x-hidden">
@@ -180,25 +173,25 @@ export default function StorefrontClient({ business, products, stats }: { busine
             </div>
 
             {/* Stats Row */}
-            <div className="flex justify-between items-center px-4 mt-6 bg-slate-50/60 p-3 rounded-2xl border border-slate-50">
+            <div className="flex justify-between items-center px-4 mt-6 bg-slate-50/60 p-3 rounded-2xl border border-slate-50 w-full">
               <div className="flex flex-col items-center">
                 <span className="font-extrabold text-lg text-slate-900">{products.length}</span>
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Products</span>
               </div>
               <div className="w-px h-6 bg-slate-200/60"></div>
               <div className="flex flex-col items-center">
-                <span className="font-extrabold text-lg text-slate-900">{stats?.views || '100+'}</span>
+                <span className="font-extrabold text-lg text-slate-900">{stats?.views ?? '120+'}</span>
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Views</span>
               </div>
               <div className="w-px h-6 bg-slate-200/60"></div>
               <div className="flex flex-col items-center">
-                <span className="font-extrabold text-lg text-green-600">{stats?.orders || '0'}</span>
+                <span className="font-extrabold text-lg text-green-600">{stats?.orders ?? '0'}</span>
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Orders</span>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col gap-3 mt-5">
+            <div className="flex flex-col gap-3 mt-5 w-full">
               {whatsappNumber && (
                 <motion.button
                   whileTap={{ scale: 0.97 }}
@@ -206,20 +199,6 @@ export default function StorefrontClient({ business, products, stats }: { busine
                   className="w-full py-3.5 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-green-500/10 hover:bg-green-600 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4" /> Chat with Seller
-                </motion.button>
-              )}
-
-              {business.instagram_handle && (
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => {
-                    const handle = business.instagram_handle.replace('@', '').trim();
-                    window.open(`https://instagram.com/${handle}`, '_blank');
-                  }}
-                  className="w-full py-3.5 rounded-2xl bg-white text-[#111111] border border-slate-200 font-extrabold flex items-center justify-center gap-2 shadow-sm hover:bg-slate-50 transition-colors"
-                >
-                  <svg className="w-4 h-4 text-pink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                  Instagram
                 </motion.button>
               )}
             </div>
@@ -272,22 +251,43 @@ export default function StorefrontClient({ business, products, stats }: { busine
 
                 {/* Categories */}
                 <div className="flex gap-2 overflow-x-auto no-scrollbar mt-4 pb-2">
-                  <button
-                    onClick={() => setSelectedCategory('All')}
-                    className={`px-5 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all duration-200 ${selectedCategory === 'All' ? `${primaryColor} text-white shadow-md` : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
-                  >
-                    All
-                  </button>
-                  {Array.from(new Set(products.map(p => p.category).filter(Boolean))).map(cat => (
+                  <div className="flex flex-col items-center gap-1 shrink-0">
                     <button
-                      key={cat}
-                      onClick={() => setSelectedCategory(cat)}
-                      className={`px-5 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all duration-200 ${selectedCategory === cat ? `${primaryColor} text-white shadow-md` : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                      onClick={() => setSelectedCategory('All')}
+                      className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-200 ${selectedCategory === 'All' ? `${primaryColor} text-white shadow-lg` : 'bg-white border border-slate-100 text-slate-400 shadow-sm'}`}
                     >
-                      {cat}
+                      <LayoutGrid className="w-6 h-6" />
                     </button>
+                    <span className={`text-[10px] font-bold ${selectedCategory === 'All' ? 'text-slate-900' : 'text-slate-400'}`}>Category</span>
+                  </div>
+
+                  {Array.from(new Set(products.map(p => p.category).filter(Boolean))).map(cat => (
+                    <div key={cat} className="flex flex-col items-center gap-1 shrink-0">
+                      <button
+                        onClick={() => setSelectedCategory(cat as string)}
+                        className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-200 ${selectedCategory === cat ? `${primaryColor} text-white shadow-lg` : 'bg-white border border-slate-100 text-[#111111] shadow-sm font-extrabold text-lg'}`}
+                      >
+                        {String(cat).charAt(0).toUpperCase()}
+                      </button>
+                      <span className={`text-[10px] font-bold ${selectedCategory === cat ? 'text-slate-900' : 'text-slate-400'} max-w-[70px] truncate`}>{cat as string}</span>
+                    </div>
                   ))}
                 </div>
+
+                {/* Instagram Button (Exact placement from screenshot) */}
+                {business.instagram_handle && (
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      const handle = business.instagram_handle.replace('@', '').trim();
+                      window.open(`https://instagram.com/${handle}`, '_blank');
+                    }}
+                    className="w-full mt-6 py-4 rounded-3xl bg-white text-slate-900 border border-slate-100 font-extrabold flex items-center justify-center gap-3 shadow-xl shadow-slate-200/40 hover:bg-slate-50 transition-all mb-4"
+                  >
+                    <svg className="w-5 h-5 text-pink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    <span className="text-base tracking-tight">Instagram</span>
+                  </motion.button>
+                )}
 
                 {/* Product Grid */}
                 <motion.div layout className="grid grid-cols-2 gap-3 mt-4">
