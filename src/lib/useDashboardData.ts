@@ -19,7 +19,8 @@ export function useDashboardData() {
     fetchData();
 
     async function fetchData() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) { setLoading(false); return; }
 
       const { data: business } = await supabase.from('businesses').select('*').eq('user_id', user.id).single();

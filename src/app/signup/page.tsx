@@ -79,7 +79,7 @@ export default function SignupPage() {
 
     const timeoutId = setTimeout(() => {
       checkUsername();
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [formData.username]);
@@ -284,9 +284,15 @@ export default function SignupPage() {
                   />
                   <span className="flex items-center pr-4 bg-white">
                     {usernameStatus === 'checking' && <Loader2 className="w-5 h-5 text-slate-400 animate-spin" />}
+                    {usernameStatus === 'available' && <span className="text-[10px] font-black text-green-600 uppercase tracking-tighter mr-1 animate-in fade-in zoom-in">Available</span>}
+                    {usernameStatus === 'taken' && <span className="text-[10px] font-black text-red-600 uppercase tracking-tighter mr-1 animate-in fade-in zoom-in">Taken</span>}
                     {usernameStatus === 'available' && <CheckCircle2 className="w-5 h-5 text-green-500" />}
                     {usernameStatus === 'taken' && <XCircle className="w-5 h-5 text-red-500" />}
                   </span>
+                </div>
+                <div className="h-5 mt-1 ml-1">
+                  {usernameStatus === 'available' && <p className="text-xs text-green-600 font-bold">Awesome! This link is available.</p>}
+                  {usernameStatus === 'taken' && <p className="text-xs text-red-600 font-bold">Not available. Try another one.</p>}
                 </div>
               </div>
 
