@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck } from "lucide-react";
+import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck, MapPin } from "lucide-react";
 import StoreBottomNav from "@/components/StoreBottomNav";
 import ReviewSystem from "@/components/ReviewSystem";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function StorefrontClient({ business, products }: { business: any, products: any[] }) {
+export default function StorefrontClient({ business, products, stats }: { business: any, products: any[], stats?: { views: number, orders: number } }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Products");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -187,13 +187,13 @@ export default function StorefrontClient({ business, products }: { business: any
               </div>
               <div className="w-px h-6 bg-slate-200/60"></div>
               <div className="flex flex-col items-center">
-                <span className="font-extrabold text-lg text-slate-900">100+</span>
+                <span className="font-extrabold text-lg text-slate-900">{stats?.views || '100+'}</span>
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Views</span>
               </div>
               <div className="w-px h-6 bg-slate-200/60"></div>
               <div className="flex flex-col items-center">
-                <span className="font-extrabold text-lg text-green-600">Active</span>
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Status</span>
+                <span className="font-extrabold text-lg text-green-600">{stats?.orders || '0'}</span>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Orders</span>
               </div>
             </div>
 
