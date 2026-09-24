@@ -193,7 +193,7 @@ export default function StorefrontClient({ business, products, stats }: { busine
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col gap-3 mt-5 w-full">
+            <div className="flex flex-col gap-2.5 mt-5 w-full">
               {whatsappNumber && (
                 <motion.button
                   whileTap={{ scale: 0.97 }}
@@ -204,6 +204,20 @@ export default function StorefrontClient({ business, products, stats }: { busine
                   className="w-full py-3.5 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-green-500/10 hover:bg-green-600 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4" /> Chat with Seller
+                </motion.button>
+              )}
+
+              {business.instagram_handle && (
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    const handle = business.instagram_handle.replace('@', '').trim();
+                    window.open(`https://instagram.com/${handle}`, '_blank');
+                  }}
+                  className="w-full py-3.5 rounded-2xl bg-white text-slate-900 border border-slate-200 font-extrabold flex items-center justify-center gap-2 shadow-md hover:bg-slate-50 transition-colors"
+                >
+                  <svg className="w-4 h-4 text-pink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                  <span>Visit Instagram</span>
                 </motion.button>
               )}
             </div>
@@ -278,21 +292,6 @@ export default function StorefrontClient({ business, products, stats }: { busine
                     </div>
                   ))}
                 </div>
-
-                {/* Instagram Button (Exact placement from screenshot) */}
-                {business.instagram_handle && (
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      const handle = business.instagram_handle.replace('@', '').trim();
-                      window.open(`https://instagram.com/${handle}`, '_blank');
-                    }}
-                    className="w-full mt-6 py-4 rounded-3xl bg-white text-slate-900 border border-slate-100 font-extrabold flex items-center justify-center gap-3 shadow-xl shadow-slate-200/40 hover:bg-slate-50 transition-all mb-4"
-                  >
-                    <svg className="w-5 h-5 text-pink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                    <span className="text-base tracking-tight">Instagram</span>
-                  </motion.button>
-                )}
 
                 {/* Product Grid */}
                 <motion.div layout className="grid grid-cols-2 gap-3 mt-4">
