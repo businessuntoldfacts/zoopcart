@@ -19,6 +19,7 @@ export default function StoreSettingsPage() {
     email: "",
     whatsapp_number: "",
     whatsapp_country_code: "91",
+    insta_followers: "",
     orderPrefix: "FAI",
     freeShipping: false,
     shippingCharge: "500",
@@ -112,6 +113,7 @@ export default function StoreSettingsPage() {
       email: business.email,
       whatsapp_number: business.whatsapp_number,
       whatsapp_country_code: business.whatsapp_country_code,
+      insta_followers: business.insta_followers,
       orderPrefix: business.orderPrefix,
       freeShipping: business.freeShipping,
       shippingCharge: business.shippingCharge,
@@ -191,6 +193,10 @@ export default function StoreSettingsPage() {
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Instagram username</label>
                 <Input value={business.instagram_handle} onChange={(e: any) => setBusiness({...business, instagram_handle: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" placeholder="@ " />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Instagram Followers (e.g. 40K)</label>
+                <Input value={business.insta_followers} onChange={(e: any) => setBusiness({...business, insta_followers: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" placeholder="e.g. 10K, 1.2M" />
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Email</label>

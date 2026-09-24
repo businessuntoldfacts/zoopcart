@@ -76,6 +76,14 @@ export default function StorefrontClient({ business, products }: { business: any
   const whatsappNumber = business.whatsapp_number || (business.instagram_profile_url?.startsWith('{') ? JSON.parse(business.instagram_profile_url).whatsapp_number : '');
   const whatsappCountryCode = business.whatsapp_country_code || (business.instagram_profile_url?.startsWith('{') ? JSON.parse(business.instagram_profile_url).whatsapp_country_code : '91');
 
+  let instaFollowers = '';
+  try {
+    if (business.instagram_profile_url?.startsWith('{')) {
+      const parsed = JSON.parse(business.instagram_profile_url);
+      instaFollowers = parsed.insta_followers || '';
+    }
+  } catch (e) {}
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-24 relative overflow-x-hidden">
       {/* Top Header */}
@@ -155,6 +163,22 @@ export default function StorefrontClient({ business, products }: { business: any
               <span className="text-slate-400 font-medium">(0 reviews)</span>
             </div>
 
+            {/* Insta & Location Badges */}
+            <div className="flex items-center justify-center gap-2 mt-4">
+              {instaFollowers && (
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-full shadow-sm">
+                  <svg className="w-3.5 h-3.5 text-pink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                  <span className="text-[10px] font-extrabold text-slate-700 uppercase tracking-tight">{instaFollowers}</span>
+                </div>
+              )}
+              {business.city && (
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-full shadow-sm">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="text-[10px] font-extrabold text-slate-700 uppercase tracking-tight">{business.city}</span>
+                </div>
+              )}
+            </div>
+
             {/* Stats Row */}
             <div className="flex justify-between items-center px-4 mt-6 bg-slate-50/60 p-3 rounded-2xl border border-slate-50">
               <div className="flex flex-col items-center">
@@ -174,17 +198,31 @@ export default function StorefrontClient({ business, products }: { business: any
             </div>
 
             {/* Action Buttons */}
-            {whatsappNumber && (
-              <div className="flex gap-3 mt-5">
+            <div className="flex flex-col gap-3 mt-5">
+              {whatsappNumber && (
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   onClick={() => window.open(`https://wa.me/${whatsappCountryCode}${whatsappNumber}`, '_blank')}
-                  className="flex-1 py-3 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 hover:bg-green-600 transition-colors"
+                  className="w-full py-3.5 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-green-500/10 hover:bg-green-600 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4" /> Chat with Seller
-                  </motion.button>
-              </div>
-            )}
+                </motion.button>
+              )}
+
+              {business.instagram_handle && (
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    const handle = business.instagram_handle.replace('@', '').trim();
+                    window.open(`https://instagram.com/${handle}`, '_blank');
+                  }}
+                  className="w-full py-3.5 rounded-2xl bg-white text-[#111111] border border-slate-200 font-extrabold flex items-center justify-center gap-2 shadow-sm hover:bg-slate-50 transition-colors"
+                >
+                  <svg className="w-4 h-4 text-pink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                  Instagram
+                </motion.button>
+              )}
+            </div>
           </div>
         </motion.div>
 
