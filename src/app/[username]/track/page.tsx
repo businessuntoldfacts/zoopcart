@@ -239,7 +239,13 @@ export default function TrackOrderPage({ params }: { params: { username: string 
                  <h4 className="font-extrabold text-slate-900 text-sm">Need Help?</h4>
                  <p className="text-[11px] font-medium text-slate-500 leading-tight mt-0.5">Contact the seller on WhatsApp for faster support.</p>
               </div>
-              <button onClick={() => window.open(`https://wa.me/${business?.whatsapp_country_code || '91'}${business?.whatsapp_number}`, '_blank')} className="px-4 py-2.5 bg-[#111111] text-white font-extrabold text-xs rounded-xl shadow-sm whitespace-nowrap hover:bg-[#111111] transition-colors">
+              <button
+                onClick={() => {
+                  const message = encodeURIComponent(`Hi, I need help with my order for ${product?.name || 'Product'}. Order ID: ${order?.tracking_token}`);
+                  window.open(`https://wa.me/${business?.whatsapp_country_code || '91'}${business?.whatsapp_number}?text=${message}`, '_blank');
+                }}
+                className="px-4 py-2.5 bg-[#111111] text-white font-extrabold text-xs rounded-xl shadow-sm whitespace-nowrap hover:bg-[#111111] transition-colors"
+              >
                 Chat
               </button>
             </div>

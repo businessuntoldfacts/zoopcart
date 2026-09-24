@@ -18,7 +18,8 @@ export default function AuthCatcher() {
             .single();
 
           if (business) {
-            if (currentPath !== '/dashboard') {
+            // Only redirect if on a public landing page or login page
+            if (currentPath === '/' || currentPath === '/login' || currentPath === '/signup') {
               window.location.replace('/dashboard');
             }
           } else {
@@ -26,16 +27,12 @@ export default function AuthCatcher() {
               window.location.replace('/signup?reason=no_store');
             }
           }
-        } else {
-          if (currentPath !== '/dashboard') {
-            window.location.replace('/dashboard');
-          }
         }
       }, 500);
       return;
     }
     
-    // Only check session on public pages to avoid infinite loops
+    // Only check session on explicit login/landing pages to avoid disrupting storefront/tracking views
     const checkSession = async () => {
       if (currentPath === '/' || currentPath === '/login') {
         const { data } = await supabase.auth.getSession();
@@ -56,28 +53,27 @@ export default function AuthCatcher() {
     };
     checkSession();
     
-    // Listen for auth state changes
+    // Listen for auth state changes elegantly without breaking tracking or store pages
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        // Fix for mobile redirect scaling: force a 500ms delay then hard replace window to reset viewport scale matrix
-        setTimeout(async () => {
-          const { data: business } = await supabase
-            .from('businesses')
-            .select('id')
-            .eq('user_id', session.user.id)
-            .single();
+        const latestPath = window.location.pathname;
 
-          const latestPath = window.location.pathname;
-          if (business) {
-            if (latestPath !== '/dashboard') {
+        // Only redirect to dashboard if the user is explicitly on auth entry pages
+        if (latestPath === '/' || latestPath === '/login' || latestPath === '/signup') {
+          setTimeout(async () => {
+            const { data: business } = await supabase
+              .from('businesses')
+              .select('id')
+              .eq('user_id', session.user.id)
+              .single();
+
+            if (business) {
               window.location.replace('/dashboard');
-            }
-          } else {
-            if (!latestPath.startsWith('/signup')) {
+            } else {
               window.location.replace('/signup?reason=no_store');
             }
-          }
-        }, 500);
+          }, 300);
+        }
       }
     });
     

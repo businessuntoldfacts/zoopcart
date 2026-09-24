@@ -58,8 +58,10 @@ export default function StorefrontClient({ business, products, stats }: { busine
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
-    const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          product.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const name = product.name?.toLowerCase() || "";
+    const description = product.description?.toLowerCase() || "";
+    const search = searchQuery.toLowerCase();
+    const matchesSearch = name.includes(search) || description.includes(search);
     return matchesCategory && matchesSearch;
   });
 
@@ -195,7 +197,10 @@ export default function StorefrontClient({ business, products, stats }: { busine
               {whatsappNumber && (
                 <motion.button
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => window.open(`https://wa.me/${whatsappCountryCode}${whatsappNumber}`, '_blank')}
+                  onClick={() => {
+                    const message = encodeURIComponent(`Hi ${business.business_name}, I'm interested in your products!`);
+                    window.open(`https://wa.me/${whatsappCountryCode}${whatsappNumber}?text=${message}`, '_blank');
+                  }}
                   className="w-full py-3.5 rounded-2xl bg-green-500 text-white font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-green-500/10 hover:bg-green-600 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4" /> Chat with Seller
@@ -261,8 +266,8 @@ export default function StorefrontClient({ business, products, stats }: { busine
                     <span className={`text-[10px] font-bold ${selectedCategory === 'All' ? 'text-slate-900' : 'text-slate-400'}`}>Category</span>
                   </div>
 
-                  {Array.from(new Set(products.map(p => p.category).filter(Boolean))).map(cat => (
-                    <div key={cat} className="flex flex-col items-center gap-1 shrink-0">
+                  {Array.from(new Set(products.map(p => p.category).filter(Boolean))).map((cat, idx) => (
+                    <div key={idx} className="flex flex-col items-center gap-1 shrink-0">
                       <button
                         onClick={() => setSelectedCategory(cat as string)}
                         className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-200 ${selectedCategory === cat ? `${primaryColor} text-white shadow-lg` : 'bg-white border border-slate-100 text-[#111111] shadow-sm font-extrabold text-lg'}`}

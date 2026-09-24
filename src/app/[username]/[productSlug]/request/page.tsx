@@ -154,7 +154,10 @@ export default function RequestForm({ params }: { params: { username: string, pr
     if (error) {
       alert("Error submitting request. Please try again.");
     } else {
-      setOrderData({ token, product, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) });
+      const message = encodeURIComponent(`Hi, I've just submitted a request for ${product.name} (Qty: ${formData.quantity}).\n\nOrder ID: ${token}\nTotal: ₹${finalPrice}\n\nLink: ${window.location.origin}/${business.username}/track?token=${token}`);
+      const whatsappUrl = `https://wa.me/${business.whatsapp_country_code || '91'}${business.whatsapp_number || ''}?text=${message}`;
+
+      setOrderData({ token, product, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }), whatsappUrl });
       setIsSubmitted(true);
     }
   };
