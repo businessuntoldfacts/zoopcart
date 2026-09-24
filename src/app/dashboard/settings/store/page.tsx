@@ -213,7 +213,7 @@ export default function StoreSettingsPage() {
                 <p className="text-xs text-slate-500 mt-2">Shown on your storefront. What you make, and for whom.</p>
               </div>
               <div className="pt-2">
-                <p className="text-sm font-medium text-slate-600">Your storefront: <span className="font-bold">{business.username}.zoopcart.com</span></p>
+                <p className="text-sm font-medium text-slate-600">Your storefront: <span className="font-extrabold text-[#111111]">{business.username}.zoopcart.com</span></p>
               </div>
             </div>
           </div>

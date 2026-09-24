@@ -224,13 +224,15 @@ export default async function LandingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {realBusinesses && realBusinesses.map((b, i) => (
-              <Link key={i} href={`/${b.username}`} className="bg-white rounded-3xl p-6 flex flex-col items-center text-center border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-300 transition-all group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${i * 100}ms` }}>
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-extrabold text-2xl mb-4 group-hover:scale-110 transition-transform">
+              <div key={i} className="bg-white rounded-3xl p-6 flex flex-col items-center text-center border border-slate-100 shadow-sm transition-all group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${i * 100}ms` }}>
+                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-extrabold text-2xl mb-4 transition-transform">
                   {b.business_name ? b.business_name.charAt(0).toUpperCase() : 'S'}
                 </div>
-                <h4 className="font-extrabold text-[#0F172A] line-clamp-1">{b.business_name || `Store ${b.username}`}</h4>
-                <p className="text-xs font-medium text-[#111111] mt-1">zoopcart.com/{b.username}</p>
-              </Link>
+                <h4 className="font-extrabold text-[#0F172A] w-full break-words overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: '2', WebkitBoxOrient: 'vertical', minHeight: '2.5rem' }}>
+                  {b.business_name || `Store ${b.username}`}
+                </h4>
+                <p className="text-[10px] font-bold text-slate-400 mt-2 truncate w-full uppercase tracking-tighter">zoopcart.com/{b.username}</p>
+              </div>
             ))}
           </div>
         </div>
