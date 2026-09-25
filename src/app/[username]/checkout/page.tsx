@@ -134,20 +134,23 @@ export default function CheckoutPage({ params }: { params: { username: string } 
       return `${p?.name} (x${item.quantity})`;
     }).join(", ");
 
-    const { error } = await supabase.from('orders').insert([{
-      business_id: business.id,
-      product_id: cartItems[0]?.id,
-      customer_name: formData.name,
-      customer_phone: formData.phone,
-      customer_email: formData.email,
-      quantity: totalQuantity,
-      budget: total,
-      notes: `Method: ${paymentMethod.toUpperCase()}. Items: ${itemDetails}. Addr: ${formData.delivery_location}`,
-      delivery_location: formData.delivery_location,
-      tracking_token: token,
-      status: 'pending',
-      reference_image: paymentScreenshot || null
-    }]);
+    const { error } = await supabase.from('orders').insert(cartItems.map(item => {
+      const p = products.find(prod => prod.id === item.id);
+      return {
+        business_id: business.id,
+        product_id: item.id,
+        customer_name: formData.name,
+        customer_phone: formData.phone,
+        customer_email: formData.email,
+        quantity: item.quantity,
+        budget: (p?.price || 0) * item.quantity,
+        notes: `Method: ${paymentMethod.toUpperCase()}. Total Order Value: ₹${total}. Addr: ${formData.delivery_location}`,
+        delivery_location: formData.delivery_location,
+        tracking_token: token,
+        status: 'pending',
+        reference_image: paymentScreenshot || null
+      };
+    }));
 
     if (!error) {
       localStorage.removeItem('zoopcart_cart');
@@ -162,7 +165,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
 
   const getUpiLink = () => {
     if (!paymentSettings?.upiId) return "";
-    const name = encodeURIComponent(paymentSettings.upiName || business?.name || "Zoopcart Order");
+    const name = encodeURIComponent(paymentSettings.upiName || business?.business_name || "Zoopcart Order");
     return `upi://pay?pa=${paymentSettings.upiId}&pn=${name}&am=${calculateTotal()}&cu=INR`;
   };
 
@@ -205,10 +208,10 @@ export default function CheckoutPage({ params }: { params: { username: string } 
         {/* Merchant Branding */}
         <div className="flex items-center gap-3 p-1">
           <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-bold text-xs">
-            {business.name.substring(0,2).toUpperCase()}
+            {(business.business_name || 'ZC').substring(0,2).toUpperCase()}
           </div>
           <div>
-            <h2 className="text-sm font-black text-slate-900">{business.name}</h2>
+            <h2 className="text-sm font-black text-slate-900">{business.business_name}</h2>
             <div className="flex items-center gap-1 text-[10px] text-green-600 font-bold uppercase tracking-wider">
               <div className="w-1 h-1 bg-green-600 rounded-full"></div> Verified Merchant
             </div>

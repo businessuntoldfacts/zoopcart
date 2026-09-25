@@ -295,14 +295,21 @@ export default function ProductDetailPage({ params }: { params: { username: stri
           >
             <ShoppingCart className="w-6 h-6" />
           </motion.button>
-          <Link href={`/${business.username}/${product.slug}/request`} className="flex-1">
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              className="w-full h-14 rounded-2xl bg-[#111111] hover:bg-black text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-black/20 transition-all"
-            >
-              Request Product
-            </motion.button>
-          </Link>
+          <button
+            onClick={() => {
+              const cart = JSON.parse(localStorage.getItem('zoopcart_cart') || '[]');
+              const existingIndex = cart.findIndex((item: any) => item.id === product.id);
+              if (existingIndex === -1) {
+                cart.push({ id: product.id, quantity: 1 });
+                localStorage.setItem('zoopcart_cart', JSON.stringify(cart));
+                window.dispatchEvent(new Event('cart-updated'));
+              }
+              router.push(`/${business.username}/checkout`);
+            }}
+            className="flex-1 h-14 rounded-2xl bg-[#111111] hover:bg-black text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-black/20 transition-all active:scale-[0.98]"
+          >
+            Buy Now
+          </button>
         </div>
       </motion.div>
     </div>

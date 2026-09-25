@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck, MapPin, LayoutGrid } from "lucide-react";
+import { ArrowLeft, Share2, Heart, Search, Filter, MessageCircle, Star, BadgeCheck, MapPin, LayoutGrid, ShoppingCart, Plus } from "lucide-react";
 import StoreBottomNav from "@/components/StoreBottomNav";
 import ReviewSystem from "@/components/ReviewSystem";
 import { useRouter } from "next/navigation";
@@ -33,6 +33,24 @@ export default function StorefrontClient({ business, products, stats }: { busine
     setSavedItems(newSaved);
     localStorage.setItem('zoopcart_saved', JSON.stringify(newSaved));
     window.dispatchEvent(new Event('cart-updated'));
+  };
+
+  const addToCart = (e: React.MouseEvent, product: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const cart = JSON.parse(localStorage.getItem('zoopcart_cart') || '[]');
+    const existingIndex = cart.findIndex((item: any) => item.id === product.id);
+
+    if (existingIndex > -1) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push({ id: product.id, quantity: 1 });
+    }
+
+    localStorage.setItem('zoopcart_cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cart-updated'));
+    // Simple alert for now, can be improved to a toast
+    alert(`${product.name} added to cart!`);
   };
 
   const extraSettings = useMemo(() => {
@@ -335,9 +353,17 @@ export default function StorefrontClient({ business, products, stats }: { busine
                                 <span className="text-[10px] font-bold text-slate-400 line-through">₹{product.original_price}</span>
                               )}
                             </div>
-                            <div className="flex items-center gap-1 text-[9px] font-bold text-green-600 mt-2 bg-green-50 self-start inline-flex px-1.5 py-0.5 rounded pl-1">
-                              <div className="w-1 h-1 rounded-full bg-green-500"></div>
-                              In stock &middot; ships soon
+                            <div className="flex items-center justify-between mt-2">
+                              <div className="flex items-center gap-1 text-[9px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                                <div className="w-1 h-1 rounded-full bg-green-500"></div>
+                                In stock
+                              </div>
+                              <button
+                                onClick={(e) => addToCart(e, product)}
+                                className={`w-8 h-8 rounded-xl ${primaryColor} text-white flex items-center justify-center shadow-md active:scale-90 transition-transform`}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
                         </Link>
