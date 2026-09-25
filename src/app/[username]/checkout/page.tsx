@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, CheckCircle2, User, Phone, Mail, MapPin, Calendar, ChevronDown, Loader2, QrCode } from "lucide-react";
+import { ArrowLeft, CheckCircle2, User, Phone, Mail, MapPin, Loader2, QrCode, ShieldCheck, CreditCard, Wallet, ChevronRight, Copy, ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CheckoutPage({ params }: { params: { username: string } }) {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     delivery_location: ""
   });
   const [paymentMethod, setPaymentMethod] = useState("cod");
-  const [paymentSettings, setPaymentSettings] = useState<any>({ codEnabled: true, upiEnabled: false });
+  const [paymentSettings, setPaymentSettings] = useState<any>({ codEnabled: true, upiEnabled: false, upiId: "" });
   const [paymentScreenshot, setPaymentScreenshot] = useState("");
   const [uploadingScreenshot, setUploadingScreenshot] = useState(false);
 
@@ -33,19 +34,22 @@ export default function CheckoutPage({ params }: { params: { username: string } 
       setBusiness(b);
 
       try {
-        let settings = { codEnabled: true, upiEnabled: false, upiId: "" };
+        let settings = { codEnabled: true, upiEnabled: false, upiId: "", upiName: "", upiQr: "" };
         if (b.instagram_profile_url && b.instagram_profile_url.startsWith('{')) {
           const parsed = JSON.parse(b.instagram_profile_url);
           settings = { ...settings, ...parsed };
         }
+
+        // Ensure at least one method is available
+        if (settings.codEnabled === false && !settings.upiId) {
+          settings.codEnabled = true;
+        }
+
         setPaymentSettings(settings);
 
-        // Logic for initial selection:
-        // 1. If COD is enabled, default to COD
-        // 2. If only UPI is enabled, default to UPI
         if (settings.codEnabled !== false) {
           setPaymentMethod('cod');
-        } else if (settings.upiEnabled !== false && settings.upiId) {
+        } else if (settings.upiId) {
           setPaymentMethod('upi');
         }
       } catch (e) {
@@ -69,7 +73,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
             router.push(`/${params.username}/cart`);
           }
         } catch (e) {
-          console.error("Error parsing cart", e);
+          router.push(`/${params.username}/cart`);
         }
       } else {
         router.push(`/${params.username}/cart`);
@@ -98,9 +102,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
         const canvas = document.createElement('canvas');
         const MAX_WIDTH = 800;
         let scaleSize = 1;
-        if (img.width > MAX_WIDTH) {
-          scaleSize = MAX_WIDTH / img.width;
-        }
+        if (img.width > MAX_WIDTH) scaleSize = MAX_WIDTH / img.width;
         canvas.width = img.width * scaleSize;
         canvas.height = img.height * scaleSize;
         const ctx = canvas.getContext('2d');
@@ -109,9 +111,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
         setPaymentScreenshot(compressedBase64);
         setUploadingScreenshot(false);
       };
-      if (event.target?.result) {
-        img.src = event.target.result as string;
-      }
+      if (event.target?.result) img.src = event.target.result as string;
     };
     reader.readAsDataURL(file);
   };
@@ -126,14 +126,9 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     }
 
     setSubmitting(true);
-
     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
     const total = calculateTotal();
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-    const firstProductId = cartItems.length > 0 ? cartItems[0].id : null;
-
-    // Create order entries for each product or one summary order
-    // For now, we'll create one summary order with item details in notes
     const itemDetails = cartItems.map(item => {
       const p = products.find(prod => prod.id === item.id);
       return `${p?.name} (x${item.quantity})`;
@@ -141,13 +136,13 @@ export default function CheckoutPage({ params }: { params: { username: string } 
 
     const { error } = await supabase.from('orders').insert([{
       business_id: business.id,
-      product_id: firstProductId,
+      product_id: cartItems[0]?.id,
       customer_name: formData.name,
       customer_phone: formData.phone,
       customer_email: formData.email,
       quantity: totalQuantity,
       budget: total,
-      notes: `Payment: ${paymentMethod.toUpperCase()}. Cart Items: ${itemDetails}. ${formData.delivery_location}`,
+      notes: `Method: ${paymentMethod.toUpperCase()}. Items: ${itemDetails}. Addr: ${formData.delivery_location}`,
       delivery_location: formData.delivery_location,
       tracking_token: token,
       status: 'pending',
@@ -155,80 +150,6 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     }]);
 
     if (!error) {
-      // 1. Send email to Buyer
-      console.log("Attempting to send Buyer email to:", formData.email);
-      if (formData.email) {
-        try {
-          const buyerRes = await fetch("/api/send", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              type: "order_notification",
-              email: formData.email,
-              orderId: token,
-              customerName: formData.name,
-              customerPhone: formData.phone,
-              productName: itemDetails,
-              price: total,
-              quantity: totalQuantity,
-              deliveryLocation: formData.delivery_location,
-              trackingLink: `${window.location.origin}/${business.username}/track?token=${token}`
-            })
-          });
-          const buyerResult = await buyerRes.json();
-          if (buyerRes.ok) {
-            console.log("✅ Buyer Email Sent Successfully:", buyerResult);
-          } else {
-            console.error("❌ Buyer Email Error:", buyerResult);
-          }
-        } catch (emailErr) {
-          console.error("❌ Buyer email failed to fetch:", emailErr);
-        }
-      } else {
-        console.log("ℹ️ No buyer email provided, skipping.");
-      }
-
-      // 2. Send email to Seller
-      try {
-        let sellerEmail = "";
-        try {
-          if (business.instagram_profile_url && business.instagram_profile_url.startsWith('{')) {
-            const settings = JSON.parse(business.instagram_profile_url);
-            sellerEmail = settings.email;
-          }
-        } catch (e) {}
-
-        console.log("Attempting to send Seller email to:", sellerEmail);
-        if (sellerEmail) {
-          const sellerRes = await fetch("/api/send", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              type: "seller_order_notification",
-              email: sellerEmail,
-              orderId: token,
-              customerName: formData.name,
-              customerPhone: formData.phone,
-              productName: itemDetails,
-              price: total,
-              quantity: totalQuantity,
-              deliveryLocation: formData.delivery_location,
-              notes: formData.delivery_location
-            })
-          });
-          const sellerResult = await sellerRes.json();
-          if (sellerRes.ok) {
-            console.log("✅ Seller Email Sent Successfully:", sellerResult);
-          } else {
-            console.error("❌ Seller Email Error:", sellerResult);
-          }
-        } else {
-          console.log("ℹ️ Seller email not found in business settings, skipping.");
-        }
-      } catch (sellerEmailErr) {
-        console.error("❌ Seller notification failed to fetch:", sellerEmailErr);
-      }
-
       localStorage.removeItem('zoopcart_cart');
       window.dispatchEvent(new Event('cart-updated'));
       setOrderToken(token);
@@ -242,199 +163,250 @@ export default function CheckoutPage({ params }: { params: { username: string } 
   const getUpiLink = () => {
     if (!paymentSettings?.upiId) return "";
     const name = encodeURIComponent(paymentSettings.upiName || business?.name || "Zoopcart Order");
-    const amount = calculateTotal();
-    return `upi://pay?pa=${paymentSettings.upiId}&pn=${name}&am=${amount}&cu=INR`;
+    return `upi://pay?pa=${paymentSettings.upiId}&pn=${name}&am=${calculateTotal()}&cu=INR`;
   };
 
-  if (loading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="w-8 h-8 text-slate-300 animate-spin" /></div>;
+  if (loading) return <div className="min-h-screen bg-white flex items-center justify-center"><Loader2 className="w-8 h-8 text-blue-600 animate-spin" /></div>;
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-slate-50 font-sans p-4 flex flex-col items-center justify-center text-center">
-        <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-green-500/20">
-          <CheckCircle2 className="w-10 h-10 text-white" />
-        </div>
-        <h1 className="text-2xl font-extrabold text-slate-900 mb-2">Order Placed!</h1>
-        <p className="text-sm font-medium text-slate-500 mb-8">Your order ID is <span className="text-slate-900 font-extrabold">#{orderToken}</span>. We've sent the details to your phone.</p>
-        <Link href={`/${business.username}/track?token=${orderToken}`} className="w-full max-w-xs">
-          <button className="w-full h-14 bg-[#111111] text-white rounded-2xl font-extrabold shadow-lg">Track Order</button>
-        </Link>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white p-8 rounded-[32px] shadow-xl text-center max-w-sm w-full">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-10 h-10 text-green-600" />
+          </div>
+          <h1 className="text-2xl font-black text-slate-900 mb-2">Order Confirmed!</h1>
+          <p className="text-slate-500 font-medium mb-8">Order ID: <span className="text-slate-900 font-bold">#{orderToken}</span></p>
+          <Link href={`/${business.username}/track?token=${orderToken}`} className="block">
+            <button className="w-full py-4 bg-[#111111] text-white rounded-2xl font-bold shadow-lg">Track My Order</button>
+          </Link>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans pb-32">
-      <header className="bg-white px-4 h-16 flex items-center justify-center sticky top-0 z-50 border-b border-slate-100 shadow-sm relative">
-        <button onClick={() => router.back()} className="absolute left-4 w-10 h-10 flex items-center justify-center text-slate-900">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="font-extrabold text-base text-slate-900 tracking-tight">Checkout</h1>
-      </header>
+    <div className="min-h-screen bg-[#F8FAFC] font-sans pb-32">
+      {/* Premium Gateway Header */}
+      <div className="bg-white border-b border-slate-100 sticky top-0 z-50">
+        <div className="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
+          <button onClick={() => router.back()} className="w-10 h-10 flex items-center justify-center text-slate-400">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-blue-600" />
+            <span className="font-black text-slate-900 tracking-tight uppercase text-sm">Secure Checkout</span>
+          </div>
+          <div className="w-10"></div>
+        </div>
+      </div>
 
-      <div className="max-w-md mx-auto px-4 pt-6">
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Full Name *</label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Enter your name" className="w-full h-14 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] text-sm font-medium" />
+      <div className="max-w-md mx-auto px-4 pt-6 space-y-6">
+        {/* Merchant Branding */}
+        <div className="flex items-center gap-3 p-1">
+          <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-bold text-xs">
+            {business.name.substring(0,2).toUpperCase()}
+          </div>
+          <div>
+            <h2 className="text-sm font-black text-slate-900">{business.name}</h2>
+            <div className="flex items-center gap-1 text-[10px] text-green-600 font-bold uppercase tracking-wider">
+              <div className="w-1 h-1 bg-green-600 rounded-full"></div> Verified Merchant
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Shipping Details */}
+          <div className="bg-white rounded-[28px] p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                <MapPin className="w-4 h-4 text-blue-600" />
               </div>
+              <h3 className="font-black text-slate-900 text-sm">Shipping Information</h3>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Phone Number *</label>
-              <div className="relative flex">
-                <div className="h-14 px-4 bg-slate-50 border border-r-0 border-slate-200 rounded-l-xl flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-slate-400" />
-                  <span className="text-sm font-bold text-slate-600">+91</span>
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Full Name</label>
+                <input required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="John Doe" className="w-full h-12 px-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:border-blue-600 outline-none text-sm font-bold transition-all" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Phone Number</label>
+                <div className="relative">
+                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">+91</div>
+                   <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="9876543210" className="w-full h-12 pl-12 pr-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:border-blue-600 outline-none text-sm font-bold transition-all" />
                 </div>
-                <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="Mobile number" className="w-full h-14 pl-4 pr-4 rounded-r-xl border border-slate-200 bg-white outline-none focus:border-[#111111] text-sm font-medium" />
               </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Email (Optional)</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="Enter your email" className="w-full h-14 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] text-sm font-medium" />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Delivery Address *</label>
-              <div className="relative">
-                <MapPin className="absolute left-4 top-4 w-4 h-4 text-slate-400" />
-                <textarea required value={formData.delivery_location} onChange={(e) => setFormData({...formData, delivery_location: e.target.value})} placeholder="Enter full address" className="w-full h-24 pt-4 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] text-sm font-medium resize-none"></textarea>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Delivery Address</label>
+                <textarea required value={formData.delivery_location} onChange={(e) => setFormData({...formData, delivery_location: e.target.value})} placeholder="House no, Building, Street name..." className="w-full h-24 p-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:border-blue-600 outline-none text-sm font-bold transition-all resize-none" />
               </div>
             </div>
           </div>
 
-          <div className="mt-8 bg-white rounded-3xl p-5 border border-slate-100 shadow-sm space-y-4">
-            <h3 className="font-extrabold text-slate-900 text-sm">Payment Method</h3>
+          {/* Payment Gateway Section */}
+          <div className="bg-white rounded-[28px] p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
+                  <CreditCard className="w-4 h-4 text-purple-600" />
+                </div>
+                <h3 className="font-black text-slate-900 text-sm">Select Payment</h3>
+              </div>
+              <span className="text-[10px] font-black text-slate-400 bg-slate-50 px-2 py-1 rounded-md uppercase tracking-tight">Step 2 of 2</span>
+            </div>
 
             <div className="space-y-3">
-              {/* Show COD if enabled (defaults to true) */}
-              {paymentSettings?.codEnabled !== false && (
-                <label className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${paymentMethod === 'cod' ? 'border-[#111111] bg-slate-50' : 'border-slate-100 opacity-60'}`}>
-                  <input type="radio" name="payment" value="cod" checked={paymentMethod === 'cod'} onChange={(e) => setPaymentMethod(e.target.value)} className="hidden" />
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'cod' ? 'border-[#111111]' : 'border-slate-300'}`}>
-                    {paymentMethod === 'cod' && <div className="w-2.5 h-2.5 rounded-full bg-[#111111]" />}
-                  </div>
-                  <div>
-                    <div className="font-bold text-sm text-slate-900">Cash on Delivery</div>
-                    <div className="text-[10px] text-slate-500 font-medium uppercase tracking-tight">Pay when you receive the order</div>
-                  </div>
-                </label>
-              )}
-
-              {/* Show UPI if merchant has provided a UPI ID */}
-              {paymentSettings?.upiId && (
-                <div className="space-y-3">
-                  <label className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${paymentMethod === 'upi' ? 'border-[#111111] bg-slate-50' : 'border-slate-100 opacity-60'}`}>
-                    <input type="radio" name="payment" value="upi" checked={paymentMethod === 'upi'} onChange={(e) => setPaymentMethod(e.target.value)} className="hidden" />
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'upi' ? 'border-[#111111]' : 'border-slate-300'}`}>
-                      {paymentMethod === 'upi' && <div className="w-2.5 h-2.5 rounded-full bg-[#111111]" />}
-                    </div>
-                    <div>
-                      <div className="font-bold text-sm text-slate-900">UPI / Online Payment</div>
-                      <div className="text-[10px] text-slate-500 font-medium uppercase tracking-tight">Instant payment via GPay, PhonePe, etc.</div>
-                    </div>
-                  </label>
-
-                  {paymentMethod === 'upi' && (
-                    <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 animate-in fade-in slide-in-from-top-2 duration-300">
-                      <div className="flex flex-col items-center text-center space-y-4">
-                        {paymentSettings.upiQr && (
-                          <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
-                            <img src={paymentSettings.upiQr} alt="Payment QR" className="w-40 h-40 object-contain" />
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Payable Amount</p>
-                          <p className="text-2xl font-black text-slate-900">₹{calculateTotal()}</p>
-                        </div>
-
-                        {/* Mobile Direct Pay Button */}
-                        <a
-                          href={getUpiLink()}
-                          className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all"
-                        >
-                          <Phone className="w-4 h-4" /> Pay via UPI App
-                        </a>
-
-                        <div className="w-full space-y-2">
-                          <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between text-left">
-                            <div>
-                              <p className="text-[10px] font-bold text-slate-400 uppercase">UPI ID</p>
-                              <p className="text-sm font-bold text-slate-900">{paymentSettings.upiId}</p>
-                            </div>
-                            <button type="button" onClick={() => {navigator.clipboard.writeText(paymentSettings.upiId); alert('UPI ID Copied!')}} className="text-[10px] font-bold text-blue-600 px-2 py-1 bg-blue-50 rounded-md">COPY</button>
-                          </div>
-
-                          {paymentSettings.upiName && (
-                            <div className="p-3 bg-white rounded-xl border border-slate-200 text-left">
-                              <p className="text-[10px] font-bold text-slate-400 uppercase">Verified Name</p>
-                              <p className="text-sm font-bold text-slate-900">{paymentSettings.upiName}</p>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="w-full pt-4 border-t border-slate-200">
-                          <p className="text-xs font-bold text-slate-900 mb-3">Upload Payment Screenshot *</p>
-                          <div className="relative h-32 w-full border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center bg-white hover:bg-slate-50 transition-colors cursor-pointer overflow-hidden">
-                            {paymentScreenshot ? (
-                              <img src={paymentScreenshot} alt="Payment Proof" className="w-full h-full object-contain p-2" />
-                            ) : (
-                              <div className="flex flex-col items-center">
-                                <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mb-2">
-                                  <QrCode className="w-4 h-4 text-slate-400" />
-                                </div>
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Tap to upload screenshot</span>
-                              </div>
-                            )}
-                            <input type="file" accept="image/*" onChange={handleScreenshotUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
-                            {uploadingScreenshot && (
-                              <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                                <Loader2 className="w-5 h-5 text-slate-900 animate-spin" />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <p className="text-[10px] text-slate-500 font-medium italic leading-relaxed">Please pay exactly ₹{calculateTotal()} and upload the screenshot. Your order will be confirmed after verification.</p>
+              {paymentSettings.codEnabled !== false && (
+                <div
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`group relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-blue-600 bg-blue-50/30' : 'border-slate-50 bg-slate-50/50 hover:border-slate-200'}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${paymentMethod === 'cod' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-slate-400'}`}>
+                        <Wallet className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-black text-slate-900">Cash on Delivery</div>
+                        <div className="text-[10px] text-slate-500 font-bold">Pay at your doorstep</div>
                       </div>
                     </div>
-                  )}
+                    {paymentMethod === 'cod' && <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-white" /></div>}
+                  </div>
+                </div>
+              )}
+
+              {paymentSettings.upiId && (
+                <div
+                  onClick={() => setPaymentMethod('upi')}
+                  className={`group relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'upi' ? 'border-blue-600 bg-blue-50/30' : 'border-slate-50 bg-slate-50/50 hover:border-slate-200'}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${paymentMethod === 'upi' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-slate-400'}`}>
+                        <QrCode className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-black text-slate-900">UPI / Online Pay</div>
+                        <div className="text-[10px] text-slate-500 font-bold">GPay, PhonePe, Paytm</div>
+                      </div>
+                    </div>
+                    {paymentMethod === 'upi' && <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-white" /></div>}
+                  </div>
                 </div>
               )}
             </div>
+
+            <AnimatePresence>
+              {paymentMethod === 'upi' && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mt-6">
+                  <div className="p-5 bg-slate-900 rounded-2xl text-white space-y-6">
+                     <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Payable Amount</p>
+                          <p className="text-2xl font-black">₹{calculateTotal()}</p>
+                        </div>
+                        <div className="bg-white/10 p-2 rounded-lg">
+                          <ShieldCheck className="w-5 h-5 text-blue-400" />
+                        </div>
+                     </div>
+
+                     {paymentSettings.upiQr && (
+                        <div className="bg-white p-2 rounded-xl w-32 h-32 mx-auto">
+                           <img src={paymentSettings.upiQr} alt="QR" className="w-full h-full object-contain" />
+                        </div>
+                     )}
+
+                     <div className="space-y-3">
+                        <a href={getUpiLink()} className="flex items-center justify-center gap-2 w-full py-3.5 bg-blue-600 rounded-xl font-black text-sm hover:bg-blue-700 transition-colors shadow-lg">
+                           <ExternalLink className="w-4 h-4" /> Open Payment App
+                        </a>
+
+                        <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                           <div className="text-left">
+                              <p className="text-[9px] font-bold text-slate-500 uppercase">UPI ID</p>
+                              <p className="text-xs font-bold truncate max-w-[150px]">{paymentSettings.upiId}</p>
+                           </div>
+                           <button type="button" onClick={() => {navigator.clipboard.writeText(paymentSettings.upiId); alert('Copied!')}} className="text-[10px] font-bold bg-white/10 px-2 py-1 rounded uppercase flex items-center gap-1">
+                              <Copy className="w-3 h-3" /> Copy
+                           </button>
+                        </div>
+                     </div>
+
+                     <div className="pt-4 border-t border-white/10 space-y-3">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase text-center">Upload Payment Proof</p>
+                        <label className="relative block h-32 w-full border-2 border-dashed border-white/20 rounded-xl overflow-hidden cursor-pointer hover:bg-white/5 transition-all">
+                           {paymentScreenshot ? (
+                              <img src={paymentScreenshot} alt="Proof" className="w-full h-full object-cover" />
+                           ) : (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                 <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center mb-2">
+                                    <Info className="w-4 h-4 text-slate-400" />
+                                 </div>
+                                 <span className="text-[10px] font-bold text-slate-500 uppercase">Tap to upload screenshot</span>
+                              </div>
+                           )}
+                           <input type="file" accept="image/*" onChange={handleScreenshotUpload} className="hidden" />
+                           {uploadingScreenshot && <div className="absolute inset-0 bg-black/60 flex items-center justify-center"><Loader2 className="w-5 h-5 animate-spin" /></div>}
+                        </label>
+                     </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          <div className="mt-8 bg-white rounded-3xl p-5 border border-slate-100 shadow-sm mb-24">
-            <h3 className="font-extrabold text-slate-900 text-sm mb-4">Summary</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm font-medium text-slate-500">
-                <span>Subtotal</span>
-                <span className="text-slate-900">₹{calculateTotal()}</span>
-              </div>
-              <div className="flex justify-between text-sm font-medium text-slate-500">
-                <span>Delivery</span>
-                <span className="text-green-600 font-bold">Free</span>
-              </div>
-              <div className="h-px bg-slate-50 my-2"></div>
-              <div className="flex justify-between text-lg font-extrabold text-slate-900">
-                <span>Total</span>
-                <span>₹{calculateTotal()}</span>
-              </div>
-            </div>
+          {/* Order Summary */}
+          <div className="bg-white rounded-[28px] p-6 shadow-sm border border-slate-100">
+             <h3 className="font-black text-slate-900 text-sm mb-4">Order Summary</h3>
+             <div className="space-y-3 text-sm">
+                <div className="flex justify-between items-center text-slate-500 font-medium">
+                   <span>Items ({cartItems.length})</span>
+                   <span className="text-slate-900 font-bold">₹{calculateTotal()}</span>
+                </div>
+                <div className="flex justify-between items-center text-slate-500 font-medium">
+                   <span>Delivery</span>
+                   <span className="text-green-600 font-black uppercase text-[10px]">Free Delivery</span>
+                </div>
+                <div className="pt-3 border-t border-slate-50 flex justify-between items-center">
+                   <span className="text-slate-900 font-black">Grand Total</span>
+                   <span className="text-blue-600 font-black text-lg">₹{calculateTotal()}</span>
+                </div>
+             </div>
           </div>
 
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50 p-4 pb-safe">
+          {/* Trust Footer */}
+          <div className="flex flex-col items-center gap-4 py-4 opacity-50">
+             <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                   <ShieldCheck className="w-3 h-3" />
+                   <span className="text-[9px] font-bold uppercase tracking-widest">SSL Secure</span>
+                </div>
+                <div className="flex items-center gap-1">
+                   <CreditCard className="w-3 h-3" />
+                   <span className="text-[9px] font-bold uppercase tracking-widest">Safe Payment</span>
+                </div>
+             </div>
+             <p className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em]">Powered by Zoopcart Technology</p>
+          </div>
+
+          {/* Action Button */}
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 p-4 z-50">
             <div className="max-w-md mx-auto">
-              <button disabled={submitting} type="submit" className="w-full h-14 rounded-2xl bg-[#111111] text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg transition-all active:scale-[0.98] disabled:opacity-50">
-                {submitting ? "Processing..." : "Confirm Order"}
+              <button
+                disabled={submitting}
+                type="submit"
+                className="group w-full h-14 bg-[#111111] text-white rounded-[20px] font-black text-base flex items-center justify-center gap-2 shadow-xl shadow-slate-200 active:scale-[0.98] transition-all disabled:opacity-50"
+              >
+                {submitting ? (
+                   <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                   <>
+                     Confirm & Place Order
+                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                   </>
+                )}
               </button>
             </div>
           </div>
