@@ -25,7 +25,7 @@ export default function SavedPage({ params }: { params: { username: string } }) 
       if (!b) return router.push('/');
       setBusiness(b);
 
-      const saved = localStorage.getItem('zypcart_saved');
+      const saved = localStorage.getItem('zoopcart_saved');
       if (saved) {
         try {
           const ids = JSON.parse(saved);
@@ -51,7 +51,7 @@ export default function SavedPage({ params }: { params: { username: string } }) 
     const newSaved = savedIds.filter(id => id !== productId);
     setSavedIds(newSaved);
     setProducts(products.filter(p => p.id !== productId));
-    localStorage.setItem('zypcart_saved', JSON.stringify(newSaved));
+    localStorage.setItem('zoopcart_saved', JSON.stringify(newSaved));
     window.dispatchEvent(new Event('cart-updated'));
   };
 

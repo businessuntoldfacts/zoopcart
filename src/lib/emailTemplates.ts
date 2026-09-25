@@ -193,3 +193,108 @@ export function getOrderNotificationEmailTemplate(orderData: {
     </html>
   `;
 }
+
+export function getPlatformAnnouncementEmailTemplate(title: string, content: string, link?: string) {
+  const currentYear = new Date().getFullYear();
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${title}</title>
+    </head>
+    <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #000000; margin: 0; padding: 0; color: #ffffff; -webkit-font-smoothing: antialiased;">
+      <div style="max-width: 600px; margin: 20px auto; background-color: #0a0a0a; border-radius: 24px; overflow: hidden; border: 1px solid #1a1a1a;">
+        <div style="background: #ffffff; padding: 18px 20px; text-align: center; margin: 12px; border-radius: 16px;">
+          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 55px; width: auto; display: inline-block;">
+        </div>
+
+        <div style="padding: 30px 40px 40px; color: #ffffff; line-height: 1.6;">
+          <h1 style="font-size: 24px; font-weight: 800; color: #ffffff; margin: 0 0 16px 0; letter-spacing: -0.02em;">${title}</h1>
+
+          <div style="font-size: 16px; color: #a1a1aa; margin: 0 0 24px 0; white-space: pre-wrap;">${content}</div>
+
+          ${link ? `
+          <div style="text-align: center; margin-top: 32px;">
+            <a href="${link}" target="_blank" style="display: inline-block; background-color: #ffffff; color: #000000 !important; font-weight: 800; font-size: 15px; padding: 18px 40px; text-decoration: none; border-radius: 14px;">Learn More</a>
+          </div>
+          ` : ''}
+        </div>
+
+        <div style="background-color: #000000; padding: 32px; text-align: center; font-size: 12px; color: #52525b; border-top: 1px solid #1a1a1a;">
+          &copy; ${currentYear} Zoopcart. All rights reserved.
+          <br>
+          <p style="margin-top: 8px;">You're receiving this as a registered seller on Zoopcart.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+export function getSuspensionEmailTemplate(businessName: string, reason: string) {
+  const currentYear = new Date().getFullYear();
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Account Suspended</title>
+    </head>
+    <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #000000; margin: 0; padding: 0; color: #ffffff; -webkit-font-smoothing: antialiased;">
+      <div style="max-width: 600px; margin: 20px auto; background-color: #0a0a0a; border-radius: 24px; overflow: hidden; border: 1px solid #1a1a1a;">
+        <div style="background: #ffffff; padding: 18px 20px; text-align: center; margin: 12px; border-radius: 16px;">
+          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 55px; width: auto; display: inline-block;">
+        </div>
+        <div style="padding: 30px 40px 40px; color: #ffffff; line-height: 1.6;">
+          <h1 style="font-size: 24px; font-weight: 800; color: #ef4444; margin: 0 0 16px 0;">Account Suspended ⚠️</h1>
+          <p style="font-size: 16px; color: #a1a1aa; margin: 0 0 24px 0;">Hello, the store <strong>${businessName}</strong> has been suspended by the platform administration.</p>
+          <div style="background: #111; border-left: 4px solid #ef4444; padding: 20px; border-radius: 8px; margin: 24px 0;">
+            <div style="font-size: 12px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 8px;">Reason for Suspension</div>
+            <div style="font-size: 15px; color: #ffffff; font-weight: 500;">${reason}</div>
+          </div>
+          <p style="font-size: 14px; color: #71717a;">If you believe this is a mistake, please contact our support team at support@zoopcart.com.</p>
+        </div>
+        <div style="background-color: #000000; padding: 32px; text-align: center; font-size: 12px; color: #52525b; border-top: 1px solid #1a1a1a;">
+          &copy; ${currentYear} Zoopcart. All rights reserved.
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+export function getActivationEmailTemplate(businessName: string) {
+  const currentYear = new Date().getFullYear();
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Account Reactivated</title>
+    </head>
+    <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #000000; margin: 0; padding: 0; color: #ffffff; -webkit-font-smoothing: antialiased;">
+      <div style="max-width: 600px; margin: 20px auto; background-color: #0a0a0a; border-radius: 24px; overflow: hidden; border: 1px solid #1a1a1a;">
+        <div style="background: #ffffff; padding: 18px 20px; text-align: center; margin: 12px; border-radius: 16px;">
+          <img src="https://www.zoopcart.com/logo-black.jpg" alt="Zoopcart" style="height: 55px; width: auto; display: inline-block;">
+        </div>
+        <div style="padding: 30px 40px 40px; color: #ffffff; line-height: 1.6;">
+          <h1 style="font-size: 24px; font-weight: 800; color: #22c55e; margin: 0 0 16px 0;">Account Reactivated! ✅</h1>
+          <p style="font-size: 16px; color: #a1a1aa; margin: 0 0 24px 0;">Great news! Your store <strong>${businessName}</strong> has been reactivated. You can now access your dashboard and your products are visible to customers again.</p>
+          <div style="text-align: center; margin-top: 32px;">
+            <a href="https://www.zoopcart.com/dashboard" target="_blank" style="display: inline-block; background-color: #ffffff; color: #000000 !important; font-weight: 800; font-size: 15px; padding: 18px 40px; text-decoration: none; border-radius: 14px;">Go to Dashboard</a>
+          </div>
+        </div>
+        <div style="background-color: #000000; padding: 32px; text-align: center; font-size: 12px; color: #52525b; border-top: 1px solid #1a1a1a;">
+          &copy; ${currentYear} Zoopcart. All rights reserved.
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+

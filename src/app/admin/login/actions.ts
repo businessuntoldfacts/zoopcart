@@ -2,9 +2,9 @@
 
 import { cookies } from "next/headers";
 
-const ADMIN_EMAIL = "admin@zoopcart.com";
-const ADMIN_PASS = "Zoopcart@Admin2026";
-const SECRET_TOKEN = "zoopcart_secure_master_key_2026";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@zoopcart.com";
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || "Zoopcart@Admin2026";
+const SECRET_TOKEN = process.env.ADMIN_SECRET_TOKEN || "zoopcart_secure_master_key_2026";
 
 export async function loginAdmin(email: string, pass: string) {
   if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {

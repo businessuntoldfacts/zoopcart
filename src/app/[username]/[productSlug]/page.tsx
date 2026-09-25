@@ -38,10 +38,10 @@ export default function ProductDetailPage({ params }: { params: { username: stri
       if (!p) return router.push(`/${b.username}`);
       setProduct(p);
 
-      const saved = JSON.parse(localStorage.getItem('zypcart_saved') || '[]');
+      const saved = JSON.parse(localStorage.getItem('zoopcart_saved') || '[]');
       setIsSaved(saved.includes(p.id));
 
-      const cart = JSON.parse(localStorage.getItem('zypcart_cart') || '[]');
+      const cart = JSON.parse(localStorage.getItem('zoopcart_cart') || '[]');
       setCartCount(cart.length);
 
       setLoading(false);
@@ -51,7 +51,7 @@ export default function ProductDetailPage({ params }: { params: { username: stri
 
   const toggleSave = () => {
     if (!product) return;
-    const saved = JSON.parse(localStorage.getItem('zypcart_saved') || '[]');
+    const saved = JSON.parse(localStorage.getItem('zoopcart_saved') || '[]');
     let newSaved;
     if (saved.includes(product.id)) {
       newSaved = saved.filter((id: string) => id !== product.id);
@@ -60,13 +60,13 @@ export default function ProductDetailPage({ params }: { params: { username: stri
       newSaved = [...saved, product.id];
       setIsSaved(true);
     }
-    localStorage.setItem('zypcart_saved', JSON.stringify(newSaved));
+    localStorage.setItem('zoopcart_saved', JSON.stringify(newSaved));
     window.dispatchEvent(new Event('cart-updated'));
   };
 
   const addToCart = () => {
     if (!product) return;
-    const cart = JSON.parse(localStorage.getItem('zypcart_cart') || '[]');
+    const cart = JSON.parse(localStorage.getItem('zoopcart_cart') || '[]');
     const existingIndex = cart.findIndex((item: any) => item.id === product.id);
 
     if (existingIndex > -1) {
@@ -75,7 +75,7 @@ export default function ProductDetailPage({ params }: { params: { username: stri
       cart.push({ id: product.id, quantity: 1 });
     }
 
-    localStorage.setItem('zypcart_cart', JSON.stringify(cart));
+    localStorage.setItem('zoopcart_cart', JSON.stringify(cart));
     setCartCount(cart.length);
     window.dispatchEvent(new Event('cart-updated'));
     alert("Added to cart!");
@@ -91,14 +91,19 @@ export default function ProductDetailPage({ params }: { params: { username: stri
 
   let cleanDescription = product.description || "";
   let videoLink = "";
+  let metaData: any = {};
   if (cleanDescription.includes('---ZYP_DELIVERY:')) {
     const parts = cleanDescription.split('---ZYP_DELIVERY:');
     cleanDescription = parts[0].trim();
     try {
-      const meta = JSON.parse(parts[1].split('---')[0]);
-      videoLink = meta.video || "";
+      metaData = JSON.parse(parts[1].split('---')[0]);
+      videoLink = metaData.video || "";
     } catch(e) {}
   }
+
+  const availableSizes = metaData.sizes ? metaData.sizes.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
+  const availableColors = metaData.colors ? metaData.colors.split(',').map((c: string) => c.trim()).filter(Boolean) : [];
+  const availableWeights = metaData.weights ? metaData.weights.split(',').map((w: string) => w.trim()).filter(Boolean) : [];
 
   const isYouTube = videoLink.includes('youtube.com') || videoLink.includes('youtu.be');
   const isInstagram = videoLink.includes('instagram.com');
@@ -179,6 +184,42 @@ export default function ProductDetailPage({ params }: { params: { username: stri
               FAST SHIPPING
             </div>
           </div>
+
+          {/* Variants */}
+          {(availableSizes.length > 0 || availableColors.length > 0 || availableWeights.length > 0) && (
+            <div className="space-y-4 mb-8">
+               {availableSizes.length > 0 && (
+                 <div>
+                   <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Available Sizes</h3>
+                   <div className="flex flex-wrap gap-2">
+                     {availableSizes.map((s: string) => (
+                       <span key={s} className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700">{s}</span>
+                     ))}
+                   </div>
+                 </div>
+               )}
+               {availableColors.length > 0 && (
+                 <div>
+                   <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Available Colors</h3>
+                   <div className="flex flex-wrap gap-2">
+                     {availableColors.map((c: string) => (
+                       <span key={c} className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700">{c}</span>
+                     ))}
+                   </div>
+                 </div>
+               )}
+               {availableWeights.length > 0 && (
+                 <div>
+                   <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Available Weights</h3>
+                   <div className="flex flex-wrap gap-2">
+                     {availableWeights.map((w: string) => (
+                       <span key={w} className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700">{w}</span>
+                     ))}
+                   </div>
+                 </div>
+               )}
+            </div>
+          )}
 
           {/* Details */}
           <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-100 mb-6">

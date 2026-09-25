@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, ShoppingBag, Settings, LogOut, Bell, Shield } from "lucide-react";
+import { LayoutDashboard, Users, ShoppingBag, Settings, LogOut, Bell, Shield, Package, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutAdmin } from "./login/actions";
 
@@ -22,9 +22,12 @@ export default function AdminLayout({
 
 
   const navigation = [
-    { name: "Overview", href: "/admin", icon: LayoutDashboard },
-    { name: "Sellers", href: "/admin/sellers", icon: Users },
-    { name: "All Orders", href: "/admin/orders", icon: ShoppingBag },
+    {name: "Overview", href: "/admin", icon: LayoutDashboard },
+    {name: "Sellers", href: "/admin/sellers", icon: Users },
+    {name: "Team Management", href: "/admin/team", icon: UserPlus },
+    {name: "All Products", href: "/admin/products", icon: Package },
+    {name: "All Orders", href: "/admin/orders", icon: ShoppingBag },
+    {name: "Announcements", href: "/admin/announcements", icon: Bell },
     
     { name: "Platform Settings", href: "/admin/settings", icon: Settings },
   ];

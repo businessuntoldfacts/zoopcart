@@ -39,29 +39,29 @@ export default function AdminLogin() {
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
           
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-extrabold mb-2 text-white">Admin Access Only</h1>
-            <p className="text-slate-400 text-sm">Please log in with your master credentials.</p>
+            <h1 className="text-2xl font-extrabold mb-2 text-slate-900">Admin Access Only</h1>
+            <p className="text-slate-500 text-sm">Please log in with your master credentials.</p>
           </div>
 
           {errorMsg && (
-            <div className="mb-6 p-3 bg-red-500/10 border border-red-500/50 rounded-xl text-red-400 text-sm font-bold text-center">
+            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-bold text-center">
               {errorMsg}
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="text-xs font-bold text-slate-300 mb-1.5 block">Admin Email</label>
+              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Admin Email</label>
               <Input 
                 required 
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 h-12"
+                className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 h-12 rounded-xl focus:ring-slate-900"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 mb-1.5 block">Master Password</label>
+              <label className="text-xs font-bold text-slate-700 mb-1.5 block">Master Password</label>
               <div className="relative">
                 <Input 
                   required 
@@ -69,24 +69,24 @@ export default function AdminLogin() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 pr-10 h-12"
+                  className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 pr-10 h-12 rounded-xl focus:ring-slate-900"
                 />
                 <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
             
-            <Button type="submit" variant="primary" disabled={loading} className="w-full text-base py-6 rounded-xl font-bold bg-[#111111] hover:bg-black mt-4 shadow-lg shadow-black/20">
+            <Button type="submit" variant="default" disabled={loading} className="w-full text-base py-6 rounded-xl font-bold bg-[#111111] hover:bg-black text-white mt-4 shadow-lg shadow-black/20">
               {loading ? "Authenticating..." : "Login to Dashboard"}
             </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-slate-700/50 flex justify-center">
+          <div className="mt-8 pt-6 border-t border-slate-100 flex justify-center">
             <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
               <ShieldCheck className="w-4 h-4 text-green-500" />
               Secure encrypted connection

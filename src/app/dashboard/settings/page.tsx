@@ -35,7 +35,7 @@ export default function SettingsHubPage() {
       title: "STORE",
       items: [
         { icon: Store, label: "Store Settings", description: "Name, description and shipping", href: "/dashboard/settings/store" },
-        { icon: Palette, label: "Website Theme", description: "Choose theme and brand colour", href: "/dashboard/settings/theme" },
+        { icon: Palette, label: "Store Theme", description: "Choose theme and brand colour", href: "/dashboard/settings/theme" },
         ]
     },
     {

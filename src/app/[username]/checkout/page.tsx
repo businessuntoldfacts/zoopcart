@@ -28,7 +28,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
       if (!b) return router.push('/');
       setBusiness(b);
 
-      const cart = localStorage.getItem('zypcart_cart');
+      const cart = localStorage.getItem('zoopcart_cart');
       if (cart) {
         try {
           const items = JSON.parse(cart);
@@ -168,7 +168,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
         console.error("❌ Seller notification failed to fetch:", sellerEmailErr);
       }
 
-      localStorage.removeItem('zypcart_cart');
+      localStorage.removeItem('zoopcart_cart');
       window.dispatchEvent(new Event('cart-updated'));
       setOrderToken(token);
       setIsSubmitted(true);

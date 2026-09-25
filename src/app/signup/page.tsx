@@ -172,20 +172,43 @@ export default function SignupPage() {
   };
 
   const createBusiness = async (userId: string) => {
-    const { error: dbError } = await supabase.from('businesses').insert([
-      {
-        user_id: userId,
-        business_name: formData.businessName,
-        username: formData.username.toLowerCase()
-      }
-    ]);
+    // Insert business and retrieve its ID
+    const { data: newBusiness, error: dbError } = await supabase
+      .from('businesses')
+      .insert([
+        {
+          user_id: userId,
+          business_name: formData.businessName,
+          username: formData.username.toLowerCase(),
+          email: formData.email.toLowerCase()
+        }
+      ])
+      .select('id')
+      .single();
 
     if (dbError) {
       if (dbError.code === '23505') throw new Error("Username already taken.");
       throw dbError;
     }
 
+    // 5. Implement a "Welcome" announcement as the initial default notification for all new stores.
+    try {
+      await supabase.from('announcements').insert([
+        {
+          business_id: newBusiness.id,
+          title: `Welcome to Zoopcart, ${formData.businessName}! 🚀`,
+          content: `We're thrilled to have you here. Your storefront is officially live at zoopcart.com/${formData.username.toLowerCase()}. Let's customize your store, add some premium products, and share your link with the world!`,
+          type: 'success',
+          link: `/dashboard/settings`,
+          is_active: true
+        }
+      ]);
+    } catch (annError) {
+      console.error("Failed to insert welcome announcement:", annError);
+    }
+
     setSuccess("Account created successfully! Redirecting...");
+    localStorage.setItem("setup_pending", "true");
 
     try {
       await fetch("/api/send", {
@@ -202,7 +225,7 @@ export default function SignupPage() {
     } catch (e) {}
 
     setTimeout(() => {
-      window.location.href = "/dashboard";
+      window.location.href = "/dashboard/settings/store";
     }, 1500);
   };
 

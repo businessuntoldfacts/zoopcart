@@ -69,7 +69,7 @@ export default function ReviewsPage() {
                       <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <p className="text-[#111111] leading-relaxed font-bold text-lg mb-8 flex-1">"{review.notes}"</p>
+                  <p className="text-[#111111] leading-relaxed font-bold text-lg mb-8 flex-1">&quot;{review.notes}&quot;</p>
                   <div className="flex items-center gap-4">
                     {review.avatar ? (
                       <img src={review.avatar} alt={review.customer_name} className="w-12 h-12 rounded-full object-cover border border-slate-200 shadow-sm" />

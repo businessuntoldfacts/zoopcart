@@ -16,7 +16,7 @@ export default function StorefrontClient({ business, products, stats }: { busine
   const [savedItems, setSavedItems] = useState<string[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('zypcart_saved');
+    const saved = localStorage.getItem('zoopcart_saved');
     if (saved) {
       try {
         setSavedItems(JSON.parse(saved));
@@ -31,7 +31,7 @@ export default function StorefrontClient({ business, products, stats }: { busine
       ? savedItems.filter(id => id !== productId)
       : [...savedItems, productId];
     setSavedItems(newSaved);
-    localStorage.setItem('zypcart_saved', JSON.stringify(newSaved));
+    localStorage.setItem('zoopcart_saved', JSON.stringify(newSaved));
     window.dispatchEvent(new Event('cart-updated'));
   };
 

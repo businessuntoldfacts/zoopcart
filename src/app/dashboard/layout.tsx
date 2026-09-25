@@ -53,11 +53,37 @@ export default function DashboardLayout({
     username: "",
     image: null
   });
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [announcementsOpen, setAnnouncementsOpen] = useState(false);
+  const [platformSettings, setPlatformSettings] = useState<any>(null);
+  const announcementsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function loadGlobalSettings() {
+      const { data } = await supabase.from('platform_settings').select('*').single();
+      if (data) setPlatformSettings(data);
+    }
+    loadGlobalSettings();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (announcementsRef.current && !announcementsRef.current.contains(event.target as Node)) {
+        setAnnouncementsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (!loading && !business) {
       // If user is logged in but has no business profile, send to signup to complete setup
       router.replace('/signup');
+    }
+
+    if (!loading && business && localStorage.getItem("setup_pending") === "true" && pathname !== "/dashboard/settings/store") {
+      router.replace('/dashboard/settings/store');
     }
 
     if (business) {
@@ -66,6 +92,51 @@ export default function DashboardLayout({
         username: business.username || "",
         image: business.profile_image || null
       });
+
+      // 1. Initial Fetch
+      const fetchAnnouncements = async () => {
+        const { data } = await supabase
+          .from('announcements')
+          .select('*')
+          .eq('is_active', true)
+          .or(`business_id.is.null,business_id.eq.${business.id}`)
+          .order('created_at', { ascending: false })
+          .limit(5);
+        if (data) setAnnouncements(data);
+      };
+
+      fetchAnnouncements();
+
+      // 2. Realtime Subscription (Live Changes)
+      const channel = supabase
+        .channel('schema-db-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'announcements'
+          },
+          () => {
+            fetchAnnouncements(); // Refresh list when any change happens
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'platform_settings'
+          },
+          (payload) => {
+            setPlatformSettings(payload.new); // Update banner live
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [business, loading, router]);
 
@@ -159,10 +230,65 @@ export default function DashboardLayout({
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6">
-            <button className="relative text-slate-500 dark:text-slate-400 hover:text-[#111111] dark:hover:text-white transition-colors">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-800"></span>
-            </button>
+            <div className="relative" ref={announcementsRef}>
+              <button
+                onClick={() => setAnnouncementsOpen(!announcementsOpen)}
+                className="relative text-slate-500 dark:text-slate-400 hover:text-[#111111] dark:hover:text-white transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <Bell className="w-5 h-5" />
+                {announcements.length > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-800"></span>
+                )}
+              </button>
+
+              {announcementsOpen && (
+                <div className="absolute top-10 right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-3 z-[100] flex flex-col">
+                  <div className="px-4 pb-2 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">Platform Notifications</span>
+                    <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">{announcements.length} New</span>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto divide-y divide-slate-50 dark:divide-slate-700">
+                    {announcements.length === 0 ? (
+                      <div className="p-6 text-center text-xs text-slate-400 font-medium">
+                        No new announcements at this time.
+                      </div>
+                    ) : (
+                      announcements.map((ann) => (
+                        <div key={ann.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors flex flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <span className={cn(
+                              "text-[9px] font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider",
+                              ann.type === 'warning' ? "bg-orange-50 text-orange-600" :
+                              ann.type === 'success' ? "bg-green-50 text-green-600" :
+                              ann.type === 'promotion' ? "bg-purple-50 text-purple-600" :
+                              "bg-blue-50 text-blue-600"
+                            )}>
+                              {ann.type || 'info'}
+                            </span>
+                            <span className="text-[9px] font-medium text-slate-400">
+                              {new Date(ann.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <h4 className="font-bold text-xs text-slate-900 dark:text-white leading-snug">{ann.title}</h4>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">{ann.content}</p>
+                          {ann.link && (
+                            <a
+                              href={ann.link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[11px] font-bold text-blue-600 hover:underline mt-1 flex items-center gap-0.5"
+                            >
+                              Learn More <ArrowUpRight className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center gap-3 border-l border-zyp-border dark:border-slate-700 pl-4 sm:pl-6 relative" ref={profileRef}>
               <div className="hidden sm:block text-right">
                 <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{businessData.name}</div>
@@ -201,6 +327,12 @@ export default function DashboardLayout({
         
         <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 dark:bg-slate-900">
           <div className="max-w-[1200px] mx-auto">
+            {platformSettings?.enable_banner && platformSettings?.global_banner && (
+              <div className="mb-6 p-4 bg-amber-500 border border-amber-600 rounded-2xl text-white font-extrabold text-sm flex items-center gap-3 shadow-md shadow-amber-500/10 animate-pulse">
+                <Bell className="w-5 h-5 shrink-0" />
+                <span>{platformSettings.global_banner}</span>
+              </div>
+            )}
             {children}
           </div>
         </div>

@@ -63,7 +63,7 @@ export default async function OrderTrackingPage({ params }: { params: { token: s
               {order.businesses.business_name.charAt(0)}
             </div>
             <p className="text-sm font-medium text-green-900 leading-relaxed ml-2">
-              "Hi {order.customer_name.split(' ')[0]}, your order has been delivered! Thank you for shopping with us. 🥰"
+              &quot;Hi {order.customer_name.split(' ')[0]}, your order has been delivered! Thank you for shopping with us. 🥰&quot;
             </p>
           </div>
         )}

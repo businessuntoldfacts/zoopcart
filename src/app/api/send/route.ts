@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
-import { getWelcomeEmailTemplate, getOrderNotificationEmailTemplate, getSellerOrderNotificationEmailTemplate } from "@/lib/emailTemplates";
+import {
+  getWelcomeEmailTemplate,
+  getOrderNotificationEmailTemplate,
+  getSellerOrderNotificationEmailTemplate,
+  getPlatformAnnouncementEmailTemplate,
+  getSuspensionEmailTemplate,
+  getActivationEmailTemplate
+} from "@/lib/emailTemplates";
 
 export async function POST(request: Request) {
   try {
@@ -34,6 +41,18 @@ export async function POST(request: Request) {
     } else if (type === "seller_order_notification") {
       html = getSellerOrderNotificationEmailTemplate(data);
       subject = `New Order Received! 🛍️ #${data.orderId}`;
+    } else if (type === "platform_announcement") {
+      const { title, content, link } = data;
+      html = getPlatformAnnouncementEmailTemplate(title, content, link);
+      subject = `📢 Announcement: ${title}`;
+    } else if (type === "account_suspended") {
+      const { businessName, reason } = data;
+      html = getSuspensionEmailTemplate(businessName, reason);
+      subject = `Account Suspended: ${businessName}`;
+    } else if (type === "account_activated") {
+      const { businessName } = data;
+      html = getActivationEmailTemplate(businessName);
+      subject = `Account Reactivated: ${businessName}`;
     } else {
       return NextResponse.json({ error: "Invalid email type" }, { status: 400 });
     }

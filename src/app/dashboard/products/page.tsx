@@ -31,7 +31,10 @@ export default function ProductsPage() {
     published: true,
     featured: false,
     delivery_type: "free",
-    delivery_charge: ""
+    delivery_charge: "",
+    sizes: "",
+    colors: "",
+    weights: ""
   });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [generatingAI, setGeneratingAI] = useState(false);
@@ -101,7 +104,14 @@ export default function ProductsPage() {
     // We map price -> selling price, sale_price -> MRP
     
     
-    const deliveryData = JSON.stringify({ type: formData.delivery_type, charge: formData.delivery_charge, video: formData.videoLink });
+    const deliveryData = JSON.stringify({
+      type: formData.delivery_type,
+      charge: formData.delivery_charge,
+      video: formData.videoLink,
+      sizes: formData.sizes,
+      colors: formData.colors,
+      weights: formData.weights
+    });
     const payloadDesc = formData.description + `\n\n---ZYP_DELIVERY:${deliveryData}---`;
 
 
@@ -139,7 +149,24 @@ export default function ProductsPage() {
 
     setEditingId(null);
     setSubmitting(false);
-    setFormData({ name: "", description: "", category: "", price: "", sale_price: "", availability: "in_stock", image: "", stock: "50", videoLink: "", published: true, featured: false, delivery_type: "free", delivery_charge: "" });
+    setFormData({
+      name: "",
+      description: "",
+      category: "",
+      price: "",
+      sale_price: "",
+      availability: "in_stock",
+      image: "",
+      stock: "50",
+      videoLink: "",
+      published: true,
+      featured: false,
+      delivery_type: "free",
+      delivery_charge: "",
+      sizes: "",
+      colors: "",
+      weights: ""
+    });
   };
 
   if (loading) return <div className="p-4 text-zyp-textMuted font-medium">Loading products...</div>;
@@ -249,6 +276,44 @@ export default function ProductsPage() {
                     </div>
                   </div>
                 </div>
+
+                {formData.category === "Clothing Sellers" && (
+                  <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
+                    <div>
+                      <label className="text-sm font-bold text-white mb-1.5 block">Sizes</label>
+                      <Input
+                        value={formData.sizes}
+                        onChange={(e: any) => setFormData({...formData, sizes: e.target.value})}
+                        placeholder="S, M, L, XL"
+                        className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl"
+                      />
+                      <p className="text-[10px] text-slate-500 mt-1">Comma separated</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-bold text-white mb-1.5 block">Colors</label>
+                      <Input
+                        value={formData.colors}
+                        onChange={(e: any) => setFormData({...formData, colors: e.target.value})}
+                        placeholder="Red, Blue, Black"
+                        className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl"
+                      />
+                      <p className="text-[10px] text-slate-500 mt-1">Comma separated</p>
+                    </div>
+                  </div>
+                )}
+
+                {formData.category === "Home Bakers" && (
+                  <div className="animate-in fade-in slide-in-from-top-2">
+                    <label className="text-sm font-bold text-white mb-1.5 block">Available Weights</label>
+                    <Input
+                      value={formData.weights}
+                      onChange={(e: any) => setFormData({...formData, weights: e.target.value})}
+                      placeholder="500g, 1kg, 2kg, 5kg"
+                      className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">Example: 500g, 1kg, 1.5kg, 2kg, 5kg</p>
+                  </div>
+                )}
 
               <div>
                 <label className="text-sm font-bold text-white mb-1.5 flex items-center justify-between">
@@ -396,6 +461,9 @@ export default function ProductsPage() {
                     let delType = "free";
                     let delCharge = "";
                     let vLink = "";
+                    let sizes = "";
+                    let colors = "";
+                    let weights = "";
                     if (desc.includes('---ZYP_DELIVERY:')) {
                       const parts = desc.split('---ZYP_DELIVERY:');
                       desc = parts[0].trim();
@@ -404,6 +472,9 @@ export default function ProductsPage() {
                         delType = meta.type || "free";
                         delCharge = meta.charge || "";
                         vLink = meta.video || "";
+                        sizes = meta.sizes || "";
+                        colors = meta.colors || "";
+                        weights = meta.weights || "";
                       } catch(e) {}
                     }
                     
@@ -420,7 +491,10 @@ export default function ProductsPage() {
                       published: true,
                       featured: false,
                       delivery_type: delType,
-                      delivery_charge: delCharge
+                      delivery_charge: delCharge,
+                      sizes: sizes,
+                      colors: colors,
+                      weights: weights
                     });
 
 

@@ -39,7 +39,7 @@ export default function StoreSettingsPage() {
       
       const { data } = await supabase.from('businesses').select('*').eq('user_id', user.id).single();
       if (data) {
-        let extraSettings = {};
+        let extraSettings: any = {};
         try {
           if (data.instagram_profile_url && data.instagram_profile_url.startsWith('{')) {
             extraSettings = JSON.parse(data.instagram_profile_url);
@@ -55,6 +55,7 @@ export default function StoreSettingsPage() {
           instagram_handle: data.instagram_handle || "",
           city: data.city || "",
           description: data.description || "",
+          email: data.email || user.email || "",
           ...extraSettings
         });
       }
@@ -135,6 +136,10 @@ export default function StoreSettingsPage() {
       alert("Error saving: " + error.message);
     } else {
       alert("Store settings saved successfully!");
+      if (localStorage.getItem("setup_pending") === "true") {
+        localStorage.removeItem("setup_pending");
+        router.push("/dashboard");
+      }
     }
     setSaving(false);
   };
@@ -200,10 +205,10 @@ export default function StoreSettingsPage() {
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-900 mb-1.5 block">Email</label>
-                <Input value={business.email} onChange={(e: any) => setBusiness({...business, email: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
+                <Input value={business.email} disabled className="bg-slate-100 border-slate-200 h-12 rounded-xl text-slate-500 cursor-not-allowed" />
               </div>
               <div>
-                <label className="text-sm font-bold text-slate-900 mb-1.5 block">WhatsApp Number</label>
+                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Phone Number</label>
                 <div className="flex gap-2">
                   <Input value={business.whatsapp_country_code} onChange={(e: any) => setBusiness({...business, whatsapp_country_code: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900 w-20" placeholder="+91" />
                   <Input value={business.whatsapp_number} onChange={(e: any) => setBusiness({...business, whatsapp_number: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900 flex-1" placeholder="Mobile number" />

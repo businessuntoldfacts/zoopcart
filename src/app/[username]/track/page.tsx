@@ -173,9 +173,14 @@ export default function TrackOrderPage({ params }: { params: { username: string 
                   <div className="w-14 h-14 rounded-lg overflow-hidden bg-white shrink-0">
                     {product.image ? <img src={product.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-slate-300 text-[10px] font-bold">N/A</div>}
                   </div>
-                  <div>
+                  <div className="flex-1">
                      <h3 className="font-extrabold text-sm text-slate-900 line-clamp-1">{product.name}</h3>
-                     <div className="text-xs font-bold text-[#111111]">₹{product.price}</div>
+                     <div className="text-xs font-bold text-[#111111] mb-1">₹{product.price}</div>
+                     {order.notes && order.notes.includes('|') && (
+                       <div className="text-[11px] font-semibold text-slate-500 bg-slate-100 p-1.5 rounded mt-1">
+                         {order.notes.split('|').slice(1).join(' | ')}
+                       </div>
+                     )}
                   </div>
                 </div>
               )}

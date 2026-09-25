@@ -38,7 +38,7 @@ export default function DashboardOverview() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
         <div>
           <h2 className="text-2xl font-extrabold text-[#0F172A]">Welcome back, {userName}</h2>
-          <p className="text-sm text-slate-500 mt-1">Here's your store performance overview.</p>
+          <p className="text-sm text-slate-500 mt-1">Here&apos;s your store performance overview.</p>
         </div>
         <select className="bg-white border border-slate-200 text-sm font-semibold text-[#0F172A] rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-[#111111]/20 cursor-pointer shadow-sm">
           <option>Last 30 Days</option>

@@ -18,8 +18,11 @@ export default function RequestForm({ params }: { params: { username: string, pr
     phone: "",
     email: "",
     quantity: 1,
-        requiredDate: "",
-    delivery_location: ""
+    requiredDate: "",
+    delivery_location: "",
+    selectedSize: "",
+    selectedColor: "",
+    selectedWeight: ""
   });
 
   useEffect(() => {
@@ -39,15 +42,20 @@ export default function RequestForm({ params }: { params: { username: string, pr
   let deliveryType = "free";
   let deliveryCharge = 0;
   let cleanDescription = product?.description || "";
+  let metaData: any = {};
   if (cleanDescription.includes('---ZYP_DELIVERY:')) {
     const parts = cleanDescription.split('---ZYP_DELIVERY:');
     try {
-      const meta = JSON.parse(parts[1].split('---')[0]);
-      deliveryType = meta.type || "free";
-      deliveryCharge = meta.charge ? parseFloat(meta.charge) : 0;
+      metaData = JSON.parse(parts[1].split('---')[0]);
+      deliveryType = metaData.type || "free";
+      deliveryCharge = metaData.charge ? parseFloat(metaData.charge) : 0;
     } catch(e) {}
   }
-  
+
+  const availableSizes = metaData.sizes ? metaData.sizes.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
+  const availableColors = metaData.colors ? metaData.colors.split(',').map((c: string) => c.trim()).filter(Boolean) : [];
+  const availableWeights = metaData.weights ? metaData.weights.split(',').map((w: string) => w.trim()).filter(Boolean) : [];
+
   const productTotal = (product?.price || 0) * formData.quantity;
   const finalPrice = productTotal + (deliveryType === 'paid' ? deliveryCharge : 0);
 
@@ -67,7 +75,7 @@ export default function RequestForm({ params }: { params: { username: string, pr
       quantity: formData.quantity,
       budget: finalPrice,
       required_date: formData.requiredDate || null,
-      notes: `Total: ₹${finalPrice} (Product: ₹${productTotal} + Delivery: ₹${deliveryType === "paid" ? deliveryCharge : 0})`,
+      notes: `Total: ₹${finalPrice} (Product: ₹${productTotal} + Delivery: ₹${deliveryType === "paid" ? deliveryCharge : 0})${formData.selectedSize ? ` | Size: ${formData.selectedSize}` : ''}${formData.selectedColor ? ` | Color: ${formData.selectedColor}` : ''}${formData.selectedWeight ? ` | Weight: ${formData.selectedWeight}` : ''}`,
       delivery_location: formData.delivery_location,
       tracking_token: token,
       status: 'pending'
@@ -302,6 +310,45 @@ export default function RequestForm({ params }: { params: { username: string, pr
           <h3 className="font-extrabold text-slate-900 mb-4 mt-8 text-sm tracking-wider uppercase">Request Details</h3>
           
           <div className="space-y-4">
+            {availableSizes.length > 0 && (
+              <div>
+                <label className="text-xs font-bold text-slate-700 mb-1.5 block">Select Size <span className="text-[#111111]">*</span></label>
+                <div className="relative">
+                  <select required value={formData.selectedSize} onChange={(e) => setFormData({...formData, selectedSize: e.target.value})} className="w-full h-14 pl-4 pr-10 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-extrabold appearance-none transition-all">
+                    <option value="" disabled>Choose Size</option>
+                    {availableSizes.map((s: string) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+            )}
+
+            {availableColors.length > 0 && (
+              <div>
+                <label className="text-xs font-bold text-slate-700 mb-1.5 block">Select Color <span className="text-[#111111]">*</span></label>
+                <div className="relative">
+                  <select required value={formData.selectedColor} onChange={(e) => setFormData({...formData, selectedColor: e.target.value})} className="w-full h-14 pl-4 pr-10 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-extrabold appearance-none transition-all">
+                    <option value="" disabled>Choose Color</option>
+                    {availableColors.map((c: string) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+            )}
+
+            {availableWeights.length > 0 && (
+              <div>
+                <label className="text-xs font-bold text-slate-700 mb-1.5 block">Select Weight <span className="text-[#111111]">*</span></label>
+                <div className="relative">
+                  <select required value={formData.selectedWeight} onChange={(e) => setFormData({...formData, selectedWeight: e.target.value})} className="w-full h-14 pl-4 pr-10 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 text-sm font-extrabold appearance-none transition-all">
+                    <option value="" disabled>Choose Weight</option>
+                    {availableWeights.map((w: string) => <option key={w} value={w}>{w}</option>)}
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="text-xs font-bold text-slate-700 mb-1.5 block">Quantity <span className="text-[#111111]">*</span></label>
               <div className="relative">

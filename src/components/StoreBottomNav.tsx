@@ -10,7 +10,7 @@ export default function StoreBottomNav({ username }: { username: string }) {
 
   useEffect(() => {
     const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem('zypcart_cart') || '[]');
+      const cart = JSON.parse(localStorage.getItem('zoopcart_cart') || '[]');
       setCartCount(cart.length);
     };
 

@@ -25,7 +25,7 @@ export default function CartPage({ params }: { params: { username: string } }) {
       if (!b) return router.push('/');
       setBusiness(b);
 
-      const cart = localStorage.getItem('zypcart_cart');
+      const cart = localStorage.getItem('zoopcart_cart');
       if (cart) {
         try {
           const items = JSON.parse(cart);
@@ -56,7 +56,7 @@ export default function CartPage({ params }: { params: { username: string } }) {
       return item;
     });
     setCartItems(newCart);
-    localStorage.setItem('zypcart_cart', JSON.stringify(newCart));
+    localStorage.setItem('zoopcart_cart', JSON.stringify(newCart));
     window.dispatchEvent(new Event('cart-updated'));
   };
 
@@ -64,7 +64,7 @@ export default function CartPage({ params }: { params: { username: string } }) {
     const newCart = cartItems.filter(item => item.id !== productId);
     setCartItems(newCart);
     setProducts(products.filter(p => p.id !== productId));
-    localStorage.setItem('zypcart_cart', JSON.stringify(newCart));
+    localStorage.setItem('zoopcart_cart', JSON.stringify(newCart));
     window.dispatchEvent(new Event('cart-updated'));
   };
 

@@ -17,16 +17,25 @@ export default function AdminOrdersPage() {
   // Detail Modal
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
-  useEffect(() => {
-    async function loadOrders() {
-      const { data } = await supabase.from('orders').select('*, businesses(business_name, username), products(name, price)').order('created_at', { ascending: false });
-      if (data) {
-        setAllOrders(data);
-        setOrders(data);
-      }
-      setLoading(false);
+  const loadOrders = async () => {
+    const { data } = await supabase.from('orders').select('*, businesses(business_name, username), products(name, price)').order('created_at', { ascending: false });
+    if (data) {
+      setAllOrders(data);
     }
+    setLoading(false);
+  };
+
+  useEffect(() => {
     loadOrders();
+
+    // REALTIME: Listen for new orders or status updates
+    const channel = supabase.channel('admin-orders')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => loadOrders())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   useEffect(() => {
@@ -51,6 +60,33 @@ export default function AdminOrdersPage() {
     // Zoopcart format usually is "Total: ₹XXX (Product: ₹XXX + Delivery: ₹XXX) | user notes"
     // Let's just return the raw string nicely formatted
     return notes;
+  };
+
+  const handleUpdateStatus = async (orderId: string, newStatus: string) => {
+    setLoading(true);
+    const { error } = await supabase
+      .from('orders')
+      .update({ status: newStatus })
+      .eq('id', orderId);
+
+    if (!error) {
+      setAllOrders(allOrders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus });
+      }
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!confirm("Are you sure you want to delete this order permanently?")) return;
+    setLoading(true);
+    const { error } = await supabase.from('orders').delete().eq('id', orderId);
+    if (!error) {
+      setAllOrders(allOrders.filter(o => o.id !== orderId));
+      setSelectedOrder(null);
+    }
+    setLoading(false);
   };
 
   return (
@@ -223,6 +259,18 @@ export default function AdminOrdersPage() {
                 <p className="text-sm font-bold text-blue-800 whitespace-pre-wrap leading-relaxed">
                   {selectedOrder.notes || "No additional financial details."}
                 </p>
+              </div>
+
+              {/* Admin Super Overrides */}
+              <div className="border border-red-200 bg-red-50/50 rounded-2xl p-5 space-y-4">
+                <h4 className="text-sm font-extrabold text-red-900">Admin Control Overrides</h4>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => handleUpdateStatus(selectedOrder.id, 'new')} className="px-4 py-2 bg-yellow-600 text-white font-bold text-xs rounded-xl shadow-sm">Set New</button>
+                  <button onClick={() => handleUpdateStatus(selectedOrder.id, 'accepted')} className="px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl shadow-sm">Set Accepted</button>
+                  <button onClick={() => handleUpdateStatus(selectedOrder.id, 'completed')} className="px-4 py-2 bg-green-600 text-white font-bold text-xs rounded-xl shadow-sm">Set Completed</button>
+                  <button onClick={() => handleUpdateStatus(selectedOrder.id, 'cancelled')} className="px-4 py-2 bg-gray-600 text-white font-bold text-xs rounded-xl shadow-sm">Set Cancelled</button>
+                  <button onClick={() => handleDeleteOrder(selectedOrder.id)} className="px-4 py-2 bg-red-600 text-white font-bold text-xs rounded-xl shadow-sm ml-auto">Delete Order</button>
+                </div>
               </div>
 
             </div>

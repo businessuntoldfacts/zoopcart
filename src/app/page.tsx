@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Play, Target, Zap, Smartphone, TrendingUp, Sparkles, ArrowRight, MessageCircle, ShoppingBag, Grid, Palette, Camera, Heart, HelpCircle, Star, Store, LineChart, LayoutTemplate, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
+export const revalidate = 0;
+
 export default async function LandingPage() {
   const { data: realBusinesses } = await supabase
     .from('businesses')
@@ -201,7 +203,6 @@ export default async function LandingPage() {
               <div key={step.num} className="flex md:flex-col items-center md:text-center gap-6 md:gap-0 w-full">
                 <div className="w-16 h-16 rounded-full bg-white border-4 border-blue-50 shadow-sm flex items-center justify-center text-[#111111] font-bold text-xl mb-4 relative shrink-0">
                   {step.num}
-                  {step.num === 1 && <div className="absolute -inset-1 rounded-full border-2 border-[#111111]/30 animate-pulse"></div>}
                 </div>
                 <div>
                   <div className="text-lg md:text-sm font-bold text-[#0F172A] leading-snug">{step.title}</div>

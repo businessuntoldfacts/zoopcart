@@ -74,7 +74,7 @@ export default function ThemeSettingsPage() {
       </div>
       
       <div>
-        <h2 className="text-3xl font-extrabold text-slate-900">Website Theme</h2>
+        <h2 className="text-3xl font-extrabold text-slate-900">Store Theme</h2>
         <p className="text-sm text-slate-500 font-medium mt-1">Choose how your storefront looks to customers.</p>
       </div>
 
