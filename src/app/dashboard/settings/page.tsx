@@ -36,6 +36,7 @@ export default function SettingsHubPage() {
       items: [
         { icon: Store, label: "Store Settings", description: "Name, description and shipping", href: "/dashboard/settings/store" },
         { icon: Palette, label: "Store Theme", description: "Choose theme and brand colour", href: "/dashboard/settings/theme" },
+        { icon: Wallet, label: "Payment Details", description: "Set up UPI ID and payment options", href: "/dashboard/settings/payment" },
         ]
     },
     {
