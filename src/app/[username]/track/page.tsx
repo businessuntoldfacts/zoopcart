@@ -265,10 +265,3 @@ export default function TrackOrderPage({ params }: { params: { username: string 
     </div>
   );
 }
-
-      </div>
-
-      {business && <StoreBottomNav username={business.username} />}
-    </div>
-  );
-}
