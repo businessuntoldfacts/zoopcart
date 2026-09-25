@@ -173,17 +173,21 @@ export default function CheckoutPage({ params }: { params: { username: string } 
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white p-8 rounded-[32px] shadow-xl text-center max-w-sm w-full">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-10 h-10 text-green-600" />
-          </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 mb-2">Order Placed!</h1>
-          <p className="text-slate-500 font-medium mb-8">Order ID: <span className="text-slate-900 font-bold">#{orderToken}</span></p>
-          <Link href={`/${business.username}/track?token=${orderToken}`} className="block">
-            <button className="w-full py-4 bg-[#111111] text-white rounded-2xl font-bold shadow-lg">Track My Order</button>
-          </Link>
-        </motion.div>
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
+          <CheckCircle2 className="w-10 h-10 text-green-500" />
+        </div>
+        <h1 className="text-2xl font-black text-[#0F172A] mb-2">Order Placed!</h1>
+        <p className="text-slate-500 font-bold mb-8">Order ID: <span className="text-[#111111]">#{orderToken}</span></p>
+
+        <div className="w-full max-w-xs space-y-3">
+          <button
+            onClick={() => router.push(`/${params.username}/track?token=${orderToken}`)}
+            className="w-full py-4 bg-[#111111] text-white rounded-2xl font-bold shadow-xl active:scale-[0.98] transition-all"
+          >
+            Track My Order
+          </button>
+        </div>
       </div>
     );
   }

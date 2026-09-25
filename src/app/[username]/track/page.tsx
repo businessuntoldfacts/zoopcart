@@ -10,8 +10,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
   const router = useRouter();
   const [business, setBusiness] = useState<any>(null);
   const [query, setQuery] = useState("");
-  const [order, setOrder] = useState<any>(null);
-  const [product, setProduct] = useState<any>(null);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
@@ -20,7 +19,6 @@ export default function TrackOrderPage({ params }: { params: { username: string 
       const { data } = await supabase.from('businesses').select('*').eq('username', params.username.toLowerCase()).single();
       setBusiness(data);
 
-      // Auto-trigger search if token parameter exists in URL query
       if (typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get('token');
@@ -39,17 +37,12 @@ export default function TrackOrderPage({ params }: { params: { username: string 
 
     const { data: orderData } = await supabase
       .from('orders')
-      .select('*')
+      .select('*, products(*)')
       .eq('business_id', businessId)
-      .eq('tracking_token', tokenVal.toUpperCase())
-      .maybeSingle();
+      .eq('tracking_token', tokenVal.toUpperCase());
 
-    if (orderData) {
-      setOrder(orderData);
-      if (orderData.product_id) {
-        const { data: prodData } = await supabase.from('products').select('*').eq('id', orderData.product_id).single();
-        setProduct(prodData);
-      }
+    if (orderData && orderData.length > 0) {
+      setOrders(orderData);
     }
     setLoading(false);
   };
@@ -59,53 +52,46 @@ export default function TrackOrderPage({ params }: { params: { username: string 
     if (!query.trim() || !business) return;
     setLoading(true);
     setSearched(true);
-    setOrder(null);
-    setProduct(null);
+    setOrders([]);
 
-    let orderData = null;
     const cleanQuery = query.trim();
 
-    // 1. Search by Tracking Token / Order ID
+    // Search by Token
     const { data: byToken } = await supabase
       .from('orders')
-      .select('*')
+      .select('*, products(*)')
       .eq('business_id', business.id)
-      .eq('tracking_token', cleanQuery.toUpperCase())
-      .maybeSingle();
+      .eq('tracking_token', cleanQuery.toUpperCase());
 
-    if (byToken) {
-      orderData = byToken;
+    if (byToken && byToken.length > 0) {
+      setOrders(byToken);
     } else {
-      // 2. Search by Customer Phone Number
+      // Search by Phone
       const { data: byPhone } = await supabase
         .from('orders')
-        .select('*')
+        .select('*, products(*)')
         .eq('business_id', business.id)
         .eq('customer_phone', cleanQuery)
         .order('created_at', { ascending: false });
 
       if (byPhone && byPhone.length > 0) {
-        orderData = byPhone[0];
+        // If searching by phone, we might get multiple orders with different tokens.
+        // Let's just show the latest token's items.
+        const latestToken = byPhone[0].tracking_token;
+        setOrders(byPhone.filter(o => o.tracking_token === latestToken));
       } else {
-        // 3. Search by Customer Name / Token
+        // Search by Name
         const { data: byName } = await supabase
           .from('orders')
-          .select('*')
+          .select('*, products(*)')
           .eq('business_id', business.id)
           .ilike('customer_name', `%${cleanQuery}%`)
           .order('created_at', { ascending: false });
 
         if (byName && byName.length > 0) {
-          orderData = byName[0];
+          const latestToken = byName[0].tracking_token;
+          setOrders(byName.filter(o => o.tracking_token === latestToken));
         }
-      }
-    }
-
-    if (orderData) {
-      setOrder(orderData);
-      if (orderData.product_id) {
-        const { data: prodData } = await supabase.from('products').select('*').eq('id', orderData.product_id).single();
-        setProduct(prodData);
       }
     }
     setLoading(false);
@@ -119,7 +105,9 @@ export default function TrackOrderPage({ params }: { params: { username: string 
     return 0;
   };
 
-  const currentStep = order ? getStatusStep(order.status) : 0;
+  const mainOrder = orders[0];
+  const currentStep = mainOrder ? getStatusStep(mainOrder.status) : 0;
+  const totalAmount = orders.reduce((sum, o) => sum + (o.budget || 0), 0);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-24">
@@ -145,7 +133,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
           </button>
         </form>
 
-        {searched && !order && !loading && (
+        {orders.length === 0 && searched && !loading && (
           <div className="mt-8 text-center bg-white p-6 rounded-3xl border border-slate-100">
              <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
                 <Search className="w-8 h-8" />
@@ -155,38 +143,53 @@ export default function TrackOrderPage({ params }: { params: { username: string 
           </div>
         )}
 
-        {order && (
+        {orders.length > 0 && (
           <div className="mt-6 animate-in slide-in-from-bottom-4 duration-500">
             {/* Order Summary Header */}
             <div className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm">
               <div className="flex justify-between items-start mb-4">
                  <div>
-                    <h2 className="font-extrabold text-lg text-slate-900 tracking-tight">{order.tracking_token}</h2>
+                    <h2 className="font-extrabold text-lg text-slate-900 tracking-tight">#{mainOrder.tracking_token}</h2>
                  </div>
-                 <div className="bg-orange-100 text-orange-600 px-2.5 py-1 rounded-md text-[10px] font-extrabold flex items-center gap-1 uppercase tracking-wider">
-                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Pending
+                 <div className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold flex items-center gap-1 uppercase tracking-wider ${
+                    mainOrder.status === 'pending' || mainOrder.status === 'new' ? 'bg-orange-100 text-orange-600' :
+                    mainOrder.status === 'accepted' ? 'bg-blue-100 text-blue-600' :
+                    mainOrder.status === 'in_progress' ? 'bg-indigo-100 text-indigo-600' :
+                    'bg-emerald-100 text-emerald-600'
+                 }`}>
+                    <div className={`w-1.5 h-1.5 rounded-full ${
+                      mainOrder.status === 'pending' || mainOrder.status === 'new' ? 'bg-orange-500' :
+                      mainOrder.status === 'accepted' ? 'bg-blue-500' :
+                      mainOrder.status === 'in_progress' ? 'bg-indigo-500' :
+                      'bg-emerald-500'
+                    }`}></div> {mainOrder.status === 'new' ? 'PENDING' : mainOrder.status.toUpperCase().replace('_', ' ')}
                  </div>
               </div>
 
-              {product && (
-                <div className="flex gap-4 items-center mb-4 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <div className="w-14 h-14 rounded-lg overflow-hidden bg-white shrink-0">
-                    {product.image ? <img src={product.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-slate-300 text-[10px] font-bold">N/A</div>}
-                  </div>
-                  <div className="flex-1">
-                     <h3 className="font-extrabold text-sm text-slate-900 line-clamp-1">{product.name}</h3>
-                     <div className="text-xs font-bold text-[#111111] mb-1">₹{product.price}</div>
-                     {order.notes && order.notes.includes('|') && (
-                       <div className="text-[11px] font-semibold text-slate-500 bg-slate-100 p-1.5 rounded mt-1">
-                         {order.notes.split('|').slice(1).join(' | ')}
+              <div className="space-y-3 mb-4">
+                {orders.map((item: any, idx: number) => (
+                  <div key={item.id} className="flex gap-4 items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-white shrink-0 border border-slate-200">
+                      {item.products?.image ? <img src={item.products.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-slate-300 text-[10px] font-bold">N/A</div>}
+                    </div>
+                    <div className="flex-1">
+                       <h3 className="font-extrabold text-sm text-slate-900 line-clamp-1">{item.products?.name || 'Product'}</h3>
+                       <div className="flex justify-between items-center mt-0.5">
+                         <div className="text-xs font-bold text-[#111111]">₹{item.budget}</div>
+                         <div className="text-[10px] font-bold text-slate-400">Qty: {item.quantity}</div>
                        </div>
-                     )}
+                    </div>
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
 
-              <div className="text-xs text-slate-500 font-medium text-center border-t border-slate-50 pt-3">
-                Ordered on {new Date(order.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              <div className="pt-3 border-t border-slate-50 flex justify-between items-center">
+                <span className="text-xs font-bold text-slate-400 uppercase">Total Amount</span>
+                <span className="text-sm font-black text-slate-900">₹{totalAmount}</span>
+              </div>
+
+              <div className="text-[10px] text-slate-400 font-medium text-center mt-4">
+                Ordered on {new Date(mainOrder.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
               </div>
             </div>
 
@@ -246,7 +249,7 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               </div>
               <button
                 onClick={() => {
-                  const message = encodeURIComponent(`Hi, I need help with my order for ${product?.name || 'Product'}. Order ID: ${order?.tracking_token}`);
+                  const message = encodeURIComponent(`Hi, I need help with my order #${mainOrder.tracking_token}`);
                   window.open(`https://wa.me/${business?.whatsapp_country_code || '91'}${business?.whatsapp_number}?text=${message}`, '_blank');
                 }}
                 className="px-4 py-2.5 bg-[#111111] text-white font-extrabold text-xs rounded-xl shadow-sm whitespace-nowrap hover:bg-[#111111] transition-colors"
@@ -256,6 +259,13 @@ export default function TrackOrderPage({ params }: { params: { username: string 
             </div>
           </div>
         )}
+      </div>
+
+      {business && <StoreBottomNav username={business.username} />}
+    </div>
+  );
+}
+
       </div>
 
       {business && <StoreBottomNav username={business.username} />}
