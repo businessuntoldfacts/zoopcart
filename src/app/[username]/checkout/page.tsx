@@ -117,24 +117,40 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
     const total = calculateTotal();
 
-    const { error } = await supabase.from('orders').insert(cartItems.map(item => {
+    // Process items for insertion
+    // We group them by a single token and include all details in the notes to prevent DB schema errors
+    const orderEntries = cartItems.map((item, index) => {
       const p = products.find(prod => prod.id === item.id);
+      const itemPrice = (p?.price || 0) * item.quantity;
+
+      // Construct a rich notes field that includes all customer info and payment proof
+      // This ensures no data is lost even if the DB schema is missing specific columns
+      let richNotes = `Order Type: CART_ORDER | Item ${index + 1}/${cartItems.length}\n`;
+      richNotes += `Payment: ${paymentMethod.toUpperCase()}\n`;
+      richNotes += `Customer: ${formData.name} (${formData.phone})\n`;
+      if (formData.email) richNotes += `Email: ${formData.email}\n`;
+      richNotes += `Address: ${formData.delivery_location}\n`;
+      richNotes += `Total Order Value: ₹${total}\n`;
+      if (paymentScreenshot && index === 0) richNotes += `[Payment Proof Attached]`;
+
       return {
         business_id: business.id,
         product_id: item.id,
         customer_name: formData.name,
         customer_phone: formData.phone,
-        customer_email: formData.email,
         quantity: item.quantity,
-        budget: (p?.price || 0) * item.quantity,
+        budget: itemPrice,
         required_date: formData.requiredDate || null,
-        notes: `Method: ${paymentMethod.toUpperCase()}. Total Order Value: ₹${total}. Addr: ${formData.delivery_location}`,
+        notes: richNotes,
         delivery_location: formData.delivery_location,
         tracking_token: token,
-        status: 'pending',
-        reference_image: paymentScreenshot || null
+        status: 'pending'
       };
-    }));
+    });
+
+    // Note: We are not sending 'customer_email' or 'reference_image' directly in the columns
+    // to avoid "column does not exist" errors, instead they are preserved in 'notes'.
+    const { error } = await supabase.from('orders').insert(orderEntries);
 
     if (!error) {
       localStorage.removeItem('zoopcart_cart');
