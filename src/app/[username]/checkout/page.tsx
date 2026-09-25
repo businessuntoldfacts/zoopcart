@@ -21,12 +21,25 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     email: "",
     delivery_location: ""
   });
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [paymentSettings, setPaymentSettings] = useState<any>(null);
 
   useEffect(() => {
     async function fetchData() {
       const { data: b } = await supabase.from('businesses').select('*').eq('username', params.username.toLowerCase()).single();
       if (!b) return router.push('/');
       setBusiness(b);
+
+      try {
+        if (b.instagram_profile_url && b.instagram_profile_url.startsWith('{')) {
+          const settings = JSON.parse(b.instagram_profile_url);
+          setPaymentSettings(settings);
+          // Default to UPI if COD is disabled, or vice versa
+          if (settings.paymentMethod === 'upi') setPaymentMethod('upi');
+          else if (settings.codEnabled === false) setPaymentMethod('upi');
+          else setPaymentMethod('cod');
+        }
+      } catch (e) {}
 
       const cart = localStorage.getItem('zoopcart_cart');
       if (cart) {
@@ -87,7 +100,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
       customer_email: formData.email,
       quantity: totalQuantity,
       budget: total,
-      notes: `Cart Items: ${itemDetails}. ${formData.delivery_location}`,
+      notes: `Payment: ${paymentMethod.toUpperCase()}. Cart Items: ${itemDetails}. ${formData.delivery_location}`,
       delivery_location: formData.delivery_location,
       tracking_token: token,
       status: 'pending'
@@ -240,6 +253,72 @@ export default function CheckoutPage({ params }: { params: { username: string } 
                 <MapPin className="absolute left-4 top-4 w-4 h-4 text-slate-400" />
                 <textarea required value={formData.delivery_location} onChange={(e) => setFormData({...formData, delivery_location: e.target.value})} placeholder="Enter full address" className="w-full h-24 pt-4 pl-11 pr-4 rounded-xl border border-slate-200 bg-white outline-none focus:border-[#111111] text-sm font-medium resize-none"></textarea>
               </div>
+            </div>
+          </div>
+
+          <div className="mt-8 bg-white rounded-3xl p-5 border border-slate-100 shadow-sm space-y-4">
+            <h3 className="font-extrabold text-slate-900 text-sm">Payment Method</h3>
+
+            <div className="space-y-3">
+              {paymentSettings?.codEnabled !== false && (
+                <label className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${paymentMethod === 'cod' ? 'border-[#111111] bg-slate-50' : 'border-slate-100 opacity-60'}`}>
+                  <input type="radio" name="payment" value="cod" checked={paymentMethod === 'cod'} onChange={(e) => setPaymentMethod(e.target.value)} className="hidden" />
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'cod' ? 'border-[#111111]' : 'border-slate-300'}`}>
+                    {paymentMethod === 'cod' && <div className="w-2.5 h-2.5 rounded-full bg-[#111111]" />}
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm text-slate-900">Cash on Delivery</div>
+                    <div className="text-[10px] text-slate-500 font-medium">Pay when you receive the order</div>
+                  </div>
+                </label>
+              )}
+
+              {paymentSettings?.upiId && (
+                <div className="space-y-3">
+                  <label className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${paymentMethod === 'upi' ? 'border-[#111111] bg-slate-50' : 'border-slate-100 opacity-60'}`}>
+                    <input type="radio" name="payment" value="upi" checked={paymentMethod === 'upi'} onChange={(e) => setPaymentMethod(e.target.value)} className="hidden" />
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'upi' ? 'border-[#111111]' : 'border-slate-300'}`}>
+                      {paymentMethod === 'upi' && <div className="w-2.5 h-2.5 rounded-full bg-[#111111]" />}
+                    </div>
+                    <div>
+                      <div className="font-bold text-sm text-slate-900">UPI / Online Payment</div>
+                      <div className="text-[10px] text-slate-500 font-medium">Pay now via UPI QR or ID</div>
+                    </div>
+                  </label>
+
+                  {paymentMethod === 'upi' && (
+                    <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        {paymentSettings.upiQr && (
+                          <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+                            <img src={paymentSettings.upiQr} alt="Payment QR" className="w-40 h-40 object-contain" />
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Payable Amount</p>
+                          <p className="text-2xl font-black text-slate-900">₹{calculateTotal()}</p>
+                        </div>
+                        <div className="w-full space-y-2">
+                          <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
+                            <div className="text-left">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase">UPI ID</p>
+                              <p className="text-sm font-bold text-slate-900">{paymentSettings.upiId}</p>
+                            </div>
+                            <button type="button" onClick={() => {navigator.clipboard.writeText(paymentSettings.upiId); alert('UPI ID Copied!')}} className="text-[10px] font-bold text-blue-600 px-2 py-1 bg-blue-50 rounded-md">COPY</button>
+                          </div>
+                          {paymentSettings.upiName && (
+                            <div className="p-3 bg-white rounded-xl border border-slate-200 text-left">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase">Verified Name</p>
+                              <p className="text-sm font-bold text-slate-900">{paymentSettings.upiName}</p>
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-slate-500 font-medium italic">Please pay exactly ₹{calculateTotal()} and confirm below. Your order will be processed after payment verification.</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

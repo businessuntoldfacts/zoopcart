@@ -25,11 +25,20 @@ export default function PaymentSettingsPage() {
       let cod = true;
       
       try {
-        if (cachedBusiness.payment_methods) {
-          const pm = typeof cachedBusiness.payment_methods === 'string' ? JSON.parse(cachedBusiness.payment_methods) : cachedBusiness.payment_methods;
-          if (pm.upi) upi = pm.upi;
-          if (pm.cod !== undefined) cod = pm.cod;
+        let settings: any = {};
+        if (cachedBusiness.instagram_profile_url && cachedBusiness.instagram_profile_url.startsWith('{')) {
+          settings = JSON.parse(cachedBusiness.instagram_profile_url);
         }
+
+        if (settings.upiId || settings.upiName || settings.upiQr) {
+          upi = {
+            id: settings.upiId || "",
+            name: settings.upiName || "",
+            qr: settings.upiQr || ""
+          };
+        }
+        if (settings.codEnabled !== undefined) cod = settings.codEnabled;
+        if (settings.paymentMethod) setMethod(settings.paymentMethod);
       } catch (e) {}
       
       setUpiData(upi);
@@ -86,7 +95,8 @@ export default function PaymentSettingsPage() {
       paymentMethod: method,
       upiId: upiData.id,
       upiName: upiData.name,
-      upiQr: upiData.qr
+      upiQr: upiData.qr,
+      codEnabled: codEnabled
     };
     
     const { error } = await supabase.from('businesses').update({
@@ -150,6 +160,19 @@ export default function PaymentSettingsPage() {
         <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1 mt-8">UPI</h3>
         
         <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="text-sm font-bold text-slate-900 block">Cash on Delivery (COD)</label>
+              <p className="text-xs text-slate-500 font-medium">Allow customers to pay when they receive the order.</p>
+            </div>
+            <button
+              onClick={() => setCodEnabled(!codEnabled)}
+              className={`w-12 h-6 rounded-full transition-colors relative ${codEnabled ? 'bg-green-500' : 'bg-slate-200'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${codEnabled ? 'left-7' : 'left-1'}`} />
+            </button>
+          </div>
+
           <div className="relative border border-dashed border-slate-300 rounded-xl overflow-hidden flex flex-col items-center justify-center hover:bg-slate-50 transition-colors">
             {upiData.qr ? (
               <img src={upiData.qr} alt="UPI QR" className="w-full max-w-[200px] object-contain p-4" />
