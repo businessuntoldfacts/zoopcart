@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, CheckCircle2, User, Phone, Mail, MapPin, Loader2, QrCode, ShieldCheck, CreditCard, Wallet, ChevronRight, Copy, ExternalLink, Info } from "lucide-react";
+import { ArrowLeft, CheckCircle2, User, Phone, Mail, MapPin, Loader2, QrCode, ShieldCheck, CreditCard, Wallet, ChevronRight, Copy, ExternalLink, Info, Calendar } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
