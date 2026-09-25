@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, CheckCircle2, User, Phone, Mail, MapPin, Calendar, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, User, Phone, Mail, MapPin, Calendar, ChevronDown, Loader2, QrCode } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -22,7 +22,9 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     delivery_location: ""
   });
   const [paymentMethod, setPaymentMethod] = useState("cod");
-  const [paymentSettings, setPaymentSettings] = useState<any>(null);
+  const [paymentSettings, setPaymentSettings] = useState<any>({ codEnabled: true, upiEnabled: false });
+  const [paymentScreenshot, setPaymentScreenshot] = useState("");
+  const [uploadingScreenshot, setUploadingScreenshot] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -31,15 +33,24 @@ export default function CheckoutPage({ params }: { params: { username: string } 
       setBusiness(b);
 
       try {
+        let settings = { codEnabled: true, upiEnabled: false, upiId: "" };
         if (b.instagram_profile_url && b.instagram_profile_url.startsWith('{')) {
-          const settings = JSON.parse(b.instagram_profile_url);
-          setPaymentSettings(settings);
-          // Default to UPI if COD is disabled, or vice versa
-          if (settings.paymentMethod === 'upi') setPaymentMethod('upi');
-          else if (settings.codEnabled === false) setPaymentMethod('upi');
-          else setPaymentMethod('cod');
+          const parsed = JSON.parse(b.instagram_profile_url);
+          settings = { ...settings, ...parsed };
         }
-      } catch (e) {}
+        setPaymentSettings(settings);
+
+        // Logic for initial selection:
+        // 1. If COD is enabled, default to COD
+        // 2. If only UPI is enabled, default to UPI
+        if (settings.codEnabled !== false) {
+          setPaymentMethod('cod');
+        } else if (settings.upiEnabled !== false && settings.upiId) {
+          setPaymentMethod('upi');
+        }
+      } catch (e) {
+        console.error("Error parsing settings", e);
+      }
 
       const cart = localStorage.getItem('zoopcart_cart');
       if (cart) {
@@ -75,9 +86,45 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     }, 0);
   };
 
+  const handleScreenshotUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setUploadingScreenshot(true);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        let scaleSize = 1;
+        if (img.width > MAX_WIDTH) {
+          scaleSize = MAX_WIDTH / img.width;
+        }
+        canvas.width = img.width * scaleSize;
+        canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+        setPaymentScreenshot(compressedBase64);
+        setUploadingScreenshot(false);
+      };
+      if (event.target?.result) {
+        img.src = event.target.result as string;
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!business || cartItems.length === 0) return;
+
+    if (paymentMethod === 'upi' && !paymentScreenshot) {
+      alert("Please upload payment screenshot to confirm your order.");
+      return;
+    }
+
     setSubmitting(true);
 
     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -103,7 +150,8 @@ export default function CheckoutPage({ params }: { params: { username: string } 
       notes: `Payment: ${paymentMethod.toUpperCase()}. Cart Items: ${itemDetails}. ${formData.delivery_location}`,
       delivery_location: formData.delivery_location,
       tracking_token: token,
-      status: 'pending'
+      status: 'pending',
+      reference_image: paymentScreenshot || null
     }]);
 
     if (!error) {
@@ -191,6 +239,13 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     setSubmitting(false);
   };
 
+  const getUpiLink = () => {
+    if (!paymentSettings?.upiId) return "";
+    const name = encodeURIComponent(paymentSettings.upiName || business?.name || "Zoopcart Order");
+    const amount = calculateTotal();
+    return `upi://pay?pa=${paymentSettings.upiId}&pn=${name}&am=${amount}&cu=INR`;
+  };
+
   if (loading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="w-8 h-8 text-slate-300 animate-spin" /></div>;
 
   if (isSubmitted) {
@@ -260,6 +315,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
             <h3 className="font-extrabold text-slate-900 text-sm">Payment Method</h3>
 
             <div className="space-y-3">
+              {/* Show COD if enabled (defaults to true) */}
               {paymentSettings?.codEnabled !== false && (
                 <label className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${paymentMethod === 'cod' ? 'border-[#111111] bg-slate-50' : 'border-slate-100 opacity-60'}`}>
                   <input type="radio" name="payment" value="cod" checked={paymentMethod === 'cod'} onChange={(e) => setPaymentMethod(e.target.value)} className="hidden" />
@@ -268,11 +324,12 @@ export default function CheckoutPage({ params }: { params: { username: string } 
                   </div>
                   <div>
                     <div className="font-bold text-sm text-slate-900">Cash on Delivery</div>
-                    <div className="text-[10px] text-slate-500 font-medium">Pay when you receive the order</div>
+                    <div className="text-[10px] text-slate-500 font-medium uppercase tracking-tight">Pay when you receive the order</div>
                   </div>
                 </label>
               )}
 
+              {/* Show UPI if merchant has provided a UPI ID */}
               {paymentSettings?.upiId && (
                 <div className="space-y-3">
                   <label className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${paymentMethod === 'upi' ? 'border-[#111111] bg-slate-50' : 'border-slate-100 opacity-60'}`}>
@@ -282,7 +339,7 @@ export default function CheckoutPage({ params }: { params: { username: string } 
                     </div>
                     <div>
                       <div className="font-bold text-sm text-slate-900">UPI / Online Payment</div>
-                      <div className="text-[10px] text-slate-500 font-medium">Pay now via UPI QR or ID</div>
+                      <div className="text-[10px] text-slate-500 font-medium uppercase tracking-tight">Instant payment via GPay, PhonePe, etc.</div>
                     </div>
                   </label>
 
@@ -298,14 +355,24 @@ export default function CheckoutPage({ params }: { params: { username: string } 
                           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Payable Amount</p>
                           <p className="text-2xl font-black text-slate-900">₹{calculateTotal()}</p>
                         </div>
+
+                        {/* Mobile Direct Pay Button */}
+                        <a
+                          href={getUpiLink()}
+                          className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all"
+                        >
+                          <Phone className="w-4 h-4" /> Pay via UPI App
+                        </a>
+
                         <div className="w-full space-y-2">
-                          <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
-                            <div className="text-left">
+                          <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between text-left">
+                            <div>
                               <p className="text-[10px] font-bold text-slate-400 uppercase">UPI ID</p>
                               <p className="text-sm font-bold text-slate-900">{paymentSettings.upiId}</p>
                             </div>
                             <button type="button" onClick={() => {navigator.clipboard.writeText(paymentSettings.upiId); alert('UPI ID Copied!')}} className="text-[10px] font-bold text-blue-600 px-2 py-1 bg-blue-50 rounded-md">COPY</button>
                           </div>
+
                           {paymentSettings.upiName && (
                             <div className="p-3 bg-white rounded-xl border border-slate-200 text-left">
                               <p className="text-[10px] font-bold text-slate-400 uppercase">Verified Name</p>
@@ -313,7 +380,30 @@ export default function CheckoutPage({ params }: { params: { username: string } 
                             </div>
                           )}
                         </div>
-                        <p className="text-[10px] text-slate-500 font-medium italic">Please pay exactly ₹{calculateTotal()} and confirm below. Your order will be processed after payment verification.</p>
+
+                        <div className="w-full pt-4 border-t border-slate-200">
+                          <p className="text-xs font-bold text-slate-900 mb-3">Upload Payment Screenshot *</p>
+                          <div className="relative h-32 w-full border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center bg-white hover:bg-slate-50 transition-colors cursor-pointer overflow-hidden">
+                            {paymentScreenshot ? (
+                              <img src={paymentScreenshot} alt="Payment Proof" className="w-full h-full object-contain p-2" />
+                            ) : (
+                              <div className="flex flex-col items-center">
+                                <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mb-2">
+                                  <QrCode className="w-4 h-4 text-slate-400" />
+                                </div>
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Tap to upload screenshot</span>
+                              </div>
+                            )}
+                            <input type="file" accept="image/*" onChange={handleScreenshotUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+                            {uploadingScreenshot && (
+                              <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                                <Loader2 className="w-5 h-5 text-slate-900 animate-spin" />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <p className="text-[10px] text-slate-500 font-medium italic leading-relaxed">Please pay exactly ₹{calculateTotal()} and upload the screenshot. Your order will be confirmed after verification.</p>
                       </div>
                     </div>
                   )}

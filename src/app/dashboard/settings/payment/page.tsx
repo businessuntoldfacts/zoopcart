@@ -12,6 +12,7 @@ export default function PaymentSettingsPage() {
   const { business: cachedBusiness, loading } = useDashboardData();
   const [method, setMethod] = useState("upi");
   const [upiData, setUpiData] = useState({ id: "", name: "", qr: "" });
+  const [upiEnabled, setUpiEnabled] = useState(true);
   const [codEnabled, setCodEnabled] = useState(true);
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -23,7 +24,8 @@ export default function PaymentSettingsPage() {
       
       let upi = { id: "", name: "", qr: "" };
       let cod = true;
-      
+      let upiOn = true;
+
       try {
         let settings: any = {};
         if (cachedBusiness.instagram_profile_url && cachedBusiness.instagram_profile_url.startsWith('{')) {
@@ -38,11 +40,13 @@ export default function PaymentSettingsPage() {
           };
         }
         if (settings.codEnabled !== undefined) cod = settings.codEnabled;
+        if (settings.upiEnabled !== undefined) upiOn = settings.upiEnabled;
         if (settings.paymentMethod) setMethod(settings.paymentMethod);
       } catch (e) {}
       
       setUpiData(upi);
       setCodEnabled(cod);
+      setUpiEnabled(upiOn);
     }
   }, [cachedBusiness]);
 
@@ -96,7 +100,8 @@ export default function PaymentSettingsPage() {
       upiId: upiData.id,
       upiName: upiData.name,
       upiQr: upiData.qr,
-      codEnabled: codEnabled
+      codEnabled: codEnabled,
+      upiEnabled: upiEnabled
     };
     
     const { error } = await supabase.from('businesses').update({
@@ -112,7 +117,7 @@ export default function PaymentSettingsPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pb-12 pt-4">
+    <div className="max-w-2xl mx-auto space-y-6 pb-12 pt-4 px-4">
       <div className="flex items-center justify-between">
         <Link href="/dashboard/settings" className="flex items-center text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-1" /> Settings
@@ -123,46 +128,15 @@ export default function PaymentSettingsPage() {
       </div>
       
       <div className="text-center md:text-left mb-8">
-        <h2 className="text-3xl font-extrabold text-slate-900">Payment Details</h2>
+        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Payment Setup</h2>
+        <p className="text-slate-500 font-medium mt-1">Configure how your customers pay you.</p>
       </div>
 
       <div className="space-y-6">
-        <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">How you get paid</h3>
-        
-        <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm space-y-6">
-          <div>
-            <label className="text-sm font-bold text-slate-900 mb-2 block">Method</label>
-            <div className="flex p-1 bg-slate-50 rounded-xl border border-slate-100 relative">
-              <button 
-                className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${method === 'upi' ? 'bg-white shadow-sm text-slate-900 border border-slate-200' : 'text-slate-500'}`}
-                onClick={() => setMethod('upi')}
-              >
-                UPI
-              </button>
-              <button 
-                className={`flex-1 flex items-center justify-center gap-1 py-2.5 text-sm font-bold rounded-lg transition-all ${method === 'razorpay' ? 'bg-white shadow-sm text-slate-900 border border-slate-200' : 'text-slate-400'}`}
-              >
-                Razorpay <Lock className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2 text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span className="font-medium">Live now: <strong className="uppercase">{method}</strong></span>
-          </div>
-          
-          <p className="text-sm text-slate-600 font-medium leading-relaxed">
-            Customers pay you directly by UPI and you confirm the order once the money lands.
-          </p>
-        </div>
-
-        <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1 mt-8">UPI</h3>
-        
         <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <label className="text-sm font-bold text-slate-900 block">Cash on Delivery (COD)</label>
+              <label className="text-sm font-extrabold text-slate-900 block">Cash on Delivery (COD)</label>
               <p className="text-xs text-slate-500 font-medium">Allow customers to pay when they receive the order.</p>
             </div>
             <button
@@ -172,48 +146,88 @@ export default function PaymentSettingsPage() {
               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${codEnabled ? 'left-7' : 'left-1'}`} />
             </button>
           </div>
-
-          <div className="relative border border-dashed border-slate-300 rounded-xl overflow-hidden flex flex-col items-center justify-center hover:bg-slate-50 transition-colors">
-            {upiData.qr ? (
-              <img src={upiData.qr} alt="UPI QR" className="w-full max-w-[200px] object-contain p-4" />
-            ) : (
-              <div className="p-8 flex flex-col items-center">
-                <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center mb-2">
-                  <QrCode className="w-6 h-6 text-slate-600" />
-                </div>
-                <span className="text-sm font-bold text-slate-900">Upload your UPI QR</span>
-              </div>
-            )}
-            <Input type="file" accept="image/*" onChange={handleQrUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-            {uploadingQr && (
-              <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-20">
-                <span className="text-sm font-bold text-[#111111] animate-pulse">Uploading...</span>
-              </div>
-            )}
-          </div>
-          <p className="text-xs text-slate-500">
-            Screenshot the QR from your bank or payment app and we'll fill in the details below.
-          </p>
-          
-          <div>
-            <label className="text-sm font-bold text-slate-900 mb-1.5 block">UPI ID <span className="text-[#111111]">*</span></label>
-            <Input value={upiData.id} onChange={(e: any) => setUpiData({...upiData, id: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
-          </div>
-          
-          <div>
-            <label className="text-sm font-bold text-slate-900 mb-1.5 block">Payee name <span className="text-[#111111]">*</span></label>
-            <Input value={upiData.name} onChange={(e: any) => setUpiData({...upiData, name: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
-            <p className="text-xs text-slate-500 mt-2">Shown in the customer's UPI app. Match your bank account name.</p>
-          </div>
-          
-          <div className="pt-4 border-t border-slate-100">
-            <p className="text-xs text-slate-500 font-medium">This is the ID customers send money to at checkout.</p>
-          </div>
         </div>
 
+        <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="text-sm font-extrabold text-slate-900 block">UPI / Online Payment</label>
+              <p className="text-xs text-slate-500 font-medium">Accept instant payments via any UPI app (GPay, PhonePe, etc.)</p>
+            </div>
+            <button
+              onClick={() => setUpiEnabled(!upiEnabled)}
+              className={`w-12 h-6 rounded-full transition-colors relative ${upiEnabled ? 'bg-green-500' : 'bg-slate-200'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${upiEnabled ? 'left-7' : 'left-1'}`} />
+            </button>
+          </div>
+
+          {upiEnabled && (
+            <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in duration-300">
+              <div>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Choose Method</label>
+                <div className="flex p-1 bg-slate-50 rounded-xl border border-slate-100 relative">
+                  <button
+                    className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${method === 'upi' ? 'bg-white shadow-sm text-slate-900 border border-slate-200' : 'text-slate-500'}`}
+                    onClick={() => setMethod('upi')}
+                  >
+                    Direct UPI
+                  </button>
+                  <button
+                    className={`flex-1 flex items-center justify-center gap-1 py-2.5 text-sm font-bold rounded-lg transition-all text-slate-300 cursor-not-allowed`}
+                    disabled
+                  >
+                    Razorpay <Lock className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="relative border border-dashed border-slate-300 rounded-xl overflow-hidden flex flex-col items-center justify-center hover:bg-slate-50 transition-colors bg-slate-50/50">
+                  {upiData.qr ? (
+                    <img src={upiData.qr} alt="UPI QR" className="w-full max-w-[200px] object-contain p-4" />
+                  ) : (
+                    <div className="p-8 flex flex-col items-center">
+                      <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mb-2 shadow-sm">
+                        <QrCode className="w-6 h-6 text-slate-400" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-900">Upload UPI QR Screenshot</span>
+                    </div>
+                  )}
+                  <Input type="file" accept="image/*" onChange={handleQrUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                  {uploadingQr && (
+                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-20">
+                      <Loader2 className="w-6 h-6 text-slate-900 animate-spin" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-bold text-slate-900 mb-1.5 block">UPI ID <span className="text-red-500">*</span></label>
+                    <Input placeholder="example@okaxis" value={upiData.id} onChange={(e: any) => setUpiData({...upiData, id: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900 font-medium" />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-bold text-slate-900 mb-1.5 block">Payee Name <span className="text-red-500">*</span></label>
+                    <Input placeholder="Your Name" value={upiData.name} onChange={(e: any) => setUpiData({...upiData, name: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900 font-medium" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                <p className="text-xs text-emerald-800 font-medium leading-relaxed">
+                  Customers will see your QR code and UPI ID at checkout. They will upload a screenshot of the payment which you can verify from your orders dashboard.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
+
 
 
