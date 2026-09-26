@@ -29,11 +29,13 @@ export default function SignupPage() {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
+        const userEmail = session.user.email?.trim().toLowerCase();
+        // Check if a business exists for this user ID OR this email
         const { data: business } = await supabase
           .from('businesses')
           .select('id')
-          .eq('user_id', session.user.id)
-          .single();
+          .or(`user_id.eq.${session.user.id}${userEmail ? `,email.eq.${userEmail}` : ''}`)
+          .maybeSingle();
 
         if (business) {
           window.location.href = '/dashboard';
@@ -53,7 +55,7 @@ export default function SignupPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const reason = urlParams.get('reason');
     if (reason === 'google_auth' || reason === 'no_store') {
-        // Info message instead of error
+        // We handle this via isGoogleUser state now
     }
   }, []);
 
@@ -106,6 +108,8 @@ export default function SignupPage() {
     setLoading(true);
     setError("");
 
+    const cleanEmail = formData.email.trim().toLowerCase();
+
     if (usernameStatus === 'taken') {
       setError("This store username is already registered.");
       setLoading(false);
@@ -113,16 +117,21 @@ export default function SignupPage() {
     }
 
     // Check if email already has a business
-    const { data: existing } = await supabase.from('businesses').select('id').eq('email', formData.email.toLowerCase()).single();
+    const { data: existing } = await supabase
+      .from('businesses')
+      .select('id')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
     if (existing) {
-      setError("This email is already registered with a store. Please login.");
+      setError("This email is already registered. Please login to your store.");
       setLoading(false);
       return;
     }
 
     try {
       const { error: otpError } = await supabase.auth.signInWithOtp({
-        email: formData.email,
+        email: cleanEmail,
         options: {
           shouldCreateUser: true,
           data: {
@@ -155,7 +164,7 @@ export default function SignupPage() {
       if (verifyError) throw new Error("Invalid OTP. Please check and try again.");
 
       if (data.user) {
-        await createBusiness(data.user.id);
+        await createBusiness(data.user.id, formData.email);
       }
     } catch (err: any) {
       setError(err.message || "Signup failed");
@@ -171,18 +180,46 @@ export default function SignupPage() {
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await createBusiness(session.user.id);
-      } else {
-        throw new Error("Session not found. Please try again.");
+      if (!session?.user) throw new Error("Session not found. Please try again.");
+
+      const cleanEmail = session.user.email?.trim().toLowerCase();
+
+      // Critical Check: Prevent duplicate business for Google user email/ID
+      const { data: existing } = await supabase
+        .from('businesses')
+        .select('id')
+        .or(`user_id.eq.${session.user.id}${cleanEmail ? `,email.eq.${cleanEmail}` : ''}`)
+        .maybeSingle();
+
+      if (existing) {
+        setSuccess("Store already found! Redirecting to dashboard...");
+        setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+        return;
       }
+
+      await createBusiness(session.user.id, cleanEmail);
     } catch (err: any) {
       setError(err.message || "Setup failed");
       setLoading(false);
     }
   };
 
-  const createBusiness = async (userId: string) => {
+  const createBusiness = async (userId: string, emailFromSession?: string) => {
+    const finalEmail = (emailFromSession || formData.email).trim().toLowerCase();
+
+    // Final check for email/user uniqueness before insertion
+    const { data: checkExisting } = await supabase
+      .from('businesses')
+      .select('id')
+      .or(`user_id.eq.${userId},email.eq.${finalEmail}`)
+      .maybeSingle();
+
+    if (checkExisting) {
+      setSuccess("Account already exists! Redirecting...");
+      setTimeout(() => { window.location.href = "/dashboard"; }, 1500);
+      return;
+    }
+
     const { data: newBusiness, error: dbError } = await supabase
       .from('businesses')
       .insert([
@@ -190,7 +227,7 @@ export default function SignupPage() {
           user_id: userId,
           business_name: formData.businessName,
           username: formData.username.toLowerCase(),
-          email: formData.email.toLowerCase()
+          email: finalEmail
         }
       ])
       .select('id')
