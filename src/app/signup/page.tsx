@@ -4,7 +4,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Info, ShieldCheck, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function SignupPage() {
@@ -20,6 +20,7 @@ export default function SignupPage() {
   const [success, setSuccess] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  const [showTerms, setShowTerms] = useState(false);
 
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
   const [isGoogleUser, setIsGoogleUser] = useState(false);
@@ -42,8 +43,8 @@ export default function SignupPage() {
         setIsGoogleUser(true);
         setFormData(prev => ({
           ...prev,
-          fullName: session.user.user_metadata.full_name || "",
-          email: session.user.email || ""
+          fullName: session.user.user_metadata.full_name || prev.fullName,
+          email: session.user.email || prev.email
         }));
       }
     };
@@ -51,8 +52,8 @@ export default function SignupPage() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const reason = urlParams.get('reason');
-    if (reason === 'no_store' || reason === 'google_auth') {
-      setError("We found your Google account! Please choose a store name and username to complete your setup.");
+    if (reason === 'google_auth' || reason === 'no_store') {
+        // Info message instead of error
     }
   }, []);
 
@@ -90,7 +91,7 @@ export default function SignupPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `https://www.zoopcart.com/dashboard`
+          redirectTo: `${window.location.origin}/dashboard`
         }
       });
       if (error) throw error;
@@ -107,6 +108,14 @@ export default function SignupPage() {
 
     if (usernameStatus === 'taken') {
       setError("This store username is already registered.");
+      setLoading(false);
+      return;
+    }
+
+    // Check if email already has a business
+    const { data: existing } = await supabase.from('businesses').select('id').eq('email', formData.email.toLowerCase()).single();
+    if (existing) {
+      setError("This email is already registered with a store. Please login.");
       setLoading(false);
       return;
     }
@@ -164,6 +173,8 @@ export default function SignupPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         await createBusiness(session.user.id);
+      } else {
+        throw new Error("Session not found. Please try again.");
       }
     } catch (err: any) {
       setError(err.message || "Setup failed");
@@ -172,7 +183,6 @@ export default function SignupPage() {
   };
 
   const createBusiness = async (userId: string) => {
-    // Insert business and retrieve its ID
     const { data: newBusiness, error: dbError } = await supabase
       .from('businesses')
       .insert([
@@ -187,43 +197,24 @@ export default function SignupPage() {
       .single();
 
     if (dbError) {
-      if (dbError.code === '23505') throw new Error("Username already taken.");
+      if (dbError.code === '23505') throw new Error("Username or Email already taken.");
       throw dbError;
     }
 
-    // 5. Implement a "Welcome" announcement as the initial default notification for all new stores.
     try {
       await supabase.from('announcements').insert([
         {
           business_id: newBusiness.id,
           title: `Welcome to Zoopcart, ${formData.businessName}! 🚀`,
-          content: `We're thrilled to have you here. Your storefront is officially live at zoopcart.com/${formData.username.toLowerCase()}. Let's customize your store, add some premium products, and share your link with the world!`,
+          content: `We're thrilled to have you here. Your storefront is officially live at zoopcart.com/${formData.username.toLowerCase()}. Let's customize your store!`,
           type: 'success',
           link: `/dashboard/settings`,
           is_active: true
         }
       ]);
-    } catch (annError) {
-      console.error("Failed to insert welcome announcement:", annError);
-    }
+    } catch (annError) {}
 
     setSuccess("Account created successfully! Redirecting...");
-    localStorage.setItem("setup_pending", "true");
-
-    try {
-      await fetch("/api/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "welcome",
-          email: formData.email,
-          fullName: formData.fullName,
-          businessName: formData.businessName,
-          storeUrl: `https://zoopcart.com/${formData.username.toLowerCase()}`
-        })
-      });
-    } catch (e) {}
-
     setTimeout(() => {
       window.location.href = "/dashboard/settings/store";
     }, 1500);
@@ -232,7 +223,8 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-[#0F172A] overflow-x-hidden">
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="bg-white p-6 md:p-10 rounded-[32px] shadow-2xl shadow-black/5 w-full max-w-[480px] border border-slate-100">
+        <div className="bg-white p-6 md:p-10 rounded-[32px] shadow-2xl shadow-black/5 w-full max-w-[480px] border border-slate-100 relative">
+
           <div className="text-center mb-8">
             <div className="flex justify-center mb-6">
               <Logo darkText={true} />
@@ -244,6 +236,16 @@ export default function SignupPage() {
               {otpSent ? "Enter the code sent to your email" : "Join thousands of social sellers"}
             </p>
           </div>
+
+          {isGoogleUser && !error && !success && (
+            <div className="p-4 mb-6 bg-blue-50 text-blue-700 rounded-2xl text-xs font-bold border border-blue-100 flex items-start gap-3 animate-in fade-in">
+              <Info className="w-5 h-5 shrink-0 text-blue-500" />
+              <div>
+                <p className="mb-1">We found your Google account!</p>
+                <p className="font-medium opacity-80 uppercase tracking-tighter">Please choose a store name and link to finish setting up your storefront.</p>
+              </div>
+            </div>
+          )}
 
           {error && <div className="p-4 mb-6 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100 flex items-start gap-2 animate-in shake"><XCircle className="w-5 h-5 shrink-0" /> {error}</div>}
           {success && <div className="p-4 mb-6 bg-green-50 text-green-600 rounded-2xl text-sm font-bold border border-green-100 flex items-start gap-2"><CheckCircle2 className="w-5 h-5 shrink-0" /> {success}</div>}
@@ -265,7 +267,7 @@ export default function SignupPage() {
                 />
               </div>
               <Button type="submit" disabled={loading} className="w-full text-base py-6 rounded-xl font-bold bg-[#111111] hover:bg-black text-white shadow-lg shadow-black/10 transition-all">
-                {loading ? "Verifying..." : "Verify & Create Store"}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verify & Create Store"}
               </Button>
               <div className="text-center pt-2">
                 <button type="button" onClick={() => setOtpSent(false)} className="text-sm font-bold text-[#111111] hover:underline">
@@ -275,47 +277,45 @@ export default function SignupPage() {
             </form>
           ) : (
             <form onSubmit={isGoogleUser ? handleGoogleComplete : handleSendOTP} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <Input
                   required
                   placeholder="Full Name"
                   value={formData.fullName}
                   onChange={e => setFormData({...formData, fullName: e.target.value})}
-                  className="bg-slate-50 border-slate-200 h-12 rounded-xl"
+                  className="bg-slate-50 border-slate-200 h-12 rounded-xl font-medium"
                 />
                 <Input
                   required
-                  placeholder="Store Name"
+                  placeholder="Store Name (e.g. My Fashion Store)"
                   value={formData.businessName}
                   onChange={e => setFormData({...formData, businessName: e.target.value})}
-                  className="bg-slate-50 border-slate-200 h-12 rounded-xl"
+                  className="bg-slate-50 border-slate-200 h-12 rounded-xl font-medium"
                 />
               </div>
 
               <div className="pt-2">
-                <label className="text-xs font-bold text-slate-500 mb-1.5 block ml-1">Store Link</label>
+                <label className="text-xs font-bold text-slate-500 mb-1.5 block ml-1 uppercase tracking-wider">Your Store Link</label>
                 <div className={`flex rounded-xl overflow-hidden border-2 transition-colors ${usernameStatus === 'taken' ? 'border-red-400' : usernameStatus === 'available' ? 'border-green-400' : 'border-slate-200 focus-within:border-[#111111]'}`}>
-                  <span className="flex items-center justify-center bg-slate-50 px-4 text-slate-500 font-medium text-sm border-r border-slate-200">
+                  <span className="flex items-center justify-center bg-slate-50 px-4 text-slate-400 font-bold text-[10px] uppercase border-r border-slate-200">
                     zoopcart.com/
                   </span>
                   <input
                     required
-                    placeholder="your-store"
+                    placeholder="your-store-name"
                     value={formData.username}
-                    onChange={e => setFormData({...formData, username: e.target.value.replace(/[^a-zA-Z0-9-]/g, '')})}
+                    onChange={e => setFormData({...formData, username: e.target.value.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase()})}
                     className="flex-1 h-12 px-3 text-sm focus:outline-none font-bold text-[#111111]"
                   />
                   <span className="flex items-center pr-4 bg-white">
-                    {usernameStatus === 'checking' && <Loader2 className="w-5 h-5 text-slate-400 animate-spin" />}
-                    {usernameStatus === 'available' && <span className="text-[10px] font-black text-green-600 uppercase tracking-tighter mr-1 animate-in fade-in zoom-in">Available</span>}
-                    {usernameStatus === 'taken' && <span className="text-[10px] font-black text-red-600 uppercase tracking-tighter mr-1 animate-in fade-in zoom-in">Taken</span>}
+                    {usernameStatus === 'checking' && <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />}
                     {usernameStatus === 'available' && <CheckCircle2 className="w-5 h-5 text-green-500" />}
                     {usernameStatus === 'taken' && <XCircle className="w-5 h-5 text-red-500" />}
                   </span>
                 </div>
                 <div className="h-5 mt-1 ml-1">
-                  {usernameStatus === 'available' && <p className="text-xs text-green-600 font-bold">Awesome! This link is available.</p>}
-                  {usernameStatus === 'taken' && <p className="text-xs text-red-600 font-bold">Not available. Try another one.</p>}
+                  {usernameStatus === 'available' && <p className="text-[10px] text-green-600 font-black uppercase tracking-tighter">Awesome! This link is available.</p>}
+                  {usernameStatus === 'taken' && <p className="text-[10px] text-red-600 font-black uppercase tracking-tighter">Already taken. Try a different name.</p>}
                 </div>
               </div>
 
@@ -326,33 +326,33 @@ export default function SignupPage() {
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={e => setFormData({...formData, email: e.target.value})}
-                  className="bg-slate-50 border-slate-200 h-12 rounded-xl"
+                  className="bg-slate-50 border-slate-200 h-12 rounded-xl font-medium"
                 />
               )}
 
               <div className="flex items-center gap-2 pt-2 pb-2">
                 <input type="checkbox" required id="terms" className="rounded text-[#111111] w-4 h-4 cursor-pointer" />
                 <label htmlFor="terms" className="text-xs font-medium text-slate-500 cursor-pointer">
-                  I agree to the <Link href="/terms" className="font-bold text-[#111111] hover:underline">Terms</Link>
+                  I agree to the <button type="button" onClick={() => setShowTerms(true)} className="font-bold text-[#111111] hover:underline">Terms & Conditions</button>
                 </label>
               </div>
 
-              <Button type="submit" disabled={loading || usernameStatus === 'taken'} className="w-full text-base py-6 rounded-xl font-bold bg-[#111111] hover:bg-black text-white shadow-lg shadow-black/10 transition-all">
-                {loading ? "Processing..." : isGoogleUser ? "Complete Setup" : "Create My Zoopcart"}
+              <Button type="submit" disabled={loading || usernameStatus === 'taken'} className="w-full text-base py-6 rounded-2xl font-black bg-[#111111] hover:bg-black text-white shadow-xl shadow-black/10 transition-all active:scale-[0.98]">
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : isGoogleUser ? "Complete My Store Setup" : "Create My Zoopcart"}
               </Button>
 
               {!isGoogleUser && (
                 <>
                   <div className="relative flex items-center py-4 mt-2">
-                    <div className="flex-grow border-t border-slate-200"></div>
-                    <span className="flex-shrink-0 mx-4 text-slate-400 text-sm font-medium">Or continue with</span>
-                    <div className="flex-grow border-t border-slate-200"></div>
+                    <div className="flex-grow border-t border-slate-100"></div>
+                    <span className="flex-shrink-0 mx-4 text-slate-400 text-[10px] font-black uppercase tracking-widest">Or continue with</span>
+                    <div className="flex-grow border-t border-slate-100"></div>
                   </div>
 
                   <Button
                     type="button"
                     onClick={handleGoogleSignup}
-                    className="w-full text-base py-6 rounded-xl font-bold bg-white border-2 border-slate-200 text-slate-800 hover:bg-slate-50 flex items-center justify-center gap-3 transition-all shadow-none"
+                    className="w-full text-base py-6 rounded-2xl font-bold bg-white border-2 border-slate-100 text-slate-800 hover:bg-slate-50 flex items-center justify-center gap-3 transition-all shadow-none"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                     Sign up with Google
@@ -360,7 +360,7 @@ export default function SignupPage() {
                 </>
               )}
 
-              <div className="text-center mt-6 pt-6 border-t border-slate-100">
+              <div className="text-center mt-6 pt-6 border-t border-slate-50">
                 <span className="text-slate-500 font-medium text-sm">Already have an account? </span>
                 <Link href="/login" className="font-bold text-[#111111] hover:underline text-sm">Login here</Link>
               </div>
@@ -368,6 +368,61 @@ export default function SignupPage() {
           )}
         </div>
       </main>
+
+      {/* Terms Modal */}
+      {showTerms && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[32px] w-full max-w-[500px] max-h-[80vh] overflow-hidden flex flex-col shadow-2xl border border-slate-100">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 text-lg">Terms & Conditions</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Last updated: May 2024</p>
+                </div>
+              </div>
+              <button onClick={() => setShowTerms(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 text-sm text-slate-600 leading-relaxed font-medium">
+              <section>
+                <h4 className="font-bold text-slate-900 mb-2 uppercase text-xs tracking-wider">1. Acceptance of Terms</h4>
+                <p>By creating a store on Zoopcart, you agree to comply with and be bound by these terms. Our platform allows social sellers to list products and manage orders via WhatsApp.</p>
+              </section>
+
+              <section>
+                <h4 className="font-bold text-slate-900 mb-2 uppercase text-xs tracking-wider">2. Seller Responsibilities</h4>
+                <p>You are responsible for the accuracy of your product listings, pricing, and fulfillment of orders. Zoopcart acts as a facilitator and is not responsible for transaction disputes between buyers and sellers.</p>
+              </section>
+
+              <section>
+                <h4 className="font-bold text-slate-900 mb-2 uppercase text-xs tracking-wider">3. Prohibited Content</h4>
+                <p>Sellers must not list illegal, harmful, or counterfeit goods. We reserve the right to suspend any store that violates our safety guidelines or receives excessive reports.</p>
+              </section>
+
+              <section>
+                <h4 className="font-bold text-slate-900 mb-2 uppercase text-xs tracking-wider">4. Fees and Payments</h4>
+                <p>Zoopcart may charge subscription or transaction fees. All payments made through the platform are subject to our refund policy. Sellers must provide valid payment details for withdrawals.</p>
+              </section>
+
+              <section>
+                <h4 className="font-bold text-slate-900 mb-2 uppercase text-xs tracking-wider">5. Privacy and Data</h4>
+                <p>We value your privacy. Your data is stored securely and only shared with third parties necessary for the operation of your store (like payment processors).</p>
+              </section>
+            </div>
+
+            <div className="p-6 border-t border-slate-100">
+              <Button onClick={() => setShowTerms(false)} className="w-full py-4 rounded-xl font-bold bg-[#111111] hover:bg-black text-white shadow-lg">
+                I Understand
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
