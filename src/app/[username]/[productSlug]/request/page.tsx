@@ -225,11 +225,11 @@ export default function RequestForm({ params }: { params: { username: string, pr
             </div>
             <div className="p-4 flex gap-4">
               <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <div className="w-5 h-5 rounded-full border-2 border-orange-500 flex items-center justify-center"><div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div></div>
               </div>
               <div className="flex-1 flex flex-col justify-center">
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status</div>
-                <div className="bg-orange-100 text-orange-600 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded self-start">Pending Review</div>
+                <div className="bg-orange-100 text-orange-600 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded self-start">Pending</div>
               </div>
             </div>
           </div>

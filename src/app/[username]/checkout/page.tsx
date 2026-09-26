@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, CheckCircle2, User, Phone, Mail, MapPin, Loader2, QrCode, ShieldCheck, CreditCard, Wallet, ChevronRight, Copy, ExternalLink, Info, Calendar } from "lucide-react";
+import { ArrowLeft, CheckCircle2, User, Phone, Mail, MapPin, Loader2, QrCode, ShieldCheck, CreditCard, Wallet, ChevronRight, Copy, ExternalLink, Info, Calendar, FileText, Package, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -172,21 +172,95 @@ export default function CheckoutPage({ params }: { params: { username: string } 
   if (loading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="w-8 h-8 text-slate-300 animate-spin" /></div>;
 
   if (isSubmitted) {
-    return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
-          <CheckCircle2 className="w-10 h-10 text-green-500" />
-        </div>
-        <h1 className="text-2xl font-black text-[#0F172A] mb-2 tracking-tight">Order Placed!</h1>
-        <p className="text-slate-500 font-bold text-sm mb-8">Order ID: <span className="text-[#111111]">#{orderToken}</span></p>
+    const orderDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const total = calculateTotal();
 
-        <div className="w-full max-w-[280px]">
-          <button
-            onClick={() => router.push(`/${params.username}/track?token=${orderToken}`)}
-            className="w-full py-4 bg-[#111111] text-white rounded-xl font-bold shadow-xl active:scale-[0.98] transition-all"
-          >
-            Track My Order
-          </button>
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans pb-8 px-4 flex flex-col pt-12">
+        <div className="max-w-md mx-auto w-full flex-1 flex flex-col">
+          {/* Success Screen */}
+          <div className="flex flex-col items-center text-center mt-8">
+            <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center relative mb-6 animate-in zoom-in duration-500">
+               <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/30">
+                 <CheckCircle2 className="w-8 h-8 text-white" />
+               </div>
+            </div>
+            <h1 className="text-2xl font-extrabold text-slate-900 mb-2">Order Placed!</h1>
+            <p className="text-sm font-medium text-slate-500 max-w-[260px] mx-auto leading-relaxed">
+              Your order has been placed successfully. You can track your order using the ID below.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-[24px] border border-slate-100 p-1 shadow-sm mt-8">
+            <div className="p-4 border-b border-slate-50 flex gap-4">
+              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
+                <FileText className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Order ID</div>
+                <div className="font-extrabold text-slate-900 text-base flex items-center justify-between">
+                  #{orderToken}
+                  <button className="text-slate-400 hover:text-slate-900" onClick={() => {navigator.clipboard.writeText(orderToken); alert('Order ID copied!')}}><Copy className="w-4 h-4" /></button>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-b border-slate-50 flex gap-4">
+              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
+                <Package className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Items ({cartItems.length})</div>
+                <div className="font-extrabold text-slate-900 text-sm">Total: ₹{total}</div>
+              </div>
+            </div>
+
+            <div className="p-4 border-b border-slate-50 flex gap-4">
+              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
+                <Calendar className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Placed On</div>
+                <div className="font-extrabold text-slate-900 text-sm">{orderDate}</div>
+              </div>
+            </div>
+
+            <div className="p-4 flex gap-4">
+              <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
+                <div className="w-5 h-5 rounded-full border-2 border-orange-500 flex items-center justify-center"><div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div></div>
+              </div>
+              <div className="flex-1 flex flex-col justify-center">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status</div>
+                <div className="bg-orange-100 text-orange-600 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded self-start">Pending</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-3 pb-8">
+            <button
+              onClick={() => {
+                const message = encodeURIComponent(`Hi, I've just placed an order (ID: #${orderToken}).\n\nTotal: ₹${total}\n\nTrack here: ${window.location.origin}/${business.username}/track?token=${orderToken}`);
+                window.open(`https://wa.me/${business.whatsapp_country_code || '91'}${business.whatsapp_number}?text=${message}`, '_blank');
+              }}
+              className="w-full h-14 rounded-2xl bg-green-600 hover:bg-green-700 text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-green-600/20 transition-all"
+            >
+              <MessageCircle className="w-5 h-5" /> Confirm on WhatsApp
+            </button>
+
+            <button
+              onClick={() => router.push(`/${params.username}/track?token=${orderToken}`)}
+              className="w-full h-14 rounded-2xl bg-[#111111] hover:bg-black text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-black/20 transition-all"
+            >
+              Track My Order
+            </button>
+
+            <button
+              onClick={() => router.push(`/${params.username}`)}
+              className="w-full h-14 rounded-2xl bg-white border border-slate-200 text-slate-900 hover:bg-slate-50 font-extrabold text-lg flex items-center justify-center gap-2 transition-all"
+            >
+              Back to Store
+            </button>
+          </div>
         </div>
       </div>
     );

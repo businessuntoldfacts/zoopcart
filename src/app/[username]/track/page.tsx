@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, Search, CheckCircle2, MessageCircle, MapPin, FileText, Package } from "lucide-react";
+import { ArrowLeft, Search, CheckCircle2, MessageCircle, MapPin, FileText, Package, Copy } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import StoreBottomNav from "@/components/StoreBottomNav";
@@ -149,7 +149,16 @@ export default function TrackOrderPage({ params }: { params: { username: string 
             <div className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm">
               <div className="flex justify-between items-start mb-4">
                  <div>
-                    <h2 className="font-extrabold text-lg text-slate-900 tracking-tight">#{mainOrder.tracking_token}</h2>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Order ID</div>
+                    <h2 className="font-extrabold text-lg text-slate-900 tracking-tight flex items-center gap-2">
+                      #{mainOrder.tracking_token}
+                      <button
+                        onClick={() => {navigator.clipboard.writeText(mainOrder.tracking_token); alert('Order ID copied!')}}
+                        className="text-slate-300 hover:text-slate-900 transition-colors"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                    </h2>
                  </div>
                  <div className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold flex items-center gap-1 uppercase tracking-wider ${
                     mainOrder.status === 'pending' || mainOrder.status === 'new' ? 'bg-orange-100 text-orange-600' :
