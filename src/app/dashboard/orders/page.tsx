@@ -137,15 +137,23 @@ export default function OrdersPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
                           <span className="text-[10px] font-bold text-slate-400 font-mono uppercase">#{order.tracking_token}</span>
-                          <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
-                            order.status === 'pending' || order.status === 'new' ? 'bg-orange-100 text-orange-700' :
-                            order.status === 'accepted' ? 'bg-blue-100 text-blue-700' :
-                            order.status === 'in_progress' ? 'bg-indigo-100 text-indigo-700' :
-                            order.status === 'completed' || order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
-                            'bg-slate-100 text-slate-700'
-                          }`}>
-                            {order.status === 'pending' || order.status === 'new' ? 'NEW' : order.status.replace('_', ' ')}
-                          </span>
+                          <div className="flex gap-1.5 items-center">
+                            {order.notes?.includes('Payment: UPI') && (
+                              <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-blue-600 text-white uppercase tracking-tighter">PREPAID</span>
+                            )}
+                            {order.notes?.includes('Payment: COD') && (
+                              <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-slate-600 text-white uppercase tracking-tighter">COD</span>
+                            )}
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+                              order.status === 'pending' || order.status === 'new' ? 'bg-orange-100 text-orange-700' :
+                              order.status === 'accepted' ? 'bg-blue-100 text-blue-700' :
+                              order.status === 'in_progress' ? 'bg-indigo-100 text-indigo-700' :
+                              order.status === 'completed' || order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
+                              'bg-slate-100 text-slate-700'
+                            }`}>
+                              {order.status === 'pending' || order.status === 'new' ? 'NEW' : order.status.replace('_', ' ')}
+                            </span>
+                          </div>
                         </div>
                         <div className="text-sm font-extrabold text-[#0F172A] truncate">{order.customer_name}</div>
                         <div className="text-xs font-medium text-slate-500 truncate">
@@ -214,9 +222,24 @@ export default function OrdersPage() {
             <div>
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Request Details</h3>
               <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 space-y-4">
-                <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase">Total Amount</div>
-                  <div className="text-lg font-black text-slate-900 mt-0.5">₹{selectedOrder.totalBudget}</div>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase">Total Amount</div>
+                    <div className="text-lg font-black text-slate-900 mt-0.5">₹{selectedOrder.totalBudget}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Payment Method</div>
+                    {selectedOrder.notes?.includes('Payment: UPI') ? (
+                      <div className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-black uppercase shadow-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                        Online Paid
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 bg-slate-200 text-slate-700 px-3 py-1 rounded-lg text-xs font-black uppercase">
+                        Cash on Delivery
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {selectedOrder.required_date && (
                   <div>
