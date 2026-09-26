@@ -31,16 +31,34 @@ export default function SignupPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         const userEmail = session.user.email?.trim().toLowerCase();
-        // Check if a business exists for this user ID OR this email
+
+        // 1. First try client-side check (fast)
         const { data: business } = await supabase
           .from('businesses')
           .select('id')
-          .or(`user_id.eq.${session.user.id}${userEmail ? `,email.eq.${userEmail}` : ''}`)
+          .eq('user_id', session.user.id)
           .maybeSingle();
 
         if (business) {
           window.location.href = '/dashboard';
           return;
+        }
+
+        // 2. If not found, double check via Server API for the email
+        // (handles cases where user used a different login method for the same email)
+        if (userEmail) {
+          try {
+            const res = await fetch('/api/auth/check-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: userEmail }),
+            });
+            const { exists } = await res.json();
+            if (exists) {
+              window.location.href = '/dashboard';
+              return;
+            }
+          } catch (e) {}
         }
 
         setIsGoogleUser(true);
@@ -52,12 +70,7 @@ export default function SignupPage() {
       }
     };
     checkUser();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const reason = urlParams.get('reason');
-    if (reason === 'google_auth' || reason === 'no_store') {
-        // We handle this via isGoogleUser state now
-    }
+    // ... rest of effect
   }, []);
 
   useEffect(() => {
@@ -259,54 +272,62 @@ export default function SignupPage() {
   const createBusiness = async (userId: string, emailFromSession?: string) => {
     const finalEmail = (emailFromSession || formData.email).trim().toLowerCase();
 
-    // Final check for email/user uniqueness before insertion
-    const { data: checkExisting } = await supabase
-      .from('businesses')
-      .select('id')
-      .or(`user_id.eq.${userId},email.eq.${finalEmail}`)
-      .maybeSingle();
-
-    if (checkExisting) {
-      setSuccess("Account already exists! Redirecting...");
-      setTimeout(() => { window.location.href = "/dashboard"; }, 1500);
-      return;
-    }
-
-    const { data: newBusiness, error: dbError } = await supabase
-      .from('businesses')
-      .insert([
-        {
-          user_id: userId,
-          business_name: formData.businessName,
-          username: formData.username.toLowerCase(),
-          email: finalEmail
-        }
-      ])
-      .select('id')
-      .single();
-
-    if (dbError) {
-      if (dbError.code === '23505') throw new Error("Username or Email already taken.");
-      throw dbError;
-    }
-
+    setLoading(true);
     try {
-      await supabase.from('announcements').insert([
-        {
-          business_id: newBusiness.id,
-          title: `Welcome to Zoopcart, ${formData.businessName}! 🚀`,
-          content: `We're thrilled to have you here. Your storefront is officially live at zoopcart.com/${formData.username.toLowerCase()}. Let's customize your store!`,
-          type: 'success',
-          link: `/dashboard/settings`,
-          is_active: true
-        }
-      ]);
-    } catch (annError) {}
+      // Final mandatory Server-side check before creation
+      const checkRes = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: finalEmail }),
+      });
+      const { exists } = await checkRes.json();
 
-    setSuccess("Account created successfully! Redirecting...");
-    setTimeout(() => {
-      window.location.href = "/dashboard/settings/store";
-    }, 1500);
+      if (exists) {
+        setSuccess("Store already found! Redirecting to dashboard...");
+        setTimeout(() => { window.location.href = "/dashboard"; }, 1500);
+        return;
+      }
+
+      const { data: newBusiness, error: dbError } = await supabase
+        .from('businesses')
+        .insert([
+          {
+            user_id: userId,
+            business_name: formData.businessName,
+            username: formData.username.toLowerCase(),
+            email: finalEmail
+          }
+        ])
+        .select('id')
+        .single();
+
+      if (dbError) {
+        if (dbError.code === '23505') throw new Error("Username or Email already taken.");
+        throw dbError;
+      }
+
+      try {
+        await supabase.from('announcements').insert([
+          {
+            business_id: newBusiness.id,
+            title: `Welcome to Zoopcart, ${formData.businessName}! 🚀`,
+            content: `We're thrilled to have you here. Your storefront is officially live at zoopcart.com/${formData.username.toLowerCase()}. Let's customize your store!`,
+            type: 'success',
+            link: `/dashboard/settings`,
+            is_active: true
+          }
+        ]);
+      } catch (annError) {}
+
+      setSuccess("Account created successfully! Redirecting...");
+      setTimeout(() => {
+        window.location.href = "/dashboard/settings/store";
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || "Could not create store. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
