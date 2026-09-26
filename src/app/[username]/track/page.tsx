@@ -167,17 +167,14 @@ export default function TrackOrderPage({ params }: { params: { username: string 
               </div>
 
               <div className="space-y-3 mb-4">
-                {orders.map((item: any, idx: number) => (
+                {orders.map((item: any) => (
                   <div key={item.id} className="flex gap-4 items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-white shrink-0 border border-slate-200">
+                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-white shrink-0 border border-slate-200">
                       {item.products?.image ? <img src={item.products.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-slate-300 text-[10px] font-bold">N/A</div>}
                     </div>
                     <div className="flex-1">
                        <h3 className="font-extrabold text-sm text-slate-900 line-clamp-1">{item.products?.name || 'Product'}</h3>
-                       <div className="flex justify-between items-center mt-0.5">
-                         <div className="text-xs font-bold text-[#111111]">₹{item.budget}</div>
-                         <div className="text-[10px] font-bold text-slate-400">Qty: {item.quantity}</div>
-                       </div>
+                       <div className="text-xs font-bold text-[#111111] mb-1">₹{item.budget} <span className="text-slate-400 font-medium ml-2">Qty: {item.quantity}</span></div>
                     </div>
                   </div>
                 ))}

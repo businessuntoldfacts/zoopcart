@@ -177,13 +177,13 @@ export default function CheckoutPage({ params }: { params: { username: string } 
         <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
           <CheckCircle2 className="w-10 h-10 text-green-500" />
         </div>
-        <h1 className="text-2xl font-black text-[#0F172A] mb-2">Order Placed!</h1>
-        <p className="text-slate-500 font-bold mb-8">Order ID: <span className="text-[#111111]">#{orderToken}</span></p>
+        <h1 className="text-2xl font-black text-[#0F172A] mb-2 tracking-tight">Order Placed!</h1>
+        <p className="text-slate-500 font-bold text-sm mb-8">Order ID: <span className="text-[#111111]">#{orderToken}</span></p>
 
-        <div className="w-full max-w-xs space-y-3">
+        <div className="w-full max-w-[280px]">
           <button
             onClick={() => router.push(`/${params.username}/track?token=${orderToken}`)}
-            className="w-full py-4 bg-[#111111] text-white rounded-2xl font-bold shadow-xl active:scale-[0.98] transition-all"
+            className="w-full py-4 bg-[#111111] text-white rounded-xl font-bold shadow-xl active:scale-[0.98] transition-all"
           >
             Track My Order
           </button>
