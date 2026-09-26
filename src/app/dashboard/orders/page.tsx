@@ -127,8 +127,12 @@ export default function OrdersPage() {
                     className={`p-4 cursor-pointer transition-colors hover:bg-slate-100 ${selectedOrder?.tracking_token === order.tracking_token ? 'bg-blue-50/50' : ''}`}
                   >
                     <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center text-lg">
-                        🛒
+                      <div className="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+                        {order.items?.[0]?.products?.image ? (
+                          <img src={order.items[0].products.image} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-lg">🛒</span>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
@@ -229,7 +233,24 @@ export default function OrdersPage() {
                 {selectedOrder.notes && (
                   <div>
                     <div className="text-[10px] font-bold text-slate-400 uppercase">Notes</div>
-                    <div className="text-sm font-medium text-[#0F172A] mt-0.5 bg-white p-3 rounded-lg border border-slate-200">{selectedOrder.notes}</div>
+                    <div className="text-sm font-medium text-[#0F172A] mt-0.5 bg-white p-3 rounded-lg border border-slate-200 whitespace-pre-wrap">
+                      {selectedOrder.notes.includes('[PAYMENT_PROOF_START]') ? (
+                        <>
+                          {selectedOrder.notes.split('[PAYMENT_PROOF_START]')[0]}
+                          <div className="mt-4 pt-4 border-t border-slate-100">
+                            <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Payment Proof</div>
+                            <img
+                              src={selectedOrder.notes.split('[PAYMENT_PROOF_START]')[1].split('[PAYMENT_PROOF_END]')[0].trim()}
+                              className="w-full max-w-[300px] rounded-lg border border-slate-200 shadow-sm"
+                              alt="Payment Proof"
+                            />
+                          </div>
+                          {selectedOrder.notes.split('[PAYMENT_PROOF_END]')[1]}
+                        </>
+                      ) : (
+                        selectedOrder.notes
+                      )}
+                    </div>
                   </div>
                 )}
                 {selectedOrder.reference_image && (

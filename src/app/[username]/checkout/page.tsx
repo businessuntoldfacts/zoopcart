@@ -131,7 +131,9 @@ export default function CheckoutPage({ params }: { params: { username: string } 
       if (formData.email) richNotes += `Email: ${formData.email}\n`;
       richNotes += `Address: ${formData.delivery_location}\n`;
       richNotes += `Total Order Value: ₹${total}\n`;
-      if (paymentScreenshot && index === 0) richNotes += `[Payment Proof Attached]`;
+      if (paymentScreenshot && index === 0) {
+        richNotes += `\n[PAYMENT_PROOF_START]\n${paymentScreenshot}\n[PAYMENT_PROOF_END]`;
+      }
 
       return {
         business_id: business.id,
