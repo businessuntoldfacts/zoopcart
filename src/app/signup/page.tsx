@@ -97,22 +97,26 @@ export default function SignupPage() {
       }
 
       setEmailStatus('checking');
-      // Note: This check might be limited by RLS.
-      // For best results, ensure the 'email' column in 'businesses' has a UNIQUE constraint in Postgres.
-      const { data } = await supabase
-        .from('businesses')
-        .select('email')
-        .eq('email', cleanEmail)
-        .maybeSingle();
+      try {
+        const response = await fetch('/api/auth/check-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail }),
+        });
+        const result = await response.json();
 
-      if (data) {
-        setEmailStatus('taken');
-        setError("This email is already registered. Please login to your store.");
-      } else {
-        setEmailStatus('available');
-        if (error === "This email is already registered. Please login to your store.") {
-          setError("");
+        if (result.exists) {
+          setEmailStatus('taken');
+          setError("This email is already registered. Please login to your store.");
+        } else {
+          setEmailStatus('available');
+          if (error === "This email is already registered. Please login to your store.") {
+            setError("");
+          }
         }
+      } catch (err) {
+        console.error("Email check failed:", err);
+        setEmailStatus('idle');
       }
     };
 
@@ -158,18 +162,23 @@ export default function SignupPage() {
       return;
     }
 
-    // Check if email already has a business (Server-side check)
-    const { data: existing } = await supabase
-      .from('businesses')
-      .select('id')
-      .eq('email', cleanEmail)
-      .maybeSingle();
+    // Final Server-side check before sending OTP
+    try {
+      const checkRes = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail }),
+      });
+      const checkData = await checkRes.json();
 
-    if (existing) {
-      setEmailStatus('taken');
-      setError("This email is already registered. Please login to your store.");
-      setLoading(false);
-      return;
+      if (checkData.exists) {
+        setEmailStatus('taken');
+        setError("This email is already registered. Please login to your store.");
+        setLoading(false);
+        return;
+      }
+    } catch (err) {
+      // If check fails, we proceed with Supabase auth which will also fail if unique constraints are set
     }
 
     try {
