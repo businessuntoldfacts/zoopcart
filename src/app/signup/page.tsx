@@ -23,6 +23,7 @@ export default function SignupPage() {
   const [showTerms, setShowTerms] = useState(false);
 
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
   const [isGoogleUser, setIsGoogleUser] = useState(false);
 
   useEffect(() => {
@@ -87,6 +88,41 @@ export default function SignupPage() {
     return () => clearTimeout(timeoutId);
   }, [formData.username]);
 
+  useEffect(() => {
+    const checkEmail = async () => {
+      const cleanEmail = formData.email.trim().toLowerCase();
+      if (cleanEmail.length < 5 || !cleanEmail.includes('@')) {
+        setEmailStatus('idle');
+        return;
+      }
+
+      setEmailStatus('checking');
+      // Note: This check might be limited by RLS.
+      // For best results, ensure the 'email' column in 'businesses' has a UNIQUE constraint in Postgres.
+      const { data } = await supabase
+        .from('businesses')
+        .select('email')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+
+      if (data) {
+        setEmailStatus('taken');
+        setError("This email is already registered. Please login to your store.");
+      } else {
+        setEmailStatus('available');
+        if (error === "This email is already registered. Please login to your store.") {
+          setError("");
+        }
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      checkEmail();
+    }, 600);
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.email, error]);
+
   const handleGoogleSignup = async () => {
     try {
       setLoading(true);
@@ -116,7 +152,13 @@ export default function SignupPage() {
       return;
     }
 
-    // Check if email already has a business
+    if (emailStatus === 'taken') {
+      setError("This email is already registered. Please login to your store.");
+      setLoading(false);
+      return;
+    }
+
+    // Check if email already has a business (Server-side check)
     const { data: existing } = await supabase
       .from('businesses')
       .select('id')
@@ -124,6 +166,7 @@ export default function SignupPage() {
       .maybeSingle();
 
     if (existing) {
+      setEmailStatus('taken');
       setError("This email is already registered. Please login to your store.");
       setLoading(false);
       return;
@@ -357,14 +400,21 @@ export default function SignupPage() {
               </div>
 
               {!isGoogleUser && (
-                <Input
-                  required
-                  type="email"
-                  placeholder="Email Address"
-                  value={formData.email}
-                  onChange={e => setFormData({...formData, email: e.target.value})}
-                  className="bg-slate-50 border-slate-200 h-12 rounded-xl font-medium"
-                />
+                <div className="space-y-1">
+                  <Input
+                    required
+                    type="email"
+                    placeholder="Email Address"
+                    value={formData.email}
+                    onChange={e => setFormData({...formData, email: e.target.value})}
+                    className={`bg-slate-50 border-slate-200 h-12 rounded-xl font-medium transition-colors ${emailStatus === 'taken' ? 'border-red-400 focus:border-red-400' : ''}`}
+                  />
+                  {emailStatus === 'taken' && (
+                    <p className="text-[10px] text-red-600 font-black uppercase tracking-tighter ml-1">
+                      Email already in use. Please login.
+                    </p>
+                  )}
+                </div>
               )}
 
               <div className="flex items-center gap-2 pt-2 pb-2">
@@ -374,7 +424,7 @@ export default function SignupPage() {
                 </label>
               </div>
 
-              <Button type="submit" disabled={loading || usernameStatus === 'taken'} className="w-full text-base py-6 rounded-2xl font-black bg-[#111111] hover:bg-black text-white shadow-xl shadow-black/10 transition-all active:scale-[0.98]">
+              <Button type="submit" disabled={loading || usernameStatus === 'taken' || emailStatus === 'taken'} className="w-full text-base py-6 rounded-2xl font-black bg-[#111111] hover:bg-black text-white shadow-xl shadow-black/10 transition-all active:scale-[0.98]">
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : isGoogleUser ? "Complete My Store Setup" : "Create My Zoopcart"}
               </Button>
 
