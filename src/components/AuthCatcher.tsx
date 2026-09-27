@@ -11,19 +11,29 @@ export default function AuthCatcher() {
       setTimeout(async () => {
         const { data } = await supabase.auth.getSession();
         if (data?.session) {
+          const user = data.session.user;
           const { data: business } = await supabase
             .from('businesses')
             .select('id')
-            .eq('user_id', data.session.user.id)
-            .single();
+            .eq('user_id', user.id)
+            .maybeSingle();
 
           if (business) {
-            // Only redirect if on a public landing page or login page
             if (currentPath === '/' || currentPath === '/login' || currentPath === '/signup') {
               window.location.replace('/dashboard');
             }
-          } else {
-            if (!currentPath.startsWith('/signup')) {
+          } else if (user.email) {
+            // Check by email to handle provider switching (Google vs OTP)
+            const checkRes = await fetch('/api/auth/check-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: user.email, currentUserId: user.id }),
+            });
+            const checkData = await checkRes.json();
+
+            if (checkData.exists && checkData.userId === user.id && checkData.username) {
+              window.location.replace('/dashboard');
+            } else if (!currentPath.startsWith('/signup')) {
               window.location.replace('/signup?reason=no_store');
             }
           }
@@ -58,19 +68,32 @@ export default function AuthCatcher() {
       if (event === 'SIGNED_IN' && session) {
         const latestPath = window.location.pathname;
 
-        // Only redirect to dashboard if the user is explicitly on auth entry pages
         if (latestPath === '/' || latestPath === '/login' || latestPath === '/signup') {
           setTimeout(async () => {
+            const user = session.user;
+            // First check by ID
             const { data: business } = await supabase
               .from('businesses')
               .select('id')
-              .eq('user_id', session.user.id)
-              .single();
+              .eq('user_id', user.id)
+              .maybeSingle();
 
             if (business) {
               window.location.replace('/dashboard');
-            } else {
-              window.location.replace('/signup?reason=no_store');
+            } else if (user.email) {
+              // Try recovery/healing via email
+              const res = await fetch('/api/auth/check-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: user.email, currentUserId: user.id }),
+              });
+              const result = await res.json();
+
+              if (result.exists && result.userId === user.id && result.username) {
+                window.location.replace('/dashboard');
+              } else {
+                window.location.replace('/signup?reason=no_store');
+              }
             }
           }, 300);
         }

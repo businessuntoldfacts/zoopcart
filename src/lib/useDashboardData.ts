@@ -23,7 +23,20 @@ export function useDashboardData() {
       const user = session?.user;
       if (!user) { setLoading(false); return; }
 
-      const { data: business } = await supabase.from('businesses').select('*').eq('user_id', user.id).single();
+      let { data: business } = await supabase.from('businesses').select('*').eq('user_id', user.id).maybeSingle();
+
+      // Fallback: If not found by user_id, check by verified email to support multiple login providers smoothly
+      if (!business && user.email) {
+        const { data: foundByEmail } = await supabase.from('businesses').select('*').eq('email', user.email.trim().toLowerCase()).maybeSingle();
+        if (foundByEmail) {
+          business = foundByEmail;
+          // Silently heal user_id mismatch on the client side too
+          try {
+            await supabase.from('businesses').update({ user_id: user.id }).eq('id', business.id);
+          } catch (e) {}
+        }
+      }
+
       if (!business) { setLoading(false); return; }
 
       const [ordersRes, productsRes] = await Promise.all([
