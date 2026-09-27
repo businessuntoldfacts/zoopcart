@@ -128,6 +128,16 @@ export default function SignupPage() {
         const result = await response.json();
 
         if (result.exists) {
+          // If the email belongs to the current user (e.g. Google user), it's not "taken" for them
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user?.id === result.userId) {
+            setEmailStatus('available');
+            if (error === "This email is already registered. Please login to your store.") {
+              setError("");
+            }
+            return;
+          }
+
           setEmailStatus('taken');
           setError("This email is already registered. Please login to your store.");
         } else {
@@ -422,7 +432,7 @@ export default function SignupPage() {
               <div className="pt-2">
                 <label className="text-xs font-bold text-slate-500 mb-1.5 block ml-1 uppercase tracking-wider">Your Store Link</label>
                 <div className={`flex rounded-xl overflow-hidden border-2 transition-colors ${usernameStatus === 'taken' ? 'border-red-400' : usernameStatus === 'available' ? 'border-green-400' : 'border-slate-200 focus-within:border-[#111111]'}`}>
-                  <span className="flex items-center justify-center bg-slate-50 px-4 text-slate-400 font-bold text-[10px] uppercase border-r border-slate-200">
+                  <span className="flex items-center justify-center bg-slate-50 px-4 text-slate-400 font-bold text-xs border-r border-slate-200">
                     zoopcart.com/
                   </span>
                   <input
@@ -439,8 +449,8 @@ export default function SignupPage() {
                   </span>
                 </div>
                 <div className="h-5 mt-1 ml-1">
-                  {usernameStatus === 'available' && <p className="text-[10px] text-green-600 font-black uppercase tracking-tighter">Awesome! This link is available.</p>}
-                  {usernameStatus === 'taken' && <p className="text-[10px] text-red-600 font-black uppercase tracking-tighter">Already taken. Try a different name.</p>}
+                  {usernameStatus === 'available' && <p className="text-xs text-green-600 font-medium">Awesome! This link is available.</p>}
+                  {usernameStatus === 'taken' && <p className="text-xs text-red-600 font-medium">Already taken. Try a different name.</p>}
                 </div>
               </div>
 
@@ -455,7 +465,7 @@ export default function SignupPage() {
                     className={`bg-slate-50 border-slate-200 h-12 rounded-xl font-medium transition-colors ${emailStatus === 'taken' ? 'border-red-400 focus:border-red-400' : ''}`}
                   />
                   {emailStatus === 'taken' && (
-                    <p className="text-[10px] text-red-600 font-black uppercase tracking-tighter ml-1">
+                    <p className="text-xs text-red-600 font-medium ml-1">
                       Email already in use. Please login.
                     </p>
                   )}
