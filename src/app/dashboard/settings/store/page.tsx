@@ -56,8 +56,25 @@ export default function StoreSettingsPage() {
           city: data.city || "",
           description: data.description || "",
           email: data.email || user.email || "",
+          whatsapp_number: data.whatsapp_number || extraSettings.whatsapp_number || "",
+          whatsapp_country_code: data.whatsapp_country_code || extraSettings.whatsapp_country_code || "+91",
+          insta_followers: data.insta_followers || extraSettings.insta_followers || "",
           ...extraSettings
         });
+      } else {
+        // Handle cases where store is found by email but user_id was just healed
+        const { data: byEmail } = await supabase.from('businesses').select('*').eq('email', user.email).maybeSingle();
+        if (byEmail) {
+           setBusiness({
+            ...business,
+            id: byEmail.id,
+            profile_image: byEmail.profile_image || "",
+            business_name: byEmail.business_name || "",
+            username: byEmail.username || "",
+            email: byEmail.email || user.email || "",
+            whatsapp_country_code: byEmail.whatsapp_country_code || "+91",
+          });
+        }
       }
       setLoading(false);
     }
@@ -129,6 +146,9 @@ export default function StoreSettingsPage() {
       city: business.city,
       description: business.description,
       profile_image: business.profile_image,
+      email: business.email,
+      whatsapp_number: business.whatsapp_number,
+      whatsapp_country_code: business.whatsapp_country_code,
       instagram_profile_url: JSON.stringify(newExtraSettings)
     }).eq('id', business.id);
     
