@@ -68,7 +68,11 @@ export default function SignupPage() {
           } catch (e) {}
         }
 
-        setIsGoogleUser(true);
+        // Check the actual provider to avoid misidentifying OTP users as Google users
+        const provider = session.user.app_metadata?.provider;
+        const isActuallyGoogle = provider === 'google';
+        setIsGoogleUser(isActuallyGoogle);
+
         setFormData(prev => ({
           ...prev,
           fullName: session.user.user_metadata.full_name || prev.fullName,
@@ -130,7 +134,15 @@ export default function SignupPage() {
           // AND they don't have a business record attached, we let them proceed.
           // BUT if they already have a username/business, we block it to prevent loop/duplication.
           const { data: { session } } = await supabase.auth.getSession();
-          if (session?.user?.id === result.userId && !result.username) {
+
+          if (session?.user?.id === result.userId) {
+            // This is the current user. If they have a username, they should be in dashboard.
+            if (result.username) {
+              setSuccess("Store found! Redirecting...");
+              window.location.href = '/dashboard';
+              return;
+            }
+            // No username yet, so they can continue setup.
             setEmailStatus('available');
             return;
           }
@@ -140,6 +152,7 @@ export default function SignupPage() {
           // If we are logged in with Google and there is a conflict, trigger the conflict UI
           if (isGoogleUser && session?.user?.id !== result.userId) {
             setAuthConflict(true);
+            setError(`Conflict: This email is registered via ${result.provider || 'another method'}.`);
           }
         } else {
           setEmailStatus('available');

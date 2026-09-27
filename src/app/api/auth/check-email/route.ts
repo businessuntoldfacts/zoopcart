@@ -43,6 +43,7 @@ export async function POST(req: Request) {
             userId: userData.user.id,
             businessName: bus?.business_name || null,
             username: bus?.username || null,
+            provider: userData.user.app_metadata?.provider || 'email',
             source: 'auth'
           });
         }
@@ -52,23 +53,26 @@ export async function POST(req: Request) {
     }
 
     // 2. Fallback: Try checking businesses table directly
-    // NOTE: This requires the 'email' column to exist in the businesses table.
     const { data: business, error: bError } = await supabaseAdmin
       .from('businesses')
       .select('id, user_id, business_name, username')
       .eq('email', cleanEmail)
       .maybeSingle();
 
-    if (bError) {
-      console.error('Database query error (check if email column exists):', bError);
-    }
-
     if (business) {
+      // Try to get provider for this specific user_id if possible
+      let provider = 'email';
+      try {
+        const { data: u } = await supabaseAdmin.auth.admin.getUserById(business.user_id);
+        provider = u.user?.app_metadata?.provider || 'email';
+      } catch (e) {}
+
       return NextResponse.json({
         exists: true,
         userId: business.user_id,
         businessName: business.business_name,
         username: business.username,
+        provider,
         source: 'database'
       });
     }
