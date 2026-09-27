@@ -97,13 +97,18 @@ export default function ProductsPage() {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!businessId) return;
+
+    // Validate price to prevent "null value" database error
+    const priceVal = parseFloat(formData.price);
+    if (isNaN(priceVal)) {
+      alert("Please enter a valid price for the product.");
+      return;
+    }
+
     setSubmitting(true);
 
     const slug = formData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
-    
-    // We map price -> selling price, sale_price -> MRP
-    
-    
+
     const deliveryData = JSON.stringify({
       type: formData.delivery_type,
       charge: formData.delivery_charge,
@@ -119,8 +124,8 @@ export default function ProductsPage() {
       business_id: businessId,
       name: formData.name,
       slug: slug,
-      price: parseFloat(formData.price),
-      sale_price: formData.sale_price ? parseFloat(formData.sale_price) : null,
+      price: priceVal,
+      sale_price: formData.sale_price && !isNaN(parseFloat(formData.sale_price)) ? parseFloat(formData.sale_price) : null,
       short_description: payloadDesc.substring(0, 100),
       description: payloadDesc,
       category: formData.category,
