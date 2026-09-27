@@ -53,14 +53,18 @@ export default function SignupPage() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email: userEmail }),
             });
-            const { exists, userId } = await res.json();
+            const result = await res.json();
 
-            if (exists && userId !== session.user.id) {
-              // Conflict: Email belongs to another account (e.g. Google vs Email OTP)
-              setError("Conflict: This email is already registered with a different login method. Please login using your original method.");
+            if (result.exists && result.userId !== session.user.id) {
+              // Conflict: Email belongs to another account
+              setError("This email is already registered with a different login method. Please login using your original method.");
               setAuthConflict(true);
+              setEmailStatus('taken');
               return;
             }
+
+            // If it exists and belongs to us but we have no business yet (handled by case 1 above)
+            // Or if it doesn't exist at all.
           } catch (e) {}
         }
 
@@ -132,6 +136,11 @@ export default function SignupPage() {
           }
 
           setEmailStatus('taken');
+
+          // If we are logged in with Google and there is a conflict, trigger the conflict UI
+          if (isGoogleUser && session?.user?.id !== result.userId) {
+            setAuthConflict(true);
+          }
         } else {
           setEmailStatus('available');
         }
@@ -366,13 +375,25 @@ export default function SignupPage() {
             </p>
           </div>
 
-          {isGoogleUser && !error && !success && (
+          {isGoogleUser && !authConflict && !error && !success && (
             <div className="p-4 mb-6 bg-blue-50 text-blue-700 rounded-2xl text-xs font-bold border border-blue-100 flex items-start gap-3 animate-in fade-in">
               <Info className="w-5 h-5 shrink-0 text-blue-500" />
               <div>
                 <p className="mb-1">We found your Google account!</p>
                 <p className="font-medium opacity-80 uppercase tracking-tighter">Please choose a store name and link to finish setting up your storefront.</p>
               </div>
+            </div>
+          )}
+
+          {isGoogleUser && emailStatus === 'taken' && !authConflict && (
+            <div className="p-4 mb-6 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100 flex flex-col gap-3 animate-in shake">
+              <div className="flex items-start gap-2">
+                <XCircle className="w-5 h-5 shrink-0" />
+                <p>This email is already registered with another account.</p>
+              </div>
+              <Button onClick={handleLogout} variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-100 font-bold py-2 h-auto text-xs">
+                Logout & Use Original Login Method
+              </Button>
             </div>
           )}
 
