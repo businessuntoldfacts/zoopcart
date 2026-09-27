@@ -23,26 +23,36 @@ export async function POST(req: Request) {
       }
     );
 
-    // Get id and user_id to help the frontend distinguish between "Already exists for ME" vs "Taken by someone else"
-    const { data, error } = await supabaseAdmin
+    // 1. Try checking businesses table directly (for records where email is saved)
+    let { data: business, error: bError } = await supabaseAdmin
       .from('businesses')
       .select('id, user_id, business_name')
       .eq('email', cleanEmail)
       .maybeSingle();
 
-    if (error) {
-      console.error('Supabase query error in check-email:', error);
-      throw error;
+    if (!business) {
+      // 2. Try finding user in auth.users by email to handle cases where email isn't in businesses table
+      const { data: userData, error: uError } = await supabaseAdmin.auth.admin.getUserByEmail(cleanEmail);
+
+      if (userData?.user) {
+        // 3. If user exists, check if they have a business associated
+        const { data: b2 } = await supabaseAdmin
+          .from('businesses')
+          .select('id, user_id, business_name')
+          .eq('user_id', userData.user.id)
+          .maybeSingle();
+        business = b2;
+      }
     }
 
-    if (!data) {
+    if (!business) {
       return NextResponse.json({ exists: false });
     }
 
     return NextResponse.json({
       exists: true,
-      userId: data.user_id,
-      businessName: data.business_name
+      userId: business.user_id,
+      businessName: business.business_name
     });
   } catch (err: any) {
     console.error('Check email error:', err);

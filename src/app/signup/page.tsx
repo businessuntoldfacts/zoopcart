@@ -438,19 +438,9 @@ export default function SignupPage() {
                     {usernameStatus === 'taken' && <XCircle className="w-5 h-5 text-red-500" />}
                   </span>
                 </div>
-                <div className="h-6 mt-1.5 ml-1 flex items-center">
-                  {usernameStatus === 'available' && (
-                    <div className="flex items-center gap-1.5 text-green-600 animate-in fade-in slide-in-from-left-2 duration-300">
-                      <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                      <p className="text-[11px] font-bold uppercase tracking-wide">URL Available!</p>
-                    </div>
-                  )}
-                  {usernameStatus === 'taken' && (
-                    <div className="flex items-center gap-1.5 text-red-600 animate-in fade-in slide-in-from-left-2 duration-300">
-                      <div className="w-1 h-1 rounded-full bg-red-500" />
-                      <p className="text-[11px] font-bold uppercase tracking-wide">Already taken</p>
-                    </div>
-                  )}
+                <div className="h-5 mt-1 ml-1">
+                  {usernameStatus === 'available' && <p className="text-[10px] text-green-600 font-black uppercase tracking-tighter">Awesome! This link is available.</p>}
+                  {usernameStatus === 'taken' && <p className="text-[10px] text-red-600 font-black uppercase tracking-tighter">Already taken. Try a different name.</p>}
                 </div>
               </div>
 
