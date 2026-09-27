@@ -128,19 +128,12 @@ export default function SignupPage() {
           const { data: { session } } = await supabase.auth.getSession();
           if (session?.user?.id === result.userId && !result.username) {
             setEmailStatus('available');
-            if (error === "This email is already registered. Please login to your store.") {
-              setError("");
-            }
             return;
           }
 
           setEmailStatus('taken');
-          setError("This email is already registered. Please login to your store.");
         } else {
           setEmailStatus('available');
-          if (error === "This email is already registered. Please login to your store.") {
-            setError("");
-          }
         }
       } catch (err) {
         console.error("Email check failed:", err);
@@ -477,35 +470,32 @@ export default function SignupPage() {
                     placeholder="Email Address"
                     value={formData.email}
                     onChange={e => setFormData({...formData, email: e.target.value})}
-                    className={`bg-slate-50 border-slate-200 h-12 rounded-xl font-medium transition-colors ${emailStatus === 'taken' ? 'border-red-400 focus:border-red-400' : ''}`}
+                    className={`bg-slate-50 h-12 rounded-xl font-medium transition-all duration-300 ${emailStatus === 'taken' ? 'border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-200'}`}
                   />
-                  {emailStatus === 'taken' && (
-                    <div className="bg-red-50 p-3 rounded-xl border border-red-100 mb-2">
-                      <p className="text-xs text-red-600 font-bold mb-2">
-                        Email already in use. You already have a store!
+                  <div className="h-5 ml-1 overflow-hidden">
+                    {emailStatus === 'taken' && (
+                      <p className="text-[11px] text-red-600 font-bold animate-in slide-in-from-top-1 duration-300">
+                        Email already in use. <Link href="/login" className="underline hover:text-red-700">Login here</Link>
                       </p>
-                      <Link href="/login">
-                        <Button type="button" variant="outline" className="w-full h-8 text-[10px] font-black uppercase border-red-200 text-red-600 hover:bg-red-50">
-                          Login to your store instead
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
 
-              <div className="flex items-center gap-2 pt-2 pb-2">
+              <div className="flex items-center gap-2 pt-1 pb-2">
                 <input type="checkbox" required id="terms" className="rounded text-[#111111] w-4 h-4 cursor-pointer" />
                 <label htmlFor="terms" className="text-xs font-medium text-slate-500 cursor-pointer">
                   I agree to the <button type="button" onClick={() => setShowTerms(true)} className="font-bold text-[#111111] hover:underline">Terms & Conditions</button>
                 </label>
               </div>
 
-              {emailStatus === 'taken' ? null : (
-                <Button type="submit" disabled={loading || usernameStatus === 'taken' || emailStatus === 'checking'} className="w-full text-base py-6 rounded-2xl font-black bg-[#111111] hover:bg-black text-white shadow-xl shadow-black/10 transition-all active:scale-[0.98]">
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : isGoogleUser ? "Complete My Store Setup" : "Create My Zoopcart"}
-                </Button>
-              )}
+              <Button
+                type="submit"
+                disabled={loading || usernameStatus === 'taken' || emailStatus === 'taken' || emailStatus === 'checking'}
+                className={`w-full text-base py-6 rounded-2xl font-black shadow-xl transition-all active:scale-[0.98] ${emailStatus === 'taken' || usernameStatus === 'taken' ? 'bg-slate-400 cursor-not-allowed opacity-70' : 'bg-[#111111] hover:bg-black text-white shadow-black/10'}`}
+              >
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : isGoogleUser ? "Complete My Store Setup" : "Create My Zoopcart"}
+              </Button>
 
               {!isGoogleUser && (
                 <>
