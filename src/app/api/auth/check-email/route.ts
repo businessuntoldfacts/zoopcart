@@ -11,47 +11,83 @@ export async function POST(req: Request) {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    // Initialize Supabase with Service Role Key to bypass RLS for this specific check
+    // Initialize Supabase with Service Role Key
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!serviceKey) {
+      console.error('CRITICAL: SUPABASE_SERVICE_ROLE_KEY is missing in environment variables');
+    }
+
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      serviceKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
+        auth: { autoRefreshToken: false, persistSession: false }
       }
     );
 
-    // 1. Try checking businesses table directly (for records where email is saved)
-    let { data: business, error: bError } = await supabaseAdmin
+    // 1. Try finding user in auth.users FIRST (Most reliable for accounts)
+    if (serviceKey && serviceKey !== 'undefined') {
+      try {
+        const { data: userData, error: uError } = await supabaseAdmin.auth.admin.getUserByEmail(cleanEmail);
+        if (userData?.user) {
+          // Find if they have a business already
+          const { data: bus } = await supabaseAdmin
+            .from('businesses')
+            .select('id, business_name, username')
+            .eq('user_id', userData.user.id)
+            .maybeSingle();
+
+          return NextResponse.json({
+            exists: true,
+            userId: userData.user.id,
+            businessName: bus?.business_name || null,
+            username: bus?.username || null,
+            source: 'auth'
+          });
+        }
+      } catch (authErr) {
+        console.error('Auth admin check failed (likely missing permissions):', authErr);
+      }
+    }
+
+    // 2. Fallback: Try checking businesses table directly
+    // NOTE: This requires the 'email' column to exist in the businesses table.
+    const { data: business, error: bError } = await supabaseAdmin
       .from('businesses')
-      .select('id, user_id, business_name')
+      .select('id, user_id, business_name, username')
       .eq('email', cleanEmail)
       .maybeSingle();
+
+    if (bError) {
+      console.error('Database query error (check if email column exists):', bError);
+    }
 
     if (business) {
       return NextResponse.json({
         exists: true,
         userId: business.user_id,
-        businessName: business.business_name
+        businessName: business.business_name,
+        username: business.username,
+        source: 'database'
       });
     }
 
-    // 2. Try finding user in auth.users by email to handle cases where email isn't in businesses table
-    const { data: userData, error: uError } = await supabaseAdmin.auth.admin.getUserByEmail(cleanEmail);
+    // 3. Last resort: Try finding by user_id if we have a match in auth.users by some other way?
+    // Not possible here without more info.
 
-    if (userData?.user) {
-      return NextResponse.json({
-        exists: true,
-        userId: userData.user.id,
-        businessName: null
-      });
-    }
+    return NextResponse.json({
+      exists: false,
+      warning: !serviceKey ? 'SUPABASE_SERVICE_ROLE_KEY is missing. Validation may be incomplete.' : null
+    });
 
     return NextResponse.json({ exists: false });
   } catch (err: any) {
     console.error('Check email error:', err);
-    return NextResponse.json({ error: 'Internal Server Error', exists: false }, { status: 500 });
+    return NextResponse.json({
+      error: 'Internal Server Error',
+      details: err.message,
+      exists: false
+    }, { status: 500 });
   }
 }

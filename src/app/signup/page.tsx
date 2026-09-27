@@ -122,9 +122,11 @@ export default function SignupPage() {
         const result = await response.json();
 
         if (result.exists) {
-          // If the email belongs to the current user (e.g. Google user), it's not "taken" for them
+          // If the email belongs to the current user (e.g. Google user who doesn't have a business yet)
+          // AND they don't have a business record attached, we let them proceed.
+          // BUT if they already have a username/business, we block it to prevent loop/duplication.
           const { data: { session } } = await supabase.auth.getSession();
-          if (session?.user?.id === result.userId) {
+          if (session?.user?.id === result.userId && !result.username) {
             setEmailStatus('available');
             if (error === "This email is already registered. Please login to your store.") {
               setError("");
