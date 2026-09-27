@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
+    const { email, currentUserId } = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required', exists: false }, { status: 400 });
@@ -53,11 +53,29 @@ export async function POST(req: Request) {
     }
 
     // 2. Fallback: Try checking businesses table directly
-    const { data: business, error: bError } = await supabaseAdmin
+    let { data: business, error: bError } = await supabaseAdmin
       .from('businesses')
       .select('id, user_id, business_name, username')
       .eq('email', cleanEmail)
       .maybeSingle();
+
+    // AUTO-HEALING LOGIC: If a business exists with this email but under a different user_id
+    // (e.g. user previously signed up with Email OTP and now clicks Google Sign-In with the same email),
+    // we automatically attach/link the store to their current user_id so they don't get locked out or loop!
+    if (business && currentUserId && business.user_id !== currentUserId) {
+      try {
+        const { data: curUser } = await supabaseAdmin.auth.admin.getUserById(currentUserId);
+        if (curUser?.user?.email?.toLowerCase() === cleanEmail) {
+          const { data: updated } = await supabaseAdmin
+            .from('businesses')
+            .update({ user_id: currentUserId })
+            .eq('id', business.id)
+            .select()
+            .single();
+          if (updated) business = updated;
+        }
+      } catch (e) {}
+    }
 
     if (business) {
       // Try to get provider for this specific user_id if possible

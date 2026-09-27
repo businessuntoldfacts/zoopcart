@@ -51,20 +51,25 @@ export default function SignupPage() {
             const res = await fetch('/api/auth/check-email', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: userEmail }),
+              body: JSON.stringify({ email: userEmail, currentUserId: session.user.id }),
             });
             const result = await res.json();
 
-            if (result.exists && result.userId !== session.user.id) {
-              // Conflict: Email belongs to another account
-              setError("This email is already registered with a different login method. Please login using your original method.");
-              setAuthConflict(true);
-              setEmailStatus('taken');
-              return;
-            }
+            if (result.exists) {
+              // If it automatically healed or now matches the user id, let them go straight to dashboard!
+              if (result.userId === session.user.id && result.username) {
+                setSuccess("Store linked successfully! Redirecting...");
+                window.location.href = '/dashboard';
+                return;
+              }
 
-            // If it exists and belongs to us but we have no business yet (handled by case 1 above)
-            // Or if it doesn't exist at all.
+              if (result.userId !== session.user.id) {
+                setError("This email is already registered with a different login method. Please login using your original method.");
+                setAuthConflict(true);
+                setEmailStatus('taken');
+                return;
+              }
+            }
           } catch (e) {}
         }
 
