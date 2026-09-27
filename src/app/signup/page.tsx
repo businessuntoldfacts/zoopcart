@@ -25,6 +25,7 @@ export default function SignupPage() {
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
   const [emailStatus, setEmailStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
   const [isGoogleUser, setIsGoogleUser] = useState(false);
+  const [authConflict, setAuthConflict] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -45,7 +46,6 @@ export default function SignupPage() {
         }
 
         // 2. If not found, double check via Server API for the email
-        // (handles cases where user used a different login method for the same email)
         if (userEmail) {
           try {
             const res = await fetch('/api/auth/check-email', {
@@ -55,17 +55,11 @@ export default function SignupPage() {
             });
             const { exists, userId } = await res.json();
 
-            if (exists) {
-              if (userId === session.user.id) {
-                window.location.href = '/dashboard';
-                return;
-              } else {
-                // Conflict: Email belongs to another account (e.g. Google vs Email OTP)
-                setError("This email is already registered with a different login method. Please use the Login page.");
-                await supabase.auth.signOut();
-                setIsGoogleUser(false);
-                return;
-              }
+            if (exists && userId !== session.user.id) {
+              // Conflict: Email belongs to another account (e.g. Google vs Email OTP)
+              setError("Conflict: This email is already registered with a different login method. Please login using your original method.");
+              setAuthConflict(true);
+              return;
             }
           } catch (e) {}
         }
@@ -288,6 +282,11 @@ export default function SignupPage() {
     }
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+  };
+
   const createBusiness = async (userId: string, emailFromSession?: string) => {
     const finalEmail = (emailFromSession || formData.email).trim().toLowerCase();
 
@@ -385,7 +384,21 @@ export default function SignupPage() {
           {error && <div className="p-4 mb-6 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100 flex items-start gap-2 animate-in shake"><XCircle className="w-5 h-5 shrink-0" /> {error}</div>}
           {success && <div className="p-4 mb-6 bg-green-50 text-green-600 rounded-2xl text-sm font-bold border border-green-100 flex items-start gap-2"><CheckCircle2 className="w-5 h-5 shrink-0" /> {success}</div>}
 
-          {otpSent ? (
+          {authConflict ? (
+            <div className="space-y-6 text-center py-4">
+              <div className="bg-amber-50 p-6 rounded-[24px] border border-amber-100">
+                <Info className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-amber-900 mb-2">Account Conflict</h3>
+                <p className="text-sm text-amber-800 font-medium">
+                  This email ({formData.email}) is already linked to a different login method (e.g. Email OTP).
+                  You are currently logged in with Google.
+                </p>
+              </div>
+              <Button onClick={handleLogout} className="w-full py-6 rounded-2xl font-black bg-[#111111] hover:bg-black text-white shadow-xl">
+                Switch to Login Page
+              </Button>
+            </div>
+          ) : otpSent ? (
             <form onSubmit={handleVerifyAndSignup} className="space-y-4">
               <div>
                 <p className="text-sm text-slate-500 mb-4 text-center">
@@ -465,9 +478,16 @@ export default function SignupPage() {
                     className={`bg-slate-50 border-slate-200 h-12 rounded-xl font-medium transition-colors ${emailStatus === 'taken' ? 'border-red-400 focus:border-red-400' : ''}`}
                   />
                   {emailStatus === 'taken' && (
-                    <p className="text-xs text-red-600 font-medium ml-1">
-                      Email already in use. Please login.
-                    </p>
+                    <div className="bg-red-50 p-3 rounded-xl border border-red-100 mb-2">
+                      <p className="text-xs text-red-600 font-bold mb-2">
+                        Email already in use. You already have a store!
+                      </p>
+                      <Link href="/login">
+                        <Button type="button" variant="outline" className="w-full h-8 text-[10px] font-black uppercase border-red-200 text-red-600 hover:bg-red-50">
+                          Login to your store instead
+                        </Button>
+                      </Link>
+                    </div>
                   )}
                 </div>
               )}
@@ -479,9 +499,11 @@ export default function SignupPage() {
                 </label>
               </div>
 
-              <Button type="submit" disabled={loading || usernameStatus === 'taken' || emailStatus === 'taken'} className="w-full text-base py-6 rounded-2xl font-black bg-[#111111] hover:bg-black text-white shadow-xl shadow-black/10 transition-all active:scale-[0.98]">
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : isGoogleUser ? "Complete My Store Setup" : "Create My Zoopcart"}
-              </Button>
+              {emailStatus === 'taken' ? null : (
+                <Button type="submit" disabled={loading || usernameStatus === 'taken' || emailStatus === 'checking'} className="w-full text-base py-6 rounded-2xl font-black bg-[#111111] hover:bg-black text-white shadow-xl shadow-black/10 transition-all active:scale-[0.98]">
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : isGoogleUser ? "Complete My Store Setup" : "Create My Zoopcart"}
+                </Button>
+              )}
 
               {!isGoogleUser && (
                 <>
