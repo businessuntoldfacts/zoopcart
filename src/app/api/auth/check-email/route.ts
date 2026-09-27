@@ -30,30 +30,26 @@ export async function POST(req: Request) {
       .eq('email', cleanEmail)
       .maybeSingle();
 
-    if (!business) {
-      // 2. Try finding user in auth.users by email to handle cases where email isn't in businesses table
-      const { data: userData, error: uError } = await supabaseAdmin.auth.admin.getUserByEmail(cleanEmail);
-
-      if (userData?.user) {
-        // 3. If user exists, check if they have a business associated
-        const { data: b2 } = await supabaseAdmin
-          .from('businesses')
-          .select('id, user_id, business_name')
-          .eq('user_id', userData.user.id)
-          .maybeSingle();
-        business = b2;
-      }
+    if (business) {
+      return NextResponse.json({
+        exists: true,
+        userId: business.user_id,
+        businessName: business.business_name
+      });
     }
 
-    if (!business) {
-      return NextResponse.json({ exists: false });
+    // 2. Try finding user in auth.users by email to handle cases where email isn't in businesses table
+    const { data: userData, error: uError } = await supabaseAdmin.auth.admin.getUserByEmail(cleanEmail);
+
+    if (userData?.user) {
+      return NextResponse.json({
+        exists: true,
+        userId: userData.user.id,
+        businessName: null
+      });
     }
 
-    return NextResponse.json({
-      exists: true,
-      userId: business.user_id,
-      businessName: business.business_name
-    });
+    return NextResponse.json({ exists: false });
   } catch (err: any) {
     console.error('Check email error:', err);
     return NextResponse.json({ error: 'Internal Server Error', exists: false }, { status: 500 });
