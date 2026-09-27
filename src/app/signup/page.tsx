@@ -53,10 +53,19 @@ export default function SignupPage() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email: userEmail }),
             });
-            const { exists } = await res.json();
+            const { exists, userId } = await res.json();
+
             if (exists) {
-              window.location.href = '/dashboard';
-              return;
+              if (userId === session.user.id) {
+                window.location.href = '/dashboard';
+                return;
+              } else {
+                // Conflict: Email belongs to another account (e.g. Google vs Email OTP)
+                setError("This email is already registered with a different login method. Please use the Login page.");
+                await supabase.auth.signOut();
+                setIsGoogleUser(false);
+                return;
+              }
             }
           } catch (e) {}
         }
@@ -138,7 +147,7 @@ export default function SignupPage() {
     }, 600);
 
     return () => clearTimeout(timeoutId);
-  }, [formData.email, error]);
+  }, [formData.email]);
 
   const handleGoogleSignup = async () => {
     try {
@@ -280,11 +289,17 @@ export default function SignupPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: finalEmail }),
       });
-      const { exists } = await checkRes.json();
+      const { exists, userId: existingUserId } = await checkRes.json();
 
       if (exists) {
-        setSuccess("Store already found! Redirecting to dashboard...");
-        setTimeout(() => { window.location.href = "/dashboard"; }, 1500);
+        if (existingUserId === userId) {
+          setSuccess("Store already found! Redirecting to dashboard...");
+          setTimeout(() => { window.location.href = "/dashboard"; }, 1500);
+        } else {
+          setError("This email is already registered with a different account. Please use the Login page.");
+          await supabase.auth.signOut();
+          setTimeout(() => { window.location.href = "/login"; }, 3000);
+        }
         return;
       }
 
@@ -423,9 +438,19 @@ export default function SignupPage() {
                     {usernameStatus === 'taken' && <XCircle className="w-5 h-5 text-red-500" />}
                   </span>
                 </div>
-                <div className="h-5 mt-1 ml-1">
-                  {usernameStatus === 'available' && <p className="text-[10px] text-green-600 font-black uppercase tracking-tighter">Awesome! This link is available.</p>}
-                  {usernameStatus === 'taken' && <p className="text-[10px] text-red-600 font-black uppercase tracking-tighter">Already taken. Try a different name.</p>}
+                <div className="h-6 mt-1.5 ml-1 flex items-center">
+                  {usernameStatus === 'available' && (
+                    <div className="flex items-center gap-1.5 text-green-600 animate-in fade-in slide-in-from-left-2 duration-300">
+                      <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                      <p className="text-[11px] font-bold uppercase tracking-wide">URL Available!</p>
+                    </div>
+                  )}
+                  {usernameStatus === 'taken' && (
+                    <div className="flex items-center gap-1.5 text-red-600 animate-in fade-in slide-in-from-left-2 duration-300">
+                      <div className="w-1 h-1 rounded-full bg-red-500" />
+                      <p className="text-[11px] font-bold uppercase tracking-wide">Already taken</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
