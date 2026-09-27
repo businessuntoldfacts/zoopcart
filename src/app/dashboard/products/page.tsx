@@ -17,6 +17,7 @@ export default function ProductsPage() {
   const [businessUsername, setBusinessUsername] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [errors, setErrors] = useState<any>({});
 
   const [formData, setFormData] = useState({ 
     name: "", 
@@ -98,13 +99,36 @@ export default function ProductsPage() {
     e.preventDefault();
     if (!businessId) return;
 
-    // Validate price to prevent "null value" database error
+    // Reset errors
+    const newErrors: any = {};
+
+    if (!formData.image) {
+      newErrors.image = "Product image is required! Please upload an image.";
+    }
+    if (!formData.name.trim()) {
+      newErrors.name = "Product name is required!";
+    }
+    if (!formData.category) {
+      newErrors.category = "Please select a product category!";
+    }
+    if (!formData.description.trim()) {
+      newErrors.description = "Product description is required!";
+    }
+
     const priceVal = parseFloat(formData.price);
-    if (isNaN(priceVal)) {
-      alert("Please enter a valid price for the product.");
+    if (isNaN(priceVal) || priceVal < 0) {
+      newErrors.price = "Please enter a valid price for the product.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      // Scroll to the first error or show an alert message for better awareness
+      const firstError = Object.values(newErrors)[0] as string;
+      alert(firstError);
       return;
     }
 
+    setErrors({});
     setSubmitting(true);
 
     const slug = formData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
@@ -198,9 +222,9 @@ export default function ProductsPage() {
           {/* PHOTOS SECTION */}
           <div className="space-y-2">
             <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">Photos</h3>
-            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-slate-800 shadow-xl">
+            <div className={`bg-[#1A1A1A] p-6 rounded-3xl border ${errors.image ? 'border-red-500 ring-2 ring-red-500/20' : 'border-slate-800'} shadow-xl`}>
               <div className="flex flex-col items-center">
-                <div className="w-40 h-40 rounded-2xl border-2 border-dashed border-slate-600 bg-black/50 overflow-hidden relative flex flex-col items-center justify-center text-center p-2 group hover:border-[#111111]/50 transition-colors mb-6">
+                <div className={`w-40 h-40 rounded-2xl border-2 border-dashed ${errors.image ? 'border-red-500 bg-red-950/20' : 'border-slate-600 bg-black/50'} overflow-hidden relative flex flex-col items-center justify-center text-center p-2 group hover:border-[#111111]/50 transition-colors mb-4`}>
                   {formData.image ? (
                     <img src={formData.image} alt="Preview" className="w-full h-full object-cover absolute inset-0" />
                   ) : (
@@ -212,6 +236,10 @@ export default function ProductsPage() {
                   <Input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
                 </div>
                 
+                {errors.image && (
+                  <p className="text-xs font-bold text-red-500 mb-4 animate-bounce">⚠️ {errors.image}</p>
+                )}
+
                 <div className="flex gap-4 w-full justify-center">
                   <div className="relative">
                     <Button type="button" variant="ghost" className="rounded-full bg-white/10 text-white border-none hover:bg-white/20 text-sm h-10 px-6 font-bold">
@@ -246,11 +274,29 @@ export default function ProductsPage() {
                 </button>
               </div>
 
-                <Input required value={formData.name} onChange={(e: any) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Shop Faisal" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl" />
+                <Input
+                  required
+                  value={formData.name}
+                  onChange={(e: any) => {
+                    setFormData({...formData, name: e.target.value});
+                    if (errors.name) setErrors({...errors, name: null});
+                  }}
+                  placeholder="e.g. Shop Faisal"
+                  className={`bg-black/50 ${errors.name ? 'border-red-500 ring-1 ring-red-500/20' : 'border-slate-700'} text-white placeholder:text-slate-600 h-12 rounded-xl`}
+                />
+                {errors.name && <p className="text-[10px] font-bold text-red-500 mt-1">⚠️ {errors.name}</p>}
               </div>
               <div>
                 <label className="text-sm font-bold text-white mb-1.5 block">Category <span className="text-[#111111]">*</span></label>
-                <select required value={formData.category} onChange={(e: any) => setFormData({...formData, category: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-900 h-14 rounded-xl px-4 outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 appearance-none font-medium">
+                <select
+                  required
+                  value={formData.category}
+                  onChange={(e: any) => {
+                    setFormData({...formData, category: e.target.value});
+                    if (errors.category) setErrors({...errors, category: null});
+                  }}
+                  className={`w-full bg-slate-50 border ${errors.category ? 'border-red-500 ring-2 ring-red-500/20' : 'border-slate-200'} text-slate-900 h-14 rounded-xl px-4 outline-none focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20 appearance-none font-medium`}
+                >
                   <option value="" disabled>Select category</option>
                   <option value="Home Bakers">Home Bakers</option>
                   <option value="Clothing Sellers">Clothing Sellers</option>
@@ -263,7 +309,8 @@ export default function ProductsPage() {
                   <option value="Wedding Vendors">Wedding Vendors</option>
                   <option value="Others">Others</option>
                 </select>
-                </div>
+                {errors.category && <p className="text-[10px] font-bold text-red-500 mt-1">⚠️ {errors.category}</p>}
+              </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -327,10 +374,14 @@ export default function ProductsPage() {
                 </label>
                 <textarea 
                   value={formData.description} 
-                  onChange={(e: any) => setFormData({...formData, description: e.target.value})} 
+                  onChange={(e: any) => {
+                    setFormData({...formData, description: e.target.value});
+                    if (errors.description) setErrors({...errors, description: null});
+                  }}
                   placeholder="Describe your product in detail. Include materials, dimensions, care instructions, or any special features..." 
-                  className="w-full bg-black/50 border border-slate-700 text-white placeholder:text-slate-600 p-4 min-h-[160px] rounded-xl resize-y outline-none focus:border-[#111111] transition-colors" 
+                  className={`w-full bg-black/50 border ${errors.description ? 'border-red-500 ring-1 ring-red-500/20' : 'border-slate-700'} text-white placeholder:text-slate-600 p-4 min-h-[160px] rounded-xl resize-y outline-none focus:border-[#111111] transition-colors`}
                 />
+                {errors.description && <p className="text-[10px] font-bold text-red-500 mt-1">⚠️ {errors.description}</p>}
                 <p className="text-xs text-slate-500 mt-2">A good description helps customers decide and builds trust.</p>
                 </div>
 
@@ -353,8 +404,19 @@ export default function ProductsPage() {
                 <label className="text-sm font-bold text-white mb-1.5 block">Price <span className="text-[#111111]">*</span></label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
-                  <Input required type="number" value={formData.price} onChange={(e: any) => setFormData({...formData, price: e.target.value})} placeholder="20" className="bg-black/50 border-slate-700 text-white placeholder:text-slate-600 h-12 rounded-xl pl-8" />
+                  <Input
+                    required
+                    type="number"
+                    value={formData.price}
+                    onChange={(e: any) => {
+                      setFormData({...formData, price: e.target.value});
+                      if (errors.price) setErrors({...errors, price: null});
+                    }}
+                    placeholder="20"
+                    className={`bg-black/50 ${errors.price ? 'border-red-500 ring-1 ring-red-500/20' : 'border-slate-700'} text-white placeholder:text-slate-600 h-12 rounded-xl pl-8`}
+                  />
                 </div>
+                {errors.price && <p className="text-[10px] font-bold text-red-500 mt-1">⚠️ {errors.price}</p>}
               </div>
               <div>
                 <label className="text-sm font-bold text-white mb-1.5 block">MRP <span className="text-[#111111]">*</span></label>
