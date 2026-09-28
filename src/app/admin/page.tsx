@@ -21,88 +21,13 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      // 1. Fetch Basic Counts (Fast)
-      const { count: totalBusinesses } = await supabase
-        .from('businesses')
-        .select('*', { count: 'exact', head: true });
+      const response = await fetch('/api/admin/stats');
+      const data = await response.json();
 
-      const { count: activeBusinesses } = await supabase
-        .from('businesses')
-        .select('*', { count: 'exact', head: true })
-        .neq('status', 'suspended');
-
-      // 2. Fetch Real Orders Count & Volume
-      // We still need to calculate volume. To avoid fetching all, we fetch only necessary columns
-      const { data: realOrdersData } = await supabase
-        .from('orders')
-        .select('total_amount, budget, created_at')
-        .not('status', 'in', '("store_view","product_view","review","platform_review")');
-
-      // 3. Fetch Recent Activity (Limited)
-      const { data: recentBusinesses } = await supabase
-        .from('businesses')
-        .select('id, business_name, created_at')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      const { data: recentOrders } = await supabase
-        .from('orders')
-        .select('id, customer_name, created_at, businesses(business_name)')
-        .not('status', 'in', '("store_view","product_view","review","platform_review")')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      let vol = 0;
-      let ordCount = 0;
-      let tOrd = 0;
-      let tRev = 0;
-      const today = new Date().toDateString();
-
-      const last7Days = [...Array(7)].map((_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        return d.toDateString();
-      }).reverse();
-
-      const dailyData = new Array(7).fill(0);
-
-      if (realOrdersData) {
-        ordCount = realOrdersData.length;
-        realOrdersData.forEach(o => {
-             const orderDate = new Date(o.created_at).toDateString();
-             const orderVal = o.total_amount || o.budget || 0;
-
-             vol += orderVal;
-
-             if (orderDate === today) {
-               tOrd++;
-               tRev += orderVal;
-             }
-
-             const dayIndex = last7Days.indexOf(orderDate);
-             if (dayIndex !== -1) {
-               dailyData[dayIndex]++;
-             }
-        });
+      if (data.success) {
+        setStats(data.stats);
+        setRecentActivity(data.stats.activities);
       }
-
-      setStats({
-        stores: totalBusinesses || 0,
-        orders: ordCount,
-        volume: vol,
-        activeStores: activeBusinesses || 0,
-        todayOrders: tOrd,
-        todayRevenue: tRev,
-        chartData: dailyData
-      });
-
-      // Combine recent activities
-      const activities = [
-        ...(recentBusinesses || []).map(b => ({ type: 'business', name: b.business_name, time: b.created_at, id: b.id })),
-        ...(recentOrders || []).map(o => ({ type: 'order', name: o.customer_name, store: o.businesses?.business_name, time: o.created_at, id: o.id }))
-      ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
-
-      setRecentActivity(activities);
     } catch (error) {
       console.error("Error loading stats:", error);
     } finally {
@@ -114,7 +39,7 @@ export default function AdminDashboard() {
     loadStats();
 
     // REALTIME: Listen for new orders or business signups
-    const channel = supabase.channel('admin-stats')
+    const channel = supabase.channel('admin-stats-live')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => loadStats())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'businesses' }, () => loadStats())
       .subscribe();
