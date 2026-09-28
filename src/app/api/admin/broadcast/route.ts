@@ -1,5 +1,33 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+
+function getAdminClient() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceRoleKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is missing");
+  }
+  const { createClient } = require('@supabase/supabase-js');
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    serviceRoleKey,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
+
+export async function GET() {
+  try {
+    const supabaseAdmin = getAdminClient();
+    const { data: announcements, error } = await supabaseAdmin
+      .from('announcements')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return NextResponse.json({ success: true, announcements });
+  } catch (error: any) {
+    console.error("Fetch announcements error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -9,18 +37,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing title or content" }, { status: 400 });
     }
 
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!serviceRoleKey) {
-        return NextResponse.json({ error: "SUPABASE_SERVICE_ROLE_KEY is missing" }, { status: 500 });
-    }
-
-    // Initialize admin client to bypass RLS
-    const { createClient } = require('@supabase/supabase-js');
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      serviceRoleKey,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    );
+    const supabaseAdmin = getAdminClient();
 
     // 1. Save to Database using Admin Client
     const { data: newAnnouncement, error: dbError } = await supabaseAdmin
@@ -80,6 +97,51 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, announcement: newAnnouncement });
   } catch (error: any) {
     console.error("Broadcast error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const { id, title, content, link, type } = await request.json();
+    if (!id || !title || !content) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const supabaseAdmin = getAdminClient();
+    const { data: updatedAnnouncement, error } = await supabaseAdmin
+      .from('announcements')
+      .update({ title, content, link, type })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return NextResponse.json({ success: true, announcement: updatedAnnouncement });
+  } catch (error: any) {
+    console.error("Update announcement error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) {
+      return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+    }
+
+    const supabaseAdmin = getAdminClient();
+    const { error } = await supabaseAdmin
+      .from('announcements')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("Delete announcement error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
