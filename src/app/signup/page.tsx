@@ -365,6 +365,9 @@ export default function SignupPage() {
         ]);
       } catch (annError) {}
 
+      // Set setup pending flag to force user to complete profile
+      localStorage.setItem("setup_pending", "true");
+
       setSuccess("Account created successfully! Redirecting...");
       setTimeout(() => {
         window.location.href = "/dashboard/settings/store";

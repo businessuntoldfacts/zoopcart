@@ -19,7 +19,11 @@ CREATE POLICY "Users can view relevant announcements" ON announcements
     is_active = true AND (business_id IS NULL OR business_id IN (SELECT id FROM businesses WHERE user_id = auth.uid()))
   );
 
--- Only service role (Admin via API) can manage announcements
+-- Admins / Authed Users can insert announcements
+CREATE POLICY "Anyone authenticated can insert announcements" ON announcements
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+-- Only service role or full admin policy can manage announcements fully
 CREATE POLICY "Admins can manage announcements" ON announcements
   FOR ALL USING (true)
   WITH CHECK (true);
