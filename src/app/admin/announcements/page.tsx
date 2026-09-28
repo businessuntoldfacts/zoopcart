@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Send, Loader2, Megaphone, Trash2, Edit3, X, Calendar } from "lucide-react";
+import { Send, Loader2, Megaphone, Trash2, Edit3, X, Calendar, Flame } from "lucide-react";
 
 export default function AnnouncementsPage() {
   const [loading, setLoading] = useState(false);
@@ -43,7 +43,6 @@ export default function AnnouncementsPage() {
     setLoading(true);
     try {
       if (editingId) {
-        // Update existing announcement
         const response = await fetch("/api/admin/broadcast", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -63,7 +62,6 @@ export default function AnnouncementsPage() {
 
         alert("Announcement updated successfully!");
       } else {
-        // Create new broadcast
         const response = await fetch("/api/admin/broadcast", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -102,8 +100,9 @@ export default function AnnouncementsPage() {
       content: ann.content || "",
       link: ann.link || "",
       type: ann.type || "info",
-      sendEmail: false // Can't re-send initial batch broadcast on update
+      sendEmail: false
     });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCancelEdit = () => {
@@ -138,19 +137,25 @@ export default function AnnouncementsPage() {
   };
 
   return (
-    <div className="space-y-8 pb-12">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-8 pb-12 transition-all duration-500 animate-in fade-in">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-[#0F172A]">
+          <h2 className="text-2xl font-black text-[#0F172A] tracking-tight flex items-center gap-2">
+            <Megaphone className="w-6 h-6 text-slate-900 animate-bounce duration-1000" />
             {editingId ? "Edit Announcement" : "Broadcast Announcement"}
           </h2>
-          <p className="text-sm text-slate-500 mt-1">Send a message to all Zoopcart sellers via dashboard and email.</p>
+          <p className="text-sm text-slate-500 mt-1">Send a message to all Zoopcart sellers via dashboard and email instantly.</p>
         </div>
+        {editingId && (
+          <div className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider animate-pulse border border-blue-100">
+            Editing Mode Active
+          </div>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <Card className="p-8 rounded-3xl border-slate-200 shadow-sm bg-white">
+          <Card className="p-8 rounded-3xl border-slate-200/80 shadow-sm bg-white hover:shadow-md transition-all duration-300">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -160,7 +165,7 @@ export default function AnnouncementsPage() {
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
                     placeholder="e.g. New Feature: Advanced Analytics"
-                    className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-[#111111] transition-all"
+                    className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-[#111111] focus:bg-white focus:ring-4 focus:ring-slate-900/5 transition-all duration-200"
                   />
                 </div>
                 <div className="space-y-2">
@@ -168,7 +173,7 @@ export default function AnnouncementsPage() {
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({...formData, type: e.target.value})}
-                    className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-[#111111] transition-all"
+                    className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 bg-slate-50 outline-none focus:border-[#111111] focus:bg-white focus:ring-4 focus:ring-slate-900/5 transition-all duration-200"
                   >
                     <option value="info">Information (Blue)</option>
                     <option value="success">Success (Green)</option>
@@ -184,7 +189,7 @@ export default function AnnouncementsPage() {
                   value={formData.content}
                   onChange={(e) => setFormData({...formData, content: e.target.value})}
                   placeholder="Describe the announcement in detail..."
-                  className="w-full p-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-[#111111] h-40 resize-none transition-all"
+                  className="w-full p-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-[#111111] focus:bg-white focus:ring-4 focus:ring-slate-900/5 h-40 resize-none transition-all duration-200"
                 ></textarea>
               </div>
 
@@ -195,31 +200,31 @@ export default function AnnouncementsPage() {
                   value={formData.link}
                   onChange={(e) => setFormData({...formData, link: e.target.value})}
                   placeholder="https://zoopcart.com/blog/new-feature"
-                  className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-[#111111] transition-all"
+                  className="w-full h-12 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-900 bg-slate-50 outline-none focus:border-[#111111] focus:bg-white focus:ring-4 focus:ring-slate-900/5 transition-all duration-200"
                 />
               </div>
 
               {!editingId && (
-                <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100/70 rounded-2xl border border-slate-100 transition-all duration-200 cursor-pointer">
                   <input
                     type="checkbox"
                     id="sendEmail"
                     checked={formData.sendEmail}
                     onChange={(e) => setFormData({...formData, sendEmail: e.target.checked})}
-                    className="w-5 h-5 rounded border-slate-300 text-[#111111] focus:ring-[#111111]"
+                    className="w-5 h-5 rounded border-slate-300 text-[#111111] focus:ring-[#111111] cursor-pointer transition-transform duration-200 active:scale-95"
                   />
-                  <label htmlFor="sendEmail" className="text-sm font-bold text-slate-700 cursor-pointer">
-                    Send Email Notification to All Sellers
+                  <label htmlFor="sendEmail" className="text-sm font-bold text-slate-700 cursor-pointer select-none">
+                    Send Email Notification to All Registered Sellers
                   </label>
                 </div>
               )}
 
-              <div className="flex gap-4">
+              <div className="flex gap-4 pt-2">
                 {editingId && (
                   <Button
                     type="button"
                     onClick={handleCancelEdit}
-                    className="w-1/3 h-14 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-2xl text-base transition-all flex items-center justify-center gap-2"
+                    className="w-1/3 h-14 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-2xl text-base transition-all duration-200 flex items-center justify-center gap-2 active:scale-98"
                   >
                     <X className="w-5 h-5" /> Cancel
                   </Button>
@@ -227,7 +232,7 @@ export default function AnnouncementsPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className={`h-14 font-extrabold rounded-2xl text-lg shadow-lg transition-all flex items-center justify-center gap-2 ${
+                  className={`h-14 font-extrabold rounded-2xl text-lg shadow-lg transition-all duration-200 flex items-center justify-center gap-2 active:scale-98 ${
                     editingId ? "w-2/3 bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/10" : "w-full bg-[#111111] hover:bg-black text-white shadow-black/10"
                   }`}
                 >
@@ -239,7 +244,7 @@ export default function AnnouncementsPage() {
                     </>
                   ) : (
                     <>
-                      <Send className="w-5 h-5" /> Publish & Broadcast
+                      <Send className="w-5 h-5 transition-transform group-hover:translate-x-1" /> Publish & Broadcast
                     </>
                   )}
                 </Button>
@@ -249,21 +254,21 @@ export default function AnnouncementsPage() {
         </div>
 
         <div className="space-y-6">
-          <Card className="p-6 rounded-3xl border-slate-200 shadow-sm bg-white">
+          <Card className="p-6 rounded-3xl border-slate-200 shadow-sm bg-white hover:shadow-md transition-all duration-300">
             <h3 className="font-bold text-[#0F172A] mb-4 flex items-center gap-2">
-              <Megaphone className="w-4 h-4 text-blue-500" /> Live Preview
+              <Flame className="w-4 h-4 text-orange-500 animate-pulse" /> Live Preview
             </h3>
-            <div className="border border-slate-100 rounded-2xl p-5 bg-slate-50">
+            <div className="border border-slate-100 rounded-2xl p-5 bg-slate-50 shadow-inner min-h-[140px] transition-all duration-300">
               <div className="flex items-center gap-2 mb-2">
-                 <div className={`w-2.5 h-2.5 rounded-full ${
-                   formData.type === 'warning' ? 'bg-orange-500' : formData.type === 'success' ? 'bg-green-500' : formData.type === 'promotion' ? 'bg-purple-500' : 'bg-blue-500'
+                 <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                   formData.type === 'warning' ? 'bg-orange-500 scale-110' : formData.type === 'success' ? 'bg-green-500 scale-110' : formData.type === 'promotion' ? 'bg-purple-500 scale-110' : 'bg-blue-500 scale-110'
                  }`}></div>
-                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{formData.type}</span>
+                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest transition-all">{formData.type}</span>
               </div>
-              <h4 className="font-bold text-slate-900 text-base leading-tight mb-2">{formData.title || "Announcement Title"}</h4>
-              <p className="text-sm text-slate-600 font-medium whitespace-pre-wrap">{formData.content || "Message content will appear here..."}</p>
+              <h4 className="font-bold text-slate-900 text-base leading-tight mb-2 break-words transition-all">{formData.title || "Announcement Title"}</h4>
+              <p className="text-sm text-slate-600 font-medium whitespace-pre-wrap break-words transition-all">{formData.content || "Message content will appear here..."}</p>
               {formData.link && (
-                <div className="mt-4 text-xs font-bold text-blue-600 underline truncate">
+                <div className="mt-4 text-xs font-bold text-blue-600 underline truncate animate-pulse">
                   Link: {formData.link}
                 </div>
               )}
@@ -283,11 +288,14 @@ export default function AnnouncementsPage() {
       </div>
 
       {/* History Section */}
-      <div className="pt-4">
-        <h3 className="text-xl font-extrabold text-[#0F172A] mb-4">Sent Announcements History</h3>
+      <div className="pt-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-extrabold text-[#0F172A] tracking-tight">Sent Announcements History</h3>
+          <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">{announcements.length} total</span>
+        </div>
         <div className="grid md:grid-cols-2 gap-4">
           {announcements.map((ann) => (
-            <Card key={ann.id} className="p-6 rounded-3xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between hover:border-slate-300 transition-all">
+            <Card key={ann.id} className="p-6 rounded-3xl border border-slate-200/70 bg-white shadow-sm flex flex-col justify-between hover:border-slate-900 hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -302,8 +310,8 @@ export default function AnnouncementsPage() {
                   </div>
                 </div>
 
-                <h4 className="font-bold text-slate-900 text-base mb-1.5">{ann.title}</h4>
-                <p className="text-sm text-slate-600 line-clamp-3 whitespace-pre-wrap mb-4">{ann.content}</p>
+                <h4 className="font-bold text-slate-900 text-base mb-1.5 line-clamp-2">{ann.title}</h4>
+                <p className="text-sm text-slate-600 line-clamp-3 whitespace-pre-wrap mb-4 font-medium">{ann.content}</p>
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-2">
@@ -318,14 +326,14 @@ export default function AnnouncementsPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleEditClick(ann)}
-                    className="p-2 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-blue-600 border border-slate-100 transition-colors"
+                    className="p-2 rounded-xl text-slate-500 hover:bg-blue-50 hover:text-blue-600 border border-slate-100/70 transition-all duration-200 active:scale-90"
                     title="Edit Announcement"
                   >
                     <Edit3 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(ann.id)}
-                    className="p-2 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-red-600 border border-slate-100 transition-colors"
+                    className="p-2 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 border border-slate-100/70 transition-all duration-200 active:scale-90"
                     title="Delete Announcement"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -336,8 +344,8 @@ export default function AnnouncementsPage() {
           ))}
 
           {announcements.length === 0 && (
-            <div className="md:col-span-2 p-8 text-center bg-slate-50 border border-dashed border-slate-200 rounded-3xl text-sm font-medium text-slate-400">
-              No announcements sent yet.
+            <div className="md:col-span-2 p-12 text-center bg-slate-50/50 border border-dashed border-slate-200/80 rounded-3xl text-sm font-medium text-slate-400 animate-pulse">
+              No announcements sent yet. Use the form above to broadcast.
             </div>
           )}
         </div>
