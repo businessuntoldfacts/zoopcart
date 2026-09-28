@@ -2,71 +2,85 @@ import { NextResponse } from "next/server";
 
 function getAdminClient() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is missing");
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!serviceRoleKey || !url) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY or URL is missing in environment");
   }
+
   const { createClient } = require('@supabase/supabase-js');
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    serviceRoleKey,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  );
+  return createClient(url, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const range = searchParams.get('range') || '7d';
     const supabaseAdmin = getAdminClient();
 
-    // 1. Total Businesses
-    const { count: totalStores } = await supabaseAdmin
-      .from('businesses')
-      .select('*', { count: 'exact', head: true });
+    // Calculate start date based on range
+    const now = new Date();
+    let startDate = new Date();
 
-    const { count: activeStores } = await supabaseAdmin
-      .from('businesses')
-      .select('*', { count: 'exact', head: true })
-      .neq('status', 'suspended');
+    if (range === 'today') startDate.setHours(0, 0, 0, 0);
+    else if (range === 'yesterday') {
+      startDate.setDate(now.getDate() - 1);
+      startDate.setHours(0, 0, 0, 0);
+      now.setHours(0,0,0,0); // For yesterday, we only want that day's data
+    }
+    else if (range === '7d') startDate.setDate(now.getDate() - 7);
+    else if (range === '30d') startDate.setDate(now.getDate() - 30);
+    else if (range === '90d') startDate.setDate(now.getDate() - 90);
+    else if (range === 'lifetime') startDate = new Date(2000, 0, 1);
 
-    // 2. Fetch Orders for Stats (Last 30 days for chart and totals)
-    const { data: orders, error: ordersError } = await supabaseAdmin
+    // 1. Basic Platform Counts (Always Lifetime)
+    const { count: totalStores } = await supabaseAdmin.from('businesses').select('*', { count: 'exact', head: true });
+    const { count: activeStores } = await supabaseAdmin.from('businesses').select('*', { count: 'exact', head: true }).neq('status', 'suspended');
+
+    // 2. Fetch Orders for specific range
+    let query = supabaseAdmin
       .from('orders')
       .select('total_amount, budget, created_at, status, customer_name, businesses(business_name)')
       .not('status', 'in', '("store_view","product_view","review","platform_review")');
 
+    if (range !== 'lifetime') {
+      query = query.gte('created_at', startDate.toISOString());
+      if (range === 'yesterday') {
+        query = query.lt('created_at', now.toISOString());
+      }
+    }
+
+    const { data: orders, error: ordersError } = await query;
     if (ordersError) throw ordersError;
 
     // 3. Calculate Metrics
     let volume = 0;
-    let todayOrders = 0;
-    let todayRevenue = 0;
     const today = new Date().toDateString();
 
-    const last7Days = [...Array(7)].map((_, i) => {
+    // For Chart (Always show last 7 or 14 points for visual)
+    const chartDays = range === '90d' ? 90 : (range === '30d' ? 30 : 7);
+    const timeLabels = [...Array(chartDays)].map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - i);
       return d.toDateString();
     }).reverse();
 
-    const dailyData = new Array(7).fill(0);
+    const dailyData = new Array(chartDays).fill(0);
 
     orders?.forEach(o => {
-      const orderDate = new Date(o.created_at).toDateString();
       const orderVal = o.total_amount || o.budget || 0;
-
       volume += orderVal;
 
-      if (orderDate === today) {
-        todayOrders++;
-        todayRevenue += orderVal;
-      }
-
-      const dayIndex = last7Days.indexOf(orderDate);
+      const orderDate = new Date(o.created_at).toDateString();
+      const dayIndex = timeLabels.indexOf(orderDate);
       if (dayIndex !== -1) {
         dailyData[dayIndex]++;
       }
     });
 
-    // 4. Recent Activity
+    // 4. Activity (Always latest)
     const { data: recentStores } = await supabaseAdmin
       .from('businesses')
       .select('id, business_name, created_at')
@@ -85,7 +99,7 @@ export async function GET() {
           time: o.created_at,
           id: o.id
         }))
-    ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
+    ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 10);
 
     return NextResponse.json({
       success: true,
@@ -94,14 +108,13 @@ export async function GET() {
         orders: orders?.length || 0,
         volume,
         activeStores: activeStores || 0,
-        todayOrders,
-        todayRevenue,
         chartData: dailyData,
+        chartLabels: timeLabels,
         activities
       }
     });
   } catch (error: any) {
     console.error("Stats API Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
