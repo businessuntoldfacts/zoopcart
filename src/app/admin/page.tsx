@@ -37,15 +37,13 @@ export default function AdminDashboard() {
       return d.toDateString();
     }).reverse();
 
-    const dailyData = new Array(7).fill(0);
+    const realOrders = (orders || []).filter(o => !['store_view', 'product_view', 'review', 'platform_review'].includes(o.status));
 
-    if (orders) {
-      orders.forEach(o => {
-         const isRealOrder = !['store_view', 'product_view', 'review', 'platform_review'].includes(o.status);
-         if (isRealOrder) {
+    if (realOrders) {
+      realOrders.forEach(o => {
            ordCount++;
            const orderDate = new Date(o.created_at).toDateString();
-           const orderVal = o.budget || (o.products?.price * (o.quantity || 1)) || 0;
+           const orderVal = o.total_amount || o.budget || (o.products?.price * (o.quantity || 1)) || 0;
 
            vol += orderVal;
 
@@ -58,7 +56,6 @@ export default function AdminDashboard() {
            if (dayIndex !== -1) {
              dailyData[dayIndex]++;
            }
-         }
       });
     }
 
@@ -72,10 +69,10 @@ export default function AdminDashboard() {
       chartData: dailyData
     });
 
-    // Combine recent activities
+    // Combine recent activities - Only show real orders, not views
     const activities = [
       ...(businesses || []).map(b => ({ type: 'business', name: b.business_name, time: b.created_at, id: b.id })),
-      ...(orders || []).slice(0, 5).map(o => ({ type: 'order', name: o.customer_name, store: o.businesses?.business_name, time: o.created_at, id: o.id }))
+      ...realOrders.slice(0, 5).map(o => ({ type: 'order', name: o.customer_name, store: o.businesses?.business_name, time: o.created_at, id: o.id }))
     ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
 
     setRecentActivity(activities);
