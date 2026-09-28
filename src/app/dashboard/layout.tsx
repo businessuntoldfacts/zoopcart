@@ -158,6 +158,21 @@ export default function DashboardLayout({
     );
   }
 
+  const newOrdersCount = (orders || []).filter((o: any) => o.status === 'new' || o.status === 'pending').length;
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.replace("/");
+  };
+
+  const navigation = [
+    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag, badge: newOrdersCount > 0 ? newOrdersCount : undefined },
+    { name: "Products", href: "/dashboard/products", icon: Store },
+    { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },
+    { name: "More", href: "/dashboard/settings", icon: Settings },
+  ];
+
   if (isSetupPending) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-[#0F172A] overflow-x-hidden p-4 md:p-8">
@@ -181,21 +196,6 @@ export default function DashboardLayout({
     );
   }
 
-  const newOrdersCount = (orders || []).filter((o: any) => o.status === 'new' || o.status === 'pending').length;
-
-  const navigation = [
-    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag, badge: newOrdersCount > 0 ? newOrdersCount : undefined },
-    { name: "Products", href: "/dashboard/products", icon: Store },
-    { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },
-    { name: "More", href: "/dashboard/settings", icon: Settings },
-  ];
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.replace("/");
-  };
-
   return (
     <div className="flex h-screen bg-zyp-bg text-zyp-textPrimary overflow-hidden font-sans">
       <aside className="hidden md:flex w-[260px] flex-col bg-[#0F172A] text-slate-300 shrink-0">
@@ -207,7 +207,8 @@ export default function DashboardLayout({
 
         <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
           {navigation.map((item) => {
-            const isActive = pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard");
+            const safePathname = pathname || "";
+            const isActive = safePathname.startsWith(item.href) && (item.href !== "/dashboard" || safePathname === "/dashboard");
             const Icon = item.icon;
             return (
               <Link
@@ -255,7 +256,7 @@ export default function DashboardLayout({
           
           <div className="hidden md:flex items-center gap-4 flex-1">
              <h1 className="text-xl font-bold text-slate-900 dark:text-white capitalize">
-               {navigation.find((item) => pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard"))?.name || "Dashboard"}
+               {navigation.find((item) => (pathname || "").startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard"))?.name || "Dashboard"}
              </h1>
           </div>
 
@@ -372,7 +373,8 @@ export default function DashboardLayout({
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-[90] pb-safe">
         <div className="flex justify-around items-center h-16">
           {navigation.map((item) => {
-            const isActive = pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard");
+            const safePathname = pathname || "";
+            const isActive = safePathname.startsWith(item.href) && (item.href !== "/dashboard" || safePathname === "/dashboard");
             const Icon = item.icon;
             return (
               <Link

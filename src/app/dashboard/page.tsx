@@ -14,7 +14,8 @@ export default function DashboardOverview() {
     setInsightIndex(Math.floor(Math.random() * 3));
   }, []);
 
-  const userName = user?.user_metadata?.full_name?.split(' ')[0] || "Seller";
+  const fullName = user?.user_metadata?.full_name;
+  const userName = (typeof fullName === 'string' ? fullName.split(' ')[0] : null) || "Seller";
   const businessSlug = business?.username || "";
 
   // Process analytics safely
