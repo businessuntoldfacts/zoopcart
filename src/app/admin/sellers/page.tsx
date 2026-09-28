@@ -18,6 +18,8 @@ export default function AdminSellersPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSuspending, setIsSuspending] = useState(false);
   const [suspensionReason, setSuspensionReason] = useState("");
+  const [sellerOrdersList, setSellerOrdersList] = useState<any[]>([]);
+  const [sellerProductsList, setSellerProductsList] = useState<any[]>([]);
   const [editForm, setEditForm] = useState({
     business_name: "",
     category: "",
@@ -27,6 +29,8 @@ export default function AdminSellersPage() {
     email: ""
   });
   const [sellerStats, setSellerStats] = useState({ products: 0, orders: 0 });
+
+
 
   const loadSellers = async () => {
     const { data } = await supabase.from('businesses').select('*').order('created_at', { ascending: false });
@@ -86,7 +90,14 @@ export default function AdminSellersPage() {
     setIsEditing(false);
     setIsSuspending(false);
     setSuspensionReason("");
-    // Load quick stats for this seller
+
+    // Load full details for this seller
+    const { data: prods } = await supabase.from('products').select('*').eq('business_id', seller.id).order('created_at', { ascending: false }).limit(5);
+    const { data: ords } = await supabase.from('orders').select('*, products(name, price)').eq('business_id', seller.id).order('created_at', { ascending: false }).limit(5);
+
+    setSellerProductsList(prods || []);
+    setSellerOrdersList(ords || []);
+
     const { count: prodCount } = await supabase.from('products').select('*', { count: 'exact', head: true }).eq('business_id', seller.id);
     const { count: ordCount } = await supabase.from('orders').select('*', { count: 'exact', head: true }).eq('business_id', seller.id);
     setSellerStats({ products: prodCount || 0, orders: ordCount || 0 });
@@ -213,8 +224,17 @@ export default function AdminSellersPage() {
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="font-bold text-[#0F172A]">+{seller.whatsapp_country_code || '91'} {seller.whatsapp_number || 'N/A'}</div>
-                      <div className="text-xs text-slate-500 font-medium">WhatsApp Number</div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                          <Phone className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-[#0F172A]">
+                            {seller.whatsapp_number ? `+${seller.whatsapp_country_code || '91'} ${seller.whatsapp_number}` : 'Not Provided'}
+                          </div>
+                          <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">WhatsApp</div>
+                        </div>
+                      </div>
                     </td>
                     <td className="p-4">
                       <span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold">
@@ -233,7 +253,7 @@ export default function AdminSellersPage() {
                         <button onClick={() => openDetails(seller)} className="p-2 text-slate-400 hover:text-[#111111] hover:bg-slate-100 rounded-lg transition-colors" title="View Full Profile">
                           <Eye className="w-5 h-5" />
                         </button>
-                        <button onClick={() => { setSelectedSeller(seller); setIsEditing(true); }} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Seller">
+                        <button onClick={() => { openDetails(seller); setIsEditing(true); }} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Seller">
                           <Edit2 className="w-5 h-4" />
                         </button>
                         <button onClick={() => {
@@ -399,17 +419,19 @@ export default function AdminSellersPage() {
                         <h4 className="font-extrabold text-slate-900">Contact Details</h4>
                       </div>
                       <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-slate-500 font-medium">WhatsApp:</span>
-                          <span className="font-bold text-slate-900">+{selectedSeller.whatsapp_country_code || '91'} {selectedSeller.whatsapp_number || 'N/A'}</span>
+                        <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200/50">
+                          <span className="text-slate-500 font-bold">WhatsApp</span>
+                          <span className="font-black text-slate-900">
+                            {selectedSeller.whatsapp_number ? `+${selectedSeller.whatsapp_country_code || '91'} ${selectedSeller.whatsapp_number}` : 'Not Provided'}
+                          </span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-500 font-medium">Email:</span>
-                          <span className="font-bold text-slate-900 lowercase">{selectedSeller.email || 'N/A'}</span>
+                        <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200/50">
+                          <span className="text-slate-500 font-bold">Email</span>
+                          <span className="font-black text-slate-900 lowercase">{selectedSeller.email || 'N/A'}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-500 font-medium">Category:</span>
-                          <span className="font-bold text-slate-900">{selectedSeller.category || 'Other'}</span>
+                        <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200/50">
+                          <span className="text-slate-500 font-bold">Category</span>
+                          <span className="font-black text-slate-900">{selectedSeller.category || 'Other'}</span>
                         </div>
                       </div>
                     </div>
@@ -435,6 +457,43 @@ export default function AdminSellersPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Enhanced Deep Data Insights for Super Admin */}
+                  <div className="mt-6 space-y-6 border-t border-slate-100 pt-6">
+                    <div>
+                      <h4 className="font-extrabold text-slate-900 text-sm mb-3">Recent Products listed by this Seller</h4>
+                      <div className="space-y-2">
+                        {sellerProductsList.map((p: any) => (
+                          <div key={p.id} className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
+                            <span className="font-bold text-slate-800">{p.name}</span>
+                            <span className="font-black text-slate-900">₹{p.price}</span>
+                          </div>
+                        ))}
+                        {sellerProductsList.length === 0 && (
+                          <p className="text-xs text-slate-400">No products found for this store.</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-extrabold text-slate-900 text-sm mb-3">Recent Orders received by this Seller</h4>
+                      <div className="space-y-2">
+                        {sellerOrdersList.map((o: any) => (
+                          <div key={o.id} className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
+                            <div>
+                              <span className="font-bold text-slate-800">{o.customer_name}</span>
+                              <span className="text-slate-400 ml-2">({o.customer_phone})</span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-800 font-bold rounded uppercase text-[10px]">{o.status}</span>
+                          </div>
+                        ))}
+                        {sellerOrdersList.length === 0 && (
+                          <p className="text-xs text-slate-400">No orders placed at this store yet.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
 
                   <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-6">
                      <button onClick={() => {

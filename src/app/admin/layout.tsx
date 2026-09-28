@@ -80,9 +80,20 @@ export default function AdminLayout({
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
         {/* Header */}
         <header className="h-[72px] border-b border-slate-200 flex items-center justify-between px-8 bg-white shrink-0">
-          <h1 className="text-xl font-extrabold text-[#0F172A]">
-            {navigation.find((item) => item.href === pathname)?.name || "Dashboard"}
-          </h1>
+          <div className="flex items-center gap-4">
+            {pathname !== "/admin" && (
+              <button
+                onClick={() => window.history.back()}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200"
+              >
+                ← Back
+              </button>
+            )}
+            <h1 className="text-xl font-extrabold text-[#0F172A]">
+              {navigation.find((item) => item.href === pathname)?.name || "Dashboard"}
+            </h1>
+          </div>
+
           <div className="flex items-center gap-6">
             <button className="relative text-slate-400 hover:text-slate-600">
               <Bell className="w-5 h-5" />

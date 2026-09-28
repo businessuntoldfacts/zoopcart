@@ -242,7 +242,7 @@ export default function DashboardLayout({
               </button>
 
               {announcementsOpen && (
-                <div className="absolute top-10 right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-3 z-[100] flex flex-col">
+                <div className="absolute top-10 -right-12 sm:right-0 mt-2 w-[calc(100vw-3rem)] sm:w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-3 z-[100] flex flex-col">
                   <div className="px-4 pb-2 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                     <span className="font-extrabold text-sm text-slate-900 dark:text-white">Platform Notifications</span>
                     <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">{announcements.length} New</span>

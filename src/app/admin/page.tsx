@@ -17,9 +17,12 @@ export default function AdminDashboard() {
 
   const [loading, setLoading] = useState(true);
 
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+
   const loadStats = async () => {
-    const { data: businesses } = await supabase.from('businesses').select('id, status, created_at');
-    const { data: orders } = await supabase.from('orders').select('*, products(price)');
+    const { data: businesses } = await supabase.from('businesses').select('id, status, created_at, business_name, username').order('created_at', { ascending: false }).limit(5);
+    const { data: allBusinesses } = await supabase.from('businesses').select('id, status, created_at');
+    const { data: orders } = await supabase.from('orders').select('*, products(price), businesses(business_name)').order('created_at', { ascending: false });
 
     let vol = 0;
     let ordCount = 0;
@@ -60,14 +63,22 @@ export default function AdminDashboard() {
     }
 
     setStats({
-      stores: businesses ? businesses.length : 0,
+      stores: allBusinesses ? allBusinesses.length : 0,
       orders: ordCount,
       volume: vol,
-      activeStores: businesses ? businesses.filter(b => b.status !== 'suspended').length : 0,
+      activeStores: allBusinesses ? allBusinesses.filter(b => b.status !== 'suspended').length : 0,
       todayOrders: tOrd,
       todayRevenue: tRev,
       chartData: dailyData
     });
+
+    // Combine recent activities
+    const activities = [
+      ...(businesses || []).map(b => ({ type: 'business', name: b.business_name, time: b.created_at, id: b.id })),
+      ...(orders || []).slice(0, 5).map(o => ({ type: 'order', name: o.customer_name, store: o.businesses?.business_name, time: o.created_at, id: o.id }))
+    ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
+
+    setRecentActivity(activities);
     setLoading(false);
   };
 
@@ -207,7 +218,33 @@ export default function AdminDashboard() {
                ))}
             </div>
           </Card>
+
+          {/* Live System Activity Feed */}
+          <Card className="bg-white border-slate-200 shadow-sm rounded-2xl p-6 border">
+            <h3 className="font-bold text-[#0F172A] mb-4 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-green-500 animate-pulse" /> Live Activity Feed
+            </h3>
+            <div className="space-y-4">
+              {recentActivity.map((act, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 text-sm">
+                  <div className="flex items-center gap-3">
+                    <span className={`w-2.5 h-2.5 rounded-full ${act.type === 'order' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
+                    <div>
+                      <span className="font-bold text-slate-800">{act.type === 'order' ? 'New Order from ' : 'New Store registered: '}</span>
+                      <strong className="text-slate-900 font-extrabold">{act.name}</strong>
+                      {act.store && <span className="text-xs text-slate-500"> ({act.store})</span>}
+                    </div>
+                  </div>
+                  <span className="text-xs text-slate-400 font-bold">{new Date(act.time).toLocaleTimeString()}</span>
+                </div>
+              ))}
+              {recentActivity.length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-4">No recent live actions detected yet.</p>
+              )}
+            </div>
+          </Card>
         </div>
+
 
         <div className="lg:col-span-1">
           <Card className="bg-white border-slate-200 shadow-sm rounded-2xl border h-80 flex flex-col p-6">
