@@ -304,16 +304,6 @@ export default function CheckoutPage({ params }: { params: { username: string } 
 
           <div className="mt-8 space-y-3 pb-8">
             <button
-              onClick={() => {
-                const message = encodeURIComponent(`Hi, I've just placed an order (ID: #${orderToken}).\n\nTotal: ₹${total}\n\nTrack here: ${window.location.origin}/${business.username}/track?token=${orderToken}`);
-                window.open(`https://wa.me/${business.whatsapp_country_code || '91'}${business.whatsapp_number}?text=${message}`, '_blank');
-              }}
-              className="w-full h-14 rounded-2xl bg-green-600 hover:bg-green-700 text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-green-600/20 transition-all"
-            >
-              <MessageCircle className="w-5 h-5" /> Confirm on WhatsApp
-            </button>
-
-            <button
               onClick={() => router.push(`/${params.username}/track?token=${orderToken}`)}
               className="w-full h-14 rounded-2xl bg-[#111111] hover:bg-black text-white font-extrabold text-lg flex items-center justify-center gap-2 shadow-lg shadow-black/20 transition-all"
             >
