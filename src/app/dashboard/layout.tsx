@@ -181,7 +181,7 @@ export default function DashboardLayout({
     );
   }
 
-  const newOrdersCount = orders?.filter((o: any) => o.status === 'new' || o.status === 'pending').length;
+  const newOrdersCount = (orders || []).filter((o: any) => o.status === 'new' || o.status === 'pending').length;
 
   const navigation = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
