@@ -133,6 +133,8 @@ export function getOrderNotificationEmailTemplate(orderData: {
   deliveryLocation: string;
   trackingLink: string;
   status?: string;
+  trackingNumber?: string;
+  carrierName?: string;
 }) {
   const statusMessages: Record<string, string> = {
     'new': 'Order Received!',
@@ -168,6 +170,15 @@ export function getOrderNotificationEmailTemplate(orderData: {
 
           <p style="font-size: 16px; color: #a1a1aa; margin: 0 0 24px 0;">Hello ${orderData.customerName}, your order for <strong>${orderData.productName}</strong> has been updated to <span style="background-color: #222222; color: #ffffff; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; border: 1px solid #333333;">${orderData.status?.replace('_', ' ').toUpperCase() || 'CONFIRMED'}</span>.</p>
 
+          ${orderData.trackingNumber ? `
+          <!-- Tracking Info Card -->
+          <div style="background-color: #111111; border-radius: 20px; padding: 24px; border: 1px solid #222222; margin: 24px 0;">
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Shipment Tracking</div>
+            <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 4px;">${orderData.carrierName || 'Courier'}</div>
+            <div style="font-size: 18px; font-weight: 800; color: #ffffff; font-family: monospace; letter-spacing: 1px;">${orderData.trackingNumber}</div>
+          </div>
+          ` : ''}
+
           <!-- Order Summary Card -->
           <div style="background-color: #111111; border-radius: 20px; padding: 24px; border: 1px solid #222222; margin: 24px 0;">
             <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Items Ordered</div>
@@ -176,12 +187,12 @@ export function getOrderNotificationEmailTemplate(orderData: {
             <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Delivery Address</div>
             <div style="font-size: 15px; font-weight: 600; color: #a1a1aa; margin-bottom: 20px;">${orderData.deliveryLocation}</div>
 
-            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Total Paid</div>
+            <div style="font-size: 10px; font-weight: 700; color: #71717a; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.1em;">Total Amount</div>
             <div style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 0;">₹${orderData.price}</div>
           </div>
 
           <div style="text-align: center; margin-top: 32px;">
-            <a href="${orderData.trackingLink}" target="_blank" style="display: inline-block; background-color: #ffffff; color: #000000 !important; font-weight: 800; font-size: 15px; padding: 18px 40px; text-decoration: none; border-radius: 14px;">Track Status</a>
+            <a href="${orderData.trackingLink}" target="_blank" style="display: inline-block; background-color: #ffffff; color: #000000 !important; font-weight: 800; font-size: 15px; padding: 18px 40px; text-decoration: none; border-radius: 14px;">View Full Order Details</a>
           </div>
         </div>
 
@@ -193,6 +204,7 @@ export function getOrderNotificationEmailTemplate(orderData: {
     </html>
   `;
 }
+
 
 export function getPlatformAnnouncementEmailTemplate(title: string, content: string, link?: string) {
   const currentYear = new Date().getFullYear();

@@ -71,20 +71,34 @@ export default function OrdersPage() {
     invalidateDashboardCache();
 
     // Send notification for the main order
-    const currentOrder = orders.find((o: any) => o.tracking_token === token);
+    const currentOrder = orders.find((o: any) => o.tracking_token?.toUpperCase() === token?.toUpperCase());
+    if (!currentOrder) return;
 
-    // Extract customer email from rich notes since there is no customer_email column
-    let customerEmail = "";
-    const notesToSearch = currentOrder?.notes || currentOrder?.items?.[0]?.notes || "";
-    const emailMatch = notesToSearch.match(/Email:\s*([^\s\n]+)/i);
-    if (emailMatch && emailMatch[1]) {
-      customerEmail = emailMatch[1].trim();
+    // Robust extraction of customer email from column or rich notes across all sub-items
+    let customerEmail = currentOrder?.customer_email || "";
+    if (!customerEmail && currentOrder?.items) {
+      for (const item of currentOrder.items) {
+        if (item.customer_email) {
+          customerEmail = item.customer_email;
+          break;
+        }
+      }
+    }
+    if (!customerEmail) {
+      const notesToSearch = [
+        currentOrder?.notes || "",
+        ...(currentOrder?.items?.map((i: any) => i.notes || "") || [])
+      ].join("\n");
+      const emailMatch = notesToSearch.match(/Email:\s*([^\s\n\r]+)/i);
+      if (emailMatch && emailMatch[1]) {
+        customerEmail = emailMatch[1].trim();
+      }
     }
 
-    if (customerEmail) {
+    if (customerEmail && business) {
       try {
         const productNames = currentOrder.items?.map((i: any) => i.products?.name).filter(Boolean).join(", ") || "Order";
-        await fetch("/api/send", {
+        const emailRes = await fetch("/api/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -92,14 +106,29 @@ export default function OrdersPage() {
             email: customerEmail,
             orderId: token,
             customerName: currentOrder.customer_name || currentOrder.items?.[0]?.customer_name,
+            customerPhone: currentOrder.customer_phone || currentOrder.items?.[0]?.customer_phone || "",
             productName: productNames,
-            status: newStatus.toUpperCase(),
-            trackingLink: `${window.location.origin}/${business.username}/track?token=${token}`
+            status: newStatus.toLowerCase(),
+            trackingLink: `${window.location.origin}/${business.username}/track?token=${token}`,
+            price: currentOrder?.totalBudget || currentOrder?.budget || 0,
+            quantity: currentOrder?.items?.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0) || 1,
+            deliveryLocation: currentOrder?.delivery_location || currentOrder?.items?.[0]?.delivery_location || "N/A",
+            trackingNumber: trackingNumber || currentOrder.tracking_number,
+            carrierName: carrierName || currentOrder.carrier_name
           })
         });
+
+        if (emailRes.ok) {
+          console.log(`Email notification sent successfully for status: ${newStatus}`);
+        } else {
+          const errData = await emailRes.json();
+          console.error("Email notification API error:", errData);
+        }
       } catch (e) {
         console.error("Status update email failed:", e);
       }
+    } else {
+      console.warn("Could not send status email: Customer email or business details missing.", { customerEmail, hasBusiness: !!business });
     }
 
     setOrders(orders.map((o: any) => o.tracking_token === token ? { ...o, status: newStatus, tracking_number: trackingNumber || o.tracking_number, carrier_name: carrierName || o.carrier_name } : o));
