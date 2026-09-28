@@ -72,7 +72,14 @@ export default function OrdersPage() {
 
     // Send notification for the main order
     const currentOrder = orders.find((o: any) => o.tracking_token === token);
-    const customerEmail = currentOrder?.customer_email || currentOrder?.items?.[0]?.customer_email;
+
+    // Extract customer email from rich notes since there is no customer_email column
+    let customerEmail = "";
+    const notesToSearch = currentOrder?.notes || currentOrder?.items?.[0]?.notes || "";
+    const emailMatch = notesToSearch.match(/Email:\s*([^\s\n]+)/i);
+    if (emailMatch && emailMatch[1]) {
+      customerEmail = emailMatch[1].trim();
+    }
 
     if (customerEmail) {
       try {
