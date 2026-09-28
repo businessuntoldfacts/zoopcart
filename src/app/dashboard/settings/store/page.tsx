@@ -30,6 +30,14 @@ export default function StoreSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isPendingSetup, setIsPendingSetup] = useState(false);
+  const [validationError, setValidationError] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsPendingSetup(localStorage.getItem("setup_pending") === "true");
+    }
+  }, []);
 
   useEffect(() => {
     async function loadBusiness() {
@@ -113,6 +121,29 @@ export default function StoreSettingsPage() {
 
   const handleSave = async () => {
     if (!business.id) return;
+
+    if (!business.business_name || !business.business_name.trim()) {
+      setValidationError("Store name is required!");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (!business.whatsapp_number || !business.whatsapp_number.trim()) {
+      setValidationError("Phone / WhatsApp number is required!");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (!business.city || !business.city.trim()) {
+      setValidationError("Location (City) is required!");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (!business.description || !business.description.trim()) {
+      setValidationError("Store description is required for customers!");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    setValidationError("");
     setSaving(true);
     
     // Merge existing JSON to not overwrite payment details etc.
@@ -158,25 +189,36 @@ export default function StoreSettingsPage() {
       alert("Store settings saved successfully!");
       if (localStorage.getItem("setup_pending") === "true") {
         localStorage.removeItem("setup_pending");
-        router.push("/dashboard");
       }
+      window.location.href = "/dashboard";
     }
     setSaving(false);
   };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-12 pt-4">
+      {validationError && (
+        <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100 animate-in shake">
+          ⚠️ {validationError}
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
-        <Link href="/dashboard/settings" className="flex items-center text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Settings
-        </Link>
-        <Button onClick={handleSave} disabled={saving} variant="primary" className="rounded-xl px-6 bg-[#111111] hover:bg-[#111111] border-none shadow-md font-bold text-white">
-          {saving ? "Saving..." : "Save"}
+        {!isPendingSetup ? (
+          <Link href="/dashboard/settings" className="flex items-center text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Settings
+          </Link>
+        ) : (
+          <div />
+        )}
+        <Button onClick={handleSave} disabled={saving} variant="primary" className="rounded-xl px-6 bg-[#111111] hover:bg-black border-none shadow-md font-bold text-white">
+          {saving ? "Launching Store..." : isPendingSetup ? "Save & Launch Dashboard 🚀" : "Save Settings"}
         </Button>
       </div>
       
       <div>
-        <h2 className="text-3xl font-extrabold text-slate-900">Store Settings</h2>
+        <h2 className="text-3xl font-extrabold text-slate-900">{isPendingSetup ? "Complete Store Setup" : "Store Settings"}</h2>
+        {isPendingSetup && <p className="text-xs font-bold text-red-500 mt-1 uppercase tracking-wider">* All fields marked with asterisk and essential store information are mandatory before launch.</p>}
       </div>
 
       <div className="space-y-8">
@@ -212,7 +254,7 @@ export default function StoreSettingsPage() {
 
             <div className="space-y-5">
               <div>
-                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Store name <span className="text-[#111111]">*</span></label>
+                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Store name <span className="text-red-500 font-black">*</span></label>
                 <Input value={business.business_name} onChange={(e: any) => setBusiness({...business, business_name: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
               </div>
               <div>
@@ -228,20 +270,21 @@ export default function StoreSettingsPage() {
                 <Input value={business.email} disabled className="bg-slate-100 border-slate-200 h-12 rounded-xl text-slate-500 cursor-not-allowed" />
               </div>
               <div>
-                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Phone Number</label>
+                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Phone Number <span className="text-red-500 font-black">*</span></label>
                 <div className="flex gap-2">
                   <Input value={business.whatsapp_country_code} onChange={(e: any) => setBusiness({...business, whatsapp_country_code: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900 w-20" placeholder="+91" />
                   <Input value={business.whatsapp_number} onChange={(e: any) => setBusiness({...business, whatsapp_number: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900 flex-1" placeholder="Mobile number" />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Location</label>
+                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Location <span className="text-red-500 font-black">*</span></label>
                 <Input value={business.city} onChange={(e: any) => setBusiness({...business, city: e.target.value})} className="bg-slate-50 border-slate-200 h-12 rounded-xl text-slate-900" />
               </div>
               <div>
-                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Description</label>
+                <label className="text-sm font-bold text-slate-900 mb-1.5 block">Description <span className="text-red-500 font-black">*</span></label>
                 <textarea value={business.description} onChange={(e: any) => setBusiness({...business, description: e.target.value})} className="w-full bg-slate-50 border border-slate-200 p-3 h-24 rounded-xl text-slate-900 resize-none text-sm outline-none focus:border-[#111111]" placeholder="Write a short bio about your store..." />
               </div>
+
               <div className="pt-2">
                 <p className="text-sm font-medium text-slate-600">Your storefront: <span className="font-extrabold text-[#111111]">zoopcart.com/{business.username}</span></p>
               </div>

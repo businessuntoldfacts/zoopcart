@@ -48,6 +48,7 @@ export default function DashboardLayout({
   }, []);
 
   const { business, products, orders, loading } = useDashboardData();
+  const [isSetupPending, setIsSetupPending] = useState(false);
   const [businessData, setBusinessData] = useState<{name: string, username: string, image: string | null}>({
     name: "Store Owner",
     username: "",
@@ -57,6 +58,12 @@ export default function DashboardLayout({
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
   const [platformSettings, setPlatformSettings] = useState<any>(null);
   const announcementsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsSetupPending(localStorage.getItem("setup_pending") === "true");
+    }
+  }, [pathname]);
 
   useEffect(() => {
     async function loadGlobalSettings() {
@@ -138,7 +145,7 @@ export default function DashboardLayout({
         supabase.removeChannel(channel);
       };
     }
-  }, [business, loading, router]);
+  }, [business, loading, router, pathname]);
 
   if (loading || !business) {
     return (
@@ -146,6 +153,29 @@ export default function DashboardLayout({
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-black"></div>
           <p className="text-sm font-bold text-slate-500">Loading your store...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isSetupPending) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-[#0F172A] overflow-x-hidden p-4 md:p-8">
+        <header className="h-[72px] flex items-center justify-between px-4 max-w-2xl mx-auto w-full mb-4">
+          <Logo darkText={true} />
+          <button onClick={handleLogout} className="flex items-center gap-2 text-sm font-bold text-red-600 hover:text-red-700 bg-red-50 px-4 py-2 rounded-xl border border-red-100">
+            <LogOut className="w-4 h-4" /> Cancel/Logout
+          </button>
+        </header>
+        <div className="flex-1 max-w-2xl mx-auto w-full">
+          <div className="bg-blue-50 text-blue-700 p-4 rounded-2xl text-xs font-bold border border-blue-100 mb-6 flex items-start gap-3">
+            <Bell className="w-5 h-5 shrink-0 text-blue-500 animate-bounce" />
+            <div>
+              <p className="mb-1 text-sm font-black">Welcome to Zoopcart! Let&apos;s set up your storefront.</p>
+              <p className="font-medium opacity-80">Please enter all the required details below to launch your e-commerce storefront dashboard.</p>
+            </div>
+          </div>
+          {children}
         </div>
       </div>
     );
