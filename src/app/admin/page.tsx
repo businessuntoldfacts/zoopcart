@@ -20,63 +20,94 @@ export default function AdminDashboard() {
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
   const loadStats = async () => {
-    const { data: businesses } = await supabase.from('businesses').select('id, status, created_at, business_name, username').order('created_at', { ascending: false }).limit(5);
-    const { data: allBusinesses } = await supabase.from('businesses').select('id, status, created_at');
-    const { data: orders } = await supabase.from('orders').select('*, products(price), businesses(business_name)').order('created_at', { ascending: false });
+    try {
+      // 1. Fetch Basic Counts (Fast)
+      const { count: totalBusinesses } = await supabase
+        .from('businesses')
+        .select('*', { count: 'exact', head: true });
 
-    let vol = 0;
-    let ordCount = 0;
-    let tOrd = 0;
-    let tRev = 0;
-    const today = new Date().toDateString();
+      const { count: activeBusinesses } = await supabase
+        .from('businesses')
+        .select('*', { count: 'exact', head: true })
+        .neq('status', 'suspended');
 
-    // Chart logic: Last 7 days
-    const last7Days = [...Array(7)].map((_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      return d.toDateString();
-    }).reverse();
+      // 2. Fetch Real Orders Count & Volume
+      // We still need to calculate volume. To avoid fetching all, we fetch only necessary columns
+      const { data: realOrdersData } = await supabase
+        .from('orders')
+        .select('total_amount, budget, created_at')
+        .not('status', 'in', '("store_view","product_view","review","platform_review")');
 
-    const realOrders = (orders || []).filter(o => !['store_view', 'product_view', 'review', 'platform_review'].includes(o.status));
+      // 3. Fetch Recent Activity (Limited)
+      const { data: recentBusinesses } = await supabase
+        .from('businesses')
+        .select('id, business_name, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5);
 
-    if (realOrders) {
-      realOrders.forEach(o => {
-           ordCount++;
-           const orderDate = new Date(o.created_at).toDateString();
-           const orderVal = o.total_amount || o.budget || (o.products?.price * (o.quantity || 1)) || 0;
+      const { data: recentOrders } = await supabase
+        .from('orders')
+        .select('id, customer_name, created_at, businesses(business_name)')
+        .not('status', 'in', '("store_view","product_view","review","platform_review")')
+        .order('created_at', { ascending: false })
+        .limit(5);
 
-           vol += orderVal;
+      let vol = 0;
+      let ordCount = 0;
+      let tOrd = 0;
+      let tRev = 0;
+      const today = new Date().toDateString();
 
-           if (orderDate === today) {
-             tOrd++;
-             tRev += orderVal;
-           }
+      const last7Days = [...Array(7)].map((_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        return d.toDateString();
+      }).reverse();
 
-           const dayIndex = last7Days.indexOf(orderDate);
-           if (dayIndex !== -1) {
-             dailyData[dayIndex]++;
-           }
+      const dailyData = new Array(7).fill(0);
+
+      if (realOrdersData) {
+        ordCount = realOrdersData.length;
+        realOrdersData.forEach(o => {
+             const orderDate = new Date(o.created_at).toDateString();
+             const orderVal = o.total_amount || o.budget || 0;
+
+             vol += orderVal;
+
+             if (orderDate === today) {
+               tOrd++;
+               tRev += orderVal;
+             }
+
+             const dayIndex = last7Days.indexOf(orderDate);
+             if (dayIndex !== -1) {
+               dailyData[dayIndex]++;
+             }
+        });
+      }
+
+      setStats({
+        stores: totalBusinesses || 0,
+        orders: ordCount,
+        volume: vol,
+        activeStores: activeBusinesses || 0,
+        todayOrders: tOrd,
+        todayRevenue: tRev,
+        chartData: dailyData
       });
+
+      // Combine recent activities
+      const activities = [
+        ...(recentBusinesses || []).map(b => ({ type: 'business', name: b.business_name, time: b.created_at, id: b.id })),
+        ...(recentOrders || []).map(o => ({ type: 'order', name: o.customer_name, store: o.businesses?.business_name, time: o.created_at, id: o.id }))
+      ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
+
+      setRecentActivity(activities);
+    } catch (error) {
+      console.error("Error loading stats:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setStats({
-      stores: allBusinesses ? allBusinesses.length : 0,
-      orders: ordCount,
-      volume: vol,
-      activeStores: allBusinesses ? allBusinesses.filter(b => b.status !== 'suspended').length : 0,
-      todayOrders: tOrd,
-      todayRevenue: tRev,
-      chartData: dailyData
-    });
-
-    // Combine recent activities - Only show real orders, not views
-    const activities = [
-      ...(businesses || []).map(b => ({ type: 'business', name: b.business_name, time: b.created_at, id: b.id })),
-      ...realOrders.slice(0, 5).map(o => ({ type: 'order', name: o.customer_name, store: o.businesses?.business_name, time: o.created_at, id: o.id }))
-    ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
-
-    setRecentActivity(activities);
-    setLoading(false);
   };
 
   useEffect(() => {

@@ -155,6 +155,70 @@ export default function CheckoutPage({ params }: { params: { username: string } 
     const { error } = await supabase.from('orders').insert(orderEntries);
 
     if (!error) {
+      // 1. Send Email Notification to Buyer if email is provided
+      if (formData.email) {
+        try {
+          const productNames = cartItems.map(item => {
+            const p = products.find(prod => prod.id === item.id);
+            return `${item.quantity}x ${p?.name || "Product"}`;
+          }).join(", ");
+
+          await fetch("/api/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "order_notification",
+              email: formData.email,
+              orderId: token,
+              customerName: formData.name,
+              customerPhone: formData.phone,
+              productName: productNames,
+              price: total,
+              quantity: 1,
+              deliveryLocation: formData.delivery_location,
+              trackingLink: `${window.location.origin}/${business.username}/track?token=${token}`
+            })
+          });
+        } catch (emailErr) {
+          console.error("Buyer checkout email notification failed:", emailErr);
+        }
+      }
+
+      // 2. Send Email Notification to Seller if email exists in their settings
+      try {
+        let sellerEmail = "";
+        if (business.instagram_profile_url && business.instagram_profile_url.startsWith('{')) {
+          const settings = JSON.parse(business.instagram_profile_url);
+          sellerEmail = settings.email;
+        }
+
+        if (sellerEmail) {
+          const productNames = cartItems.map(item => {
+            const p = products.find(prod => prod.id === item.id);
+            return `${item.quantity}x ${p?.name || "Product"}`;
+          }).join(", ");
+
+          await fetch("/api/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "seller_order_notification",
+              email: sellerEmail,
+              orderId: token,
+              customerName: formData.name,
+              customerPhone: formData.phone,
+              productName: productNames,
+              price: total,
+              quantity: 1,
+              deliveryLocation: formData.delivery_location,
+              notes: `Cart Checkout - Total: ₹${total}`
+            })
+          });
+        }
+      } catch (sellerEmailErr) {
+        console.error("Seller checkout email notification failed:", sellerEmailErr);
+      }
+
       localStorage.removeItem('zoopcart_cart');
       window.dispatchEvent(new Event('cart-updated'));
       setOrderToken(token);

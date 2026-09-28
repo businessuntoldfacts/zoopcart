@@ -72,8 +72,27 @@ export default function OrdersPage() {
 
     // Send notification for the main order
     const currentOrder = orders.find((o: any) => o.tracking_token === token);
-    if (currentOrder && currentOrder.customer_email) {
-      // ... existing email logic ...
+    const customerEmail = currentOrder?.customer_email || currentOrder?.items?.[0]?.customer_email;
+
+    if (customerEmail) {
+      try {
+        const productNames = currentOrder.items?.map((i: any) => i.products?.name).filter(Boolean).join(", ") || "Order";
+        await fetch("/api/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "order_notification",
+            email: customerEmail,
+            orderId: token,
+            customerName: currentOrder.customer_name || currentOrder.items?.[0]?.customer_name,
+            productName: productNames,
+            status: newStatus.toUpperCase(),
+            trackingLink: `${window.location.origin}/${business.username}/track?token=${token}`
+          })
+        });
+      } catch (e) {
+        console.error("Status update email failed:", e);
+      }
     }
 
     setOrders(orders.map((o: any) => o.tracking_token === token ? { ...o, status: newStatus, tracking_number: trackingNumber || o.tracking_number, carrier_name: carrierName || o.carrier_name } : o));

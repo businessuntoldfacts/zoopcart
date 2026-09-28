@@ -24,36 +24,22 @@ export default function AnnouncementsPage() {
 
     setLoading(true);
     try {
-      // 1. Save to Database
-      const { error: dbError } = await supabase
-        .from('announcements')
-        .insert([{
+      // Send all data to the server-side broadcast API to handle secure DB persistence and optional email delivery
+      const response = await fetch("/api/admin/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           title: formData.title,
           content: formData.content,
           link: formData.link,
           type: formData.type,
-          is_active: true
-        }])
-        .select()
-        .single();
+          sendEmail: formData.sendEmail
+        })
+      });
 
-      if (dbError) throw dbError;
-
-      // 2. Broadcast Email if requested
-      if (formData.sendEmail) {
-        const response = await fetch("/api/admin/broadcast", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: formData.title,
-            content: formData.content,
-            link: formData.link
-          })
-        });
-
-        if (!response.ok) {
-          console.warn("Announcement published, but email broadcast failed.");
-        }
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Failed to broadcast announcement");
       }
 
       alert("Announcement published successfully!");

@@ -312,19 +312,35 @@ export default function StorefrontClient({ business, products, stats }: { busine
                 </div>
 
                 {/* Product Grid */}
-                <motion.div layout className="grid grid-cols-2 gap-3 mt-4">
+                <motion.div
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="grid grid-cols-2 gap-3 mt-4"
+                >
                   {filteredProducts.length === 0 ? (
-                    <div className="col-span-2 text-center py-12 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="col-span-2 text-center py-12 bg-white rounded-3xl border border-slate-100 shadow-sm"
+                    >
                       <h3 className="font-extrabold text-lg text-slate-900">No products found</h3>
                       <p className="text-sm text-slate-500 mt-1">Try another search or category</p>
-                    </div>
+                    </motion.div>
                   ) : (
                     filteredProducts.map((product, idx) => (
                       <motion.div
                         layout
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3, delay: Math.min(idx * 0.05, 0.3) }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        whileHover={{ y: -5 }}
+                        transition={{
+                          duration: 0.3,
+                          delay: Math.min(idx * 0.05, 0.3),
+                          type: "spring",
+                          stiffness: 300
+                        }}
                         key={product.id}
                       >
                         <Link href={`/${business.username}/${product.slug}`} className="block group bg-white rounded-3xl border border-slate-100 shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 relative pb-3 h-full">

@@ -20,7 +20,9 @@ export default function AdminOrdersPage() {
   const loadOrders = async () => {
     const { data } = await supabase.from('orders').select('*, businesses(business_name, username), products(name, price)').order('created_at', { ascending: false });
     if (data) {
-      setAllOrders(data);
+      // Exclude tracking/analytical rows from the global sales view
+      const realSalesOrders = data.filter(o => !['store_view', 'product_view', 'review', 'platform_review'].includes(o.status));
+      setAllOrders(realSalesOrders);
     }
     setLoading(false);
   };

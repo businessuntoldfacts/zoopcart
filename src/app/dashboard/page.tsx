@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Eye, ShoppingBag, Percent, TrendingUp, Sparkles, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useDashboardData } from "@/lib/useDashboardData";
+import { motion } from "framer-motion";
 
 export default function DashboardOverview() {
   const { user, business, orders, loading } = useDashboardData();
@@ -34,9 +35,28 @@ export default function DashboardOverview() {
     { label: "CONVERSION RATE", value: `${conversionRate}%`, trend: "--", icon: Percent, color: "text-emerald-500", bg: "bg-emerald-50" }
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } }
+  };
+
   return (
     <div className="space-y-6 pb-20 animate-in fade-in duration-300">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2"
+      >
         <div>
           <h2 className="text-2xl font-extrabold text-[#0F172A]">Welcome back, {userName}</h2>
           <p className="text-sm text-slate-500 mt-1">Here&apos;s your store performance overview.</p>
@@ -46,29 +66,41 @@ export default function DashboardOverview() {
           <option>Last 7 Days</option>
           <option>All Time</option>
         </select>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+      >
         {stats.map((stat, idx) => (
-          <Card key={idx} className="bg-white border-slate-200 shadow-sm rounded-2xl p-5 border">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <div className="text-2xl font-extrabold text-[#0F172A]">{stat.value}</div>
-                <div className="text-[11px] font-bold text-slate-400 uppercase mt-1">{stat.label}</div>
+          <motion.div key={idx} variants={itemVariants}>
+            <Card className="bg-white border-slate-200 shadow-sm rounded-2xl p-5 border h-full hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <div className="text-2xl font-extrabold text-[#0F172A]">{stat.value}</div>
+                  <div className="text-[11px] font-bold text-slate-400 uppercase mt-1">{stat.label}</div>
+                </div>
+                <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
+                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                </div>
               </div>
-              <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
-                <stat.icon className={`w-5 h-5 ${stat.color}`} />
+              <div className={`flex items-center text-xs font-bold ${stat.trend.startsWith('+') ? 'text-green-500' : 'text-slate-400'}`}>
+                <TrendingUp className="w-3 h-3 mr-1" /> {stat.trend}
               </div>
-            </div>
-            <div className={`flex items-center text-xs font-bold ${stat.trend.startsWith('+') ? 'text-green-500' : 'text-slate-400'}`}>
-              <TrendingUp className="w-3 h-3 mr-1" /> {stat.trend}
-            </div>
-          </Card>
+            </Card>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       <div className="grid lg:grid-cols-3 gap-6 mt-6">
-        <div className="lg:col-span-2 space-y-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="lg:col-span-2 space-y-6"
+        >
           <Card className="bg-white border-slate-200 shadow-sm rounded-2xl p-6 border h-80 flex flex-col">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-[#0F172A]">Recent Activity</h3>
@@ -89,9 +121,14 @@ export default function DashboardOverview() {
               </svg>
             </div>
           </Card>
-        </div>
+        </motion.div>
 
-        <div className="lg:col-span-1">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="lg:col-span-1"
+        >
           <Card className="bg-gradient-to-br from-blue-600 to-indigo-700 shadow-md rounded-2xl border-none p-6 text-white relative overflow-hidden h-80 flex flex-col">
              <div className="absolute top-0 right-0 p-4 opacity-20">
                <Sparkles className="w-24 h-24" />
@@ -139,8 +176,9 @@ export default function DashboardOverview() {
                </button>
              </div>
           </Card>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
 }
+

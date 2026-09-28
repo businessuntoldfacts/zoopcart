@@ -365,6 +365,23 @@ export default function SignupPage() {
         ]);
       } catch (annError) {}
 
+      // Trigger Welcome Email to Seller
+      try {
+        await fetch("/api/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "welcome",
+            email: finalEmail,
+            fullName: formData.fullName,
+            businessName: formData.businessName,
+            storeUrl: `${window.location.origin}/${formData.username.toLowerCase()}`
+          })
+        });
+      } catch (emailErr) {
+        console.error("Welcome email failed to send:", emailErr);
+      }
+
       // Set setup pending flag to force user to complete profile
       localStorage.setItem("setup_pending", "true");
 

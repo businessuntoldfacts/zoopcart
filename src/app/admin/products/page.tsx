@@ -129,7 +129,7 @@ export default function AdminProductsPage() {
                     <td className="p-4 pl-6">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center font-bold text-slate-400 shrink-0">
-                          {product.image_url ? <img src={product.image_url} className="w-full h-full object-cover" /> : <Package className="w-5 h-5" />}
+                          {product.image || product.image_url ? <img src={product.image || product.image_url} className="w-full h-full object-cover" /> : <Package className="w-5 h-5" />}
                         </div>
                         <div>
                           <div className="font-extrabold text-[#0F172A] text-sm">{product.name}</div>
