@@ -207,18 +207,19 @@ export default function AdminDashboard() {
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-white border-slate-200 shadow-sm rounded-2xl p-6 border h-80 flex flex-col">
-            <div className="flex items-center justify-between mb-6">
+          <Card className="bg-white border-slate-200 shadow-sm rounded-3xl p-6 border flex flex-col min-h-[350px]">
+            <div className="flex items-center justify-between mb-8">
               <div>
-                <h3 className="font-bold text-[#0F172A]">Order Growth</h3>
+                <h3 className="font-bold text-[#0F172A] text-lg">Order Growth</h3>
                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Last 7 Days Activity</p>
               </div>
               <div className="text-right">
-                <div className="text-xl font-black text-slate-900">{stats.todayOrders}</div>
+                <div className="text-2xl font-black text-slate-900">{stats.todayOrders}</div>
                 <div className="text-[9px] font-bold text-slate-400 uppercase">New Today</div>
               </div>
             </div>
-            <div className="flex-1 relative flex items-end px-2">
+
+            <div className="flex-1 w-full min-h-[180px] relative px-2 mb-4">
               <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 90 80">
                 <polyline
                   fill="none"
@@ -228,7 +229,6 @@ export default function AdminDashboard() {
                   strokeLinejoin="round"
                   points={chartPoints}
                 />
-                {/* Dots on points */}
                 {stats.chartData.map((val, i) => (
                   <circle
                     key={i}
@@ -240,34 +240,35 @@ export default function AdminDashboard() {
                 ))}
               </svg>
             </div>
-            <div className="flex justify-between mt-4 px-1">
-               {[...Array(7)].map((_, i) => (
-                 <span key={i} className="text-[9px] font-bold text-slate-400 uppercase">Day {i+1}</span>
+
+            <div className="flex justify-between px-1 border-t border-slate-50 pt-4">
+               {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
+                 <span key={i} className="text-[9px] font-bold text-slate-400 uppercase">{day}</span>
                ))}
             </div>
           </Card>
 
           {/* Live System Activity Feed */}
-          <Card className="bg-white border-slate-200 shadow-sm rounded-2xl p-6 border">
-            <h3 className="font-bold text-[#0F172A] mb-4 flex items-center gap-2">
-              <Activity className="w-4 h-4 text-green-500 animate-pulse" /> Live Activity Feed
+          <Card className="bg-white border-slate-200 shadow-sm rounded-3xl p-6 border">
+            <h3 className="font-bold text-[#0F172A] mb-6 flex items-center gap-2 text-lg">
+              <Activity className="w-5 h-5 text-green-500 animate-pulse" /> Live Activity Feed
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {recentActivity.map((act, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 text-sm">
-                  <div className="flex items-center gap-3">
-                    <span className={`w-2.5 h-2.5 rounded-full ${act.type === 'order' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
+                <div key={index} className="flex items-center justify-between p-4 bg-slate-50/50 hover:bg-slate-50 rounded-2xl border border-slate-100/50 text-sm transition-colors">
+                  <div className="flex items-center gap-4">
+                    <span className={`w-3 h-3 rounded-full shadow-sm ${act.type === 'order' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
                     <div>
-                      <span className="font-bold text-slate-800">{act.type === 'order' ? 'New Order from ' : 'New Store registered: '}</span>
-                      <strong className="text-slate-900 font-extrabold">{act.name}</strong>
-                      {act.store && <span className="text-xs text-slate-500"> ({act.store})</span>}
+                      <span className="font-semibold text-slate-600">{act.type === 'order' ? 'New Order from ' : 'New Store registered: '}</span>
+                      <strong className="text-slate-900 font-bold">{act.name}</strong>
+                      {act.store && <span className="text-xs text-slate-400 italic"> ({act.store})</span>}
                     </div>
                   </div>
-                  <span className="text-xs text-slate-400 font-bold">{new Date(act.time).toLocaleTimeString()}</span>
+                  <span className="text-[11px] text-slate-400 font-bold bg-white px-2 py-1 rounded-lg border border-slate-100">{new Date(act.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
               ))}
               {recentActivity.length === 0 && (
-                <p className="text-sm text-slate-400 text-center py-4">No recent live actions detected yet.</p>
+                <p className="text-sm text-slate-400 text-center py-8">No recent activity detected.</p>
               )}
             </div>
           </Card>
